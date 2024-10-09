@@ -30,6 +30,24 @@
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Fill" />
+            <ImageButton 
+                x:Name="Doubler"
+                BackgroundColor="LightBlue"
+                CornerRadius="80"
+                AbsoluteLayout.LayoutFlags="PositionProportional"  
+                AbsoluteLayout.LayoutBounds=".95,.95,80,80"
+                Clicked ="OnCounterDouble"
+                />
+            <Label 
+                Text="112358132134"
+                Style="{StaticResource Headline}"    
+            />
+            <Button
+                x:Name="ImageEditBtn"
+                Text="Go to Image Editor" 
+                SemanticProperties.Hint="Navigate to the Image Edit Page"
+                Clicked="OnImageEditClicked"
+                HorizontalOptions="Fill" />
         </VerticalStackLayout>
     </ScrollView>
 
