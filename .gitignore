@@ -2,15 +2,7 @@
 /Pictora/bin
 /Pictora/obj
 /Pictora/.vs
-/Pictora/obj
-/Pictora/obj
 *.cache
-/Pictora/obj
 *.targets
-/Pictora/obj
-/Pictora/obj/Debug
-/Pictora/obj/Debug
-/Pictora/obj/Debug/net8.0-android
-/Pictora/obj/Debug/net8.0-android/designtime
 *.editorconfig
 *.outputs
