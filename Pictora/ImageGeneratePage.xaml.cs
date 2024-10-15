@@ -12,13 +12,7 @@ namespace Pictora
         {
 
             InitializeComponent();
-
-            var sizeList = new List<String>();
-            sizeList.Add("Test");
-            Picker picker = new Picker { Title = "Select a size" };
-            picker.ItemsSource = sizeList;
-
-            
+    
 
         }
     }
