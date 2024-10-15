@@ -4,3 +4,7 @@
 /Pictora/.vs
 /Pictora/obj
 /Pictora/obj
+*.cache
+/Pictora/obj
+*.targets
+/Pictora/obj
