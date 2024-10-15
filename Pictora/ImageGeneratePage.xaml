@@ -1,0 +1,81 @@
+﻿
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Pictora.ImageGeneratePage"
+             Title="Image Generator">
+
+    <ScrollView>
+        <VerticalStackLayout
+        Padding="30,0"
+        Spacing="25">
+            
+            <Image
+            Source="dotnet_bot.png"
+            HeightRequest="185"
+            Aspect="AspectFit"
+            SemanticProperties.Description="dot net bot in a race car number eight" />
+
+            <Label Text="Prompt" />
+
+            <Editor x:Name="Prompt"
+                   AutoSize ="TextChanges"
+                   />
+
+
+            <Picker x:Name="Model"
+                    Title="Model">
+                <Picker.Items>
+                    <x:String>Test</x:String>
+                    <x:String>Test2</x:String>
+                    <x:String>Test3</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <Picker x:Name="Style"
+                    Title="Style">
+                <Picker.Items>
+                    <x:String>Test</x:String>
+                    <x:String>Test2</x:String>
+                    <x:String>Test3</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <Picker x:Name="Size"
+                    Title="Size">
+                <Picker.Items>
+                    <x:String>Test</x:String>
+                    <x:String>Test2</x:String>
+                    <x:String>Test3</x:String>
+                    <x:String>Custom</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Entry
+                    x:Name="CustomHight"
+                    Placeholder="Height"
+                    />
+                <Label Text="×"
+                       Grid.Column="1"/>
+                <Entry 
+                    Grid.Column="2"
+                    x:Name="CustomWidth"
+                    Placeholder="Width"
+                    />
+            </Grid>
+
+            <Button Text="Generate"/>
+
+
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+    

@@ -34,6 +34,11 @@
         {
             Navigation.PushAsync(new EditImagePage());
         }
+
+        private void OnImageGeneratedClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new ImageGeneratePage());
+        }
     }
 
 }

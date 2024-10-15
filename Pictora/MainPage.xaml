@@ -48,6 +48,12 @@
                 SemanticProperties.Hint="Navigate to the Image Edit Page"
                 Clicked="OnImageEditClicked"
                 HorizontalOptions="Fill" />
+            <Button
+                x:Name="ImageGenerateBtn"
+                Text="Go to Image Generator" 
+                SemanticProperties.Hint="Navigate to the Image Edit Page"
+                Clicked="OnImageGeneratedClicked"
+                HorizontalOptions="Fill" />
         </VerticalStackLayout>
     </ScrollView>
 
