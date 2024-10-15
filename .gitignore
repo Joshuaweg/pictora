@@ -12,3 +12,5 @@
 /Pictora/obj/Debug
 /Pictora/obj/Debug/net8.0-android
 /Pictora/obj/Debug/net8.0-android/designtime
+*.editorconfig
+*.outputs
