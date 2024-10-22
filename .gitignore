@@ -6,3 +6,5 @@
 *.targets
 *.editorconfig
 *.outputs
+Pictora/.env
+/Pictora/obj
