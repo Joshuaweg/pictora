@@ -8,7 +8,10 @@
         <VerticalStackLayout
         Padding="30,0"
         Spacing="25">
-            
+
+            <Label Text=""
+				   x:Name="Debug_Label"/>
+						
             <Image
             Source="dotnet_bot.png"
 			x:Name="Generated_Image"
@@ -77,8 +80,7 @@
 
             <Button Text="Generate"/>
 
-            <Label Text=""
-				   x:Name="Debug_Label"/>
+
 
 
         </VerticalStackLayout>
