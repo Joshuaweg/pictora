@@ -39,6 +39,10 @@
         {
             Navigation.PushAsync(new ImageGeneratePage());
         }
+        private async void OnLoginClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new LoginPage());
+        }
     }
 
 }
