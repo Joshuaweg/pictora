@@ -8,9 +8,13 @@
         <VerticalStackLayout
         Padding="30,0"
         Spacing="25">
-            
+
+            <Label Text=""
+				   x:Name="Debug_Label"/>
+						
             <Image
             Source="dotnet_bot.png"
+			x:Name="Generated_Image"
             HeightRequest="185"
             Aspect="AspectFit"
             SemanticProperties.Description="dot net bot in a race car number eight" />
@@ -43,9 +47,13 @@
             <Picker x:Name="Size"
                     Title="Size">
                 <Picker.Items>
-                    <x:String>Test</x:String>
-                    <x:String>Test2</x:String>
-                    <x:String>Test3</x:String>
+                    <x:String>Square (512x512)</x:String>
+                    <x:String>Square HD (1024x1024)</x:String>
+                    <x:String>Portrait 3:4 (768x1024)</x:String>
+					<x:String>Portrait 9:16 (576x1024)</x:String>
+                    <x:String>Landscape 4:3 (1024x768)</x:String>
+                    <x:String>Landscape 16:9 (1024x576)</x:String>
+			        <x:String>Wallpaper 16:9 (1920x1080)</x:String>
                     <x:String>Custom</x:String>
                 </Picker.Items>
             </Picker>
