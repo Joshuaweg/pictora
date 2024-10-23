@@ -2,35 +2,44 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.EditImagePage"
              Title="Image Editor">
-
     <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto">
         <!-- Image Canvas -->
         <Grid Grid.Row="0" HeightRequest="300">
-            <Image x:Name="EditableImage" Aspect="AspectFit"/>
+            <Image x:Name="EditableImage" Aspect="AspectFit" Source="test.png"/>
+            <ActivityIndicator x:Name="LoadingIndicator" 
+                             IsVisible="False"
+                             IsRunning="False"
+                             HorizontalOptions="Center" 
+                             VerticalOptions="Center"/>
             <Grid ColumnDefinitions="*,*,*" VerticalOptions="Start" Margin="10">
                 <Button Text="Inpainting" Grid.Column="0"/>
                 <Button Text="Add Captions" Grid.Column="1"/>
                 <Button Text="Draw Shapes" Grid.Column="2"/>
             </Grid>
         </Grid>
-
         <!-- Prompt Text Area -->
-        <Editor Grid.Row="1" Placeholder="Enter prompt to edit image" 
-                AutoSize="TextChanges" MaxLength="500"/>
-
+        <Editor x:Name="PromptEditor" 
+                Grid.Row="1" 
+                Placeholder="Enter prompt to edit image" 
+                AutoSize="TextChanges" 
+                MaxLength="500"/>
         <!-- Edit Button -->
-        <Button Grid.Row="2" Text="Edit" Margin="10"/>
-
+        <Button x:Name="EditButton" 
+                Grid.Row="2" 
+                Text="Edit" 
+                Margin="10"/>
         <!-- Filter Buttons -->
-        <StackLayout Grid.Row="3" Orientation="Horizontal" HorizontalOptions="Center">
-            <Button Text="Filter 1"/>
-            <Button Text="Filter 2"/>
-            <Button Text="Filter 3"/>
-            <!-- Add more filter buttons as needed -->
+        <StackLayout Grid.Row="3" 
+                     Orientation="Horizontal" 
+                     HorizontalOptions="Center">
+            <Button x:Name="Filter1Button" Text="Filter 1"/>
+            <Button x:Name="Filter2Button" Text="Filter 2"/>
+            <Button x:Name="Filter3Button" Text="Filter 3"/>
         </StackLayout>
-
         <!-- Save Button -->
-        <Button Grid.Row="4" Text="Save" Margin="10"/>
+        <Button x:Name="SaveButton" 
+                Grid.Row="4" 
+                Text="Save" 
+                Margin="10"/>
     </Grid>
-
 </ContentPage>

@@ -12,47 +12,47 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Pictora
-build_property.ProjectDir = C:\Users\Matthew Bellman\Documents\GitHub\pictora\Pictora\
+build_property.ProjectDir = C:\Users\joshu\OneDrive\Desktop\pictora\pictora\Pictora\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 
-[C:/Users/Matthew Bellman/Documents/GitHub/pictora/Pictora/App.xaml]
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/App.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.App.xaml
 build_metadata.AdditionalFiles.TargetPath = App.xaml
 build_metadata.AdditionalFiles.RelativePath = App.xaml
 
-[C:/Users/Matthew Bellman/Documents/GitHub/pictora/Pictora/AppShell.xaml]
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/AppShell.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.AppShell.xaml
 build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
 build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
 
-[C:/Users/Matthew Bellman/Documents/GitHub/pictora/Pictora/EditImagePage.xaml]
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/EditImagePage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.EditImagePage.xaml
 build_metadata.AdditionalFiles.TargetPath = EditImagePage.xaml
 build_metadata.AdditionalFiles.RelativePath = EditImagePage.xaml
 
-[C:/Users/Matthew Bellman/Documents/GitHub/pictora/Pictora/ImageGeneratePage.xaml]
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/ImageGeneratePage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.ImageGeneratePage.xaml
 build_metadata.AdditionalFiles.TargetPath = ImageGeneratePage.xaml
 build_metadata.AdditionalFiles.RelativePath = ImageGeneratePage.xaml
 
-[C:/Users/Matthew Bellman/Documents/GitHub/pictora/Pictora/MainPage.xaml]
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/MainPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.MainPage.xaml
 build_metadata.AdditionalFiles.TargetPath = MainPage.xaml
 build_metadata.AdditionalFiles.RelativePath = MainPage.xaml
 
-[C:/Users/Matthew Bellman/Documents/GitHub/pictora/Pictora/Resources/Styles/Colors.xaml]
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/Resources/Styles/Colors.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.Resources.Styles.Colors.xaml
 build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Colors.xaml
 build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Colors.xaml
 
-[C:/Users/Matthew Bellman/Documents/GitHub/pictora/Pictora/Resources/Styles/Styles.xaml]
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/Resources/Styles/Styles.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.Resources.Styles.Styles.xaml
 build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Styles.xaml
