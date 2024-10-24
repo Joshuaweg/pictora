@@ -78,7 +78,8 @@
                     />
             </Grid>
 
-            <Button Text="Generate"/>
+            <Button Text="Generate"
+					Clicked="GenerateButtonClicked"/>
 
 
 
