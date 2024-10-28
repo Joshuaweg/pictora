@@ -9,7 +9,7 @@
             VerticalOptions="Center">
 
             <Image
-                Source="dotnet_bot.png"
+                Source="mock_logo.png"
                 HeightRequest="150"
                 Aspect="AspectFit"
                 SemanticProperties.Description="Login page logo" />
