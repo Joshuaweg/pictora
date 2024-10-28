@@ -23,7 +23,7 @@ namespace Pictora
                     $"File exists: {File.Exists(envPath)}", "OK");
             });
             DotNetEnv.Env.Load(envPath);
-            string apiKey = DotNetEnv.Env.GetString("FAL_API_KEY");
+            string apiKey = App.EnvironmentVariables["FAL_API_KEY"];
             _imageService = new ImageEditingService(apiKey);
 
             // Set up the edit images directory
