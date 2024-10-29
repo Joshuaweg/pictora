@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.Http;
 using DotNetEnv;
+using System.Diagnostics;
 
 
 namespace Pictora
@@ -21,7 +22,6 @@ namespace Pictora
             InitializeComponent();
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string envPath = Path.Combine(baseDirectory, ".env");
-
 
             DotNetEnv.Env.Load(envPath);
             API_KEY = DotNetEnv.Env.GetString("FAL_API_KEY", "");
@@ -40,9 +40,9 @@ namespace Pictora
                 return;
             }
 
-            prompt = ("\"prompt\": " + prompt);
+            prompt = ("\"prompt\": \"" + prompt + "\"");
 
-            String size = "\"image_size\": ";
+            String size = ",\"image_size\": ";
 
             switch (Size.SelectedIndex)
             {
@@ -55,7 +55,7 @@ namespace Pictora
                 // TODO - Add the rest later.
                 // Ignore the property for now
                 default:
-                    size = "";
+                    size += "\"square_hd\"";
                     break;     
             }
 
@@ -65,11 +65,13 @@ namespace Pictora
 
             if (!size.Equals(""))
             {
-                // Add the size
+                finalPrompt += $"{size}";
             }
 
             // End
             finalPrompt += $"}}";
+
+            Debug.WriteLine(finalPrompt);
 
             string requestUrl = "https://queue.fal.run/fal-ai/fast-sdxl";
 
@@ -92,22 +94,15 @@ namespace Pictora
             StreamReader reader = new(body);
             string result = reader.ReadToEnd();
 
-            Progress resultJSON = JsonSerializer.Deserialize<Progress>(result);
-
-            
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await DisplayAlert("Prompt", result, "Ok");
-                //await DisplayAlert("Prompt", resultJSON.status, "Ok");
-            });
+            Progress progress_JSON = JsonSerializer.Deserialize<Progress>(result);
 
             // Have a while loop that rechecks the status every second until it is complete.
-            while ((resultJSON.status).Equals("IN_QUEUE"))
+            while ((progress_JSON.status).Equals("IN_QUEUE"))
             {
-                Task.Delay(1000).Wait(); // Delay for 1 second
+                Task.Delay(1000).Wait(); // Delay for 1 seconds
 
                 // Check the request to see if it is done.
-                requestUrl = resultJSON.status_url;
+                requestUrl = progress_JSON.status_url;
 
                 httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                 httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
@@ -117,59 +112,66 @@ namespace Pictora
 
                 reader = new StreamReader(body);
                 result = reader.ReadToEnd();
-                resultJSON = JsonSerializer.Deserialize<Progress>(result);
+                progress_JSON = JsonSerializer.Deserialize<Progress>(result);
             }
 
 
-            // Check to see what the result was after exiting the while loop.
-            
-            // This doesn't seem to match what was on the page in the "Get the Result" section.
-            // It currently looks like this:
-            // {
-            //   "detail": [{
-            //     "type":"json_invalid",
-            //     "loc":["body",11],
-            //     "msg":"JSON decode error"m
-            //     "input"={},
-            //     "ctx":{
-            //       "error":"Expecting value"
-            //     }
-            //   }]
-            // }
+            requestUrl = progress_JSON.response_url;
+            Result result_JSON;
 
-            /*
-            requestUrl = resultJSON.response_url;
-
-            httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-            httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
-
-            responce = httpClient.Send(httpRequestMessage);
-            body = responce.Content.ReadAsStream();
-
-            reader = new StreamReader(body);
-            result = reader.ReadToEnd();
-            resultJSON = JsonSerializer.Deserialize<Progress>(result);
-            */
-
-            MainThread.BeginInvokeOnMainThread(async () =>
+            // This do-while makes sure the object being returned is the actual result.
+            do
             {
-                await DisplayAlert("Prompt", result, "Ok");
-                await DisplayAlert("Prompt", resultJSON.status, "Ok");
-            });
+                Task.Delay(1000).Wait(); // Delay for 1 seconds
+
+                httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
+
+                responce = httpClient.Send(httpRequestMessage);
+
+                result = new StreamReader(responce.Content.ReadAsStream()).ReadToEnd();
+                result_JSON = JsonSerializer.Deserialize<Result>(result);
+                Debug.WriteLine(result_JSON.detail);
+            } while (result_JSON.detail != "");
             
+
+            Debug.WriteLine(result_JSON);
+            Debug.WriteLine(result_JSON.images[0].url);
+
+            // TODO - Update the image and edit the page to add in more user elements
 
         }
 
         private class Progress
         {
             public string status { get; set; } = string.Empty;
-            public string request_id { get; set; } = string.Empty;
+            //public string request_id { get; set; } = string.Empty;
             public string response_url { get; set; } = string.Empty; // Result
             public string status_url { get; set; } = string.Empty; // Status Check
             //string cancel_url { get; set; } = string.Empty;
             //string logs { get; set; } = string.Empty;
             //string[] metrics;
             //int queue_position;
+        }
+
+        private class Result
+        {
+            // This is used to check if the actual result JSON object is the one that is being returned, should be blank if so.
+            public string detail { get; set; } = string.Empty; 
+            public List<Images> images { get; set; } = new();
+            // public Timings timings { get; set; } = new();
+            //public long seed { get; set; } = 0;
+            // public List<Bool> has_nsfw_concepts = new();
+            //public string prompt { get; set; } = string.Empty;
+        }
+
+        private class Images
+        {
+            public string url { get; set; } = string.Empty;
+            public int width { get; set; } = 0;
+            public int height { get; set; } = 0;
+            //public string content_type { get; set; } = string.Empty;
+
         }
 
 
