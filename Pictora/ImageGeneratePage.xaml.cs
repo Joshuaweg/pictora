@@ -137,7 +137,7 @@ namespace Pictora
             //   }]
             // }
 
-            /*
+            
             requestUrl = resultJSON.response_url;
 
             httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
@@ -149,7 +149,7 @@ namespace Pictora
             reader = new StreamReader(body);
             result = reader.ReadToEnd();
             resultJSON = JsonSerializer.Deserialize<Progress>(result);
-            */
+           
 
             MainThread.BeginInvokeOnMainThread(async () =>
             {
