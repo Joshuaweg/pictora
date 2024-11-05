@@ -18,7 +18,7 @@ namespace Pictora.Services
     {
         private readonly IMongoDatabase _database;
 
-        public MongoDBService(string connectionString ="mongodb+srv://root:root@pictora.mgro1.mongodb.net/?retryWrites=true&w=majority&appName=pictora")
+        public MongoDBService(string connectionString ="Add connection String here")
         {
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase("main");
