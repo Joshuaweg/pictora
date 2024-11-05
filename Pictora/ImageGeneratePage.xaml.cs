@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Net;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using Pictora.Services;
 
 
 namespace Pictora
@@ -194,10 +195,26 @@ namespace Pictora
 
             Debug.WriteLine(result_JSON);
             Debug.WriteLine(result_JSON.images[0].url);
-
+            MongoDBService mgdbs = new();
             GeneratedURL = result_JSON.images[0].url;
-
+            Image generated_image = new Image();
+            generated_image.ImageSize = new ImageSize();
+            generated_image.ImageUrl = GeneratedURL;
+            generated_image.ImageSize.Height = 1024;
+            generated_image.ImageSize.Width = 1024;
+            generated_image.Created = DateTime.Now;
+            generated_image.Prompt = Prompt.Text;
+            generated_image.Model = "Fast-SDXL";
+            generated_image.Style = "None";
+            generated_image.Tags = new List<string>();
+            generated_image.UserId = 0;
+            generated_image.Upvotes = 0;
+            generated_image.Downvotes = 0;
+            generated_image.Description = "Generated image";
+            generated_image.Name = "Generated Image";
+            generated_image.NumericId =0;
             Generated_Image.Source = GeneratedURL;
+            mgdbs.CreateAsync("images", generated_image);
             GenerateButton.Text = "Regenerate";
             SaveControls.IsVisible = true;
 

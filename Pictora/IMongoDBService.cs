@@ -18,7 +18,7 @@ namespace Pictora.Services
     {
         private readonly IMongoDatabase _database;
 
-        public MongoDBService(string connectionString ="Add connection String here")
+        public MongoDBService(string connectionString ="mongodb+srv://root:root@pictora.mgro1.mongodb.net/?retryWrites=true&w=majority&appName=pictora")
         {
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase("main");
@@ -27,7 +27,7 @@ namespace Pictora.Services
         public async Task<T> GetByIdAsync<T>(string collectionName, string id)
         {
             var collection = _database.GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
+            var filter = Builders<T>.Filter.Eq("id", Int32.Parse(id));
             return await collection.Find(filter).FirstOrDefaultAsync();
         }
 
@@ -35,6 +35,18 @@ namespace Pictora.Services
         {
             var collection = _database.GetCollection<T>(collectionName);
             return await collection.Find(_ => true).ToListAsync();
+        }
+        // get max id from any collection and return next id
+        public async Task<int> GetNextIdAsync<T>(string collectionName)
+        {
+            var collection = _database.GetCollection<T>(collectionName);
+            var sort = Builders<T>.Sort.Descending("id");
+            var max = await collection.Find(_ => true).Sort(sort).Limit(1).FirstOrDefaultAsync();
+            if (max == null)
+            {
+                return 1;
+            }
+            return (int)max.GetType().GetProperty("id").GetValue(max) + 1;
         }
 
         public async Task<T> CreateAsync<T>(string collectionName, T document)
