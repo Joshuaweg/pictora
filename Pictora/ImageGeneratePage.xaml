@@ -19,6 +19,27 @@
             Aspect="AspectFit"
             SemanticProperties.Description="dot net bot in a race car number eight" />
 
+			<HorizontalStackLayout
+				Padding="30,0"
+                Spacing="25"
+				x:Name="SaveControls"
+				IsVisible="False"
+				HorizontalOptions="Center"
+				>
+
+				<!-- Replace these button with icons after functionality is complete -->
+				<Button Text="Share"
+						MinimumWidthRequest="100"
+						Clicked="ButtonShareClicked"/>
+				<Button Text="Upload"
+						MinimumWidthRequest="100"
+						Clicked="Test"/> <!-- Replace with "ButtonUploadClicked" -->
+				<Button Text="Save"
+						MinimumWidthRequest="100"
+						Clicked="ButtonSaveClicked"/>
+					
+			</HorizontalStackLayout>
+
             <Label Text="Prompt" />
 
             <Editor x:Name="Prompt"
@@ -79,7 +100,8 @@
             </Grid>
 
             <Button Text="Generate"
-					Clicked="GenerateButtonClicked" x:Name="GenerateButton"/>
+					x:Name="GenerateButton"
+					Clicked="GenerateButtonClicked"/>
 
 
 

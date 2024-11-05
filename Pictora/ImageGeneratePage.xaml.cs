@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using DotNetEnv;
 using System.Diagnostics;
+using System.Net;
 
 
 namespace Pictora
@@ -16,6 +17,8 @@ namespace Pictora
     public partial class ImageGeneratePage : ContentPage
     {
         private string API_KEY = "";
+        private string GeneratedURL;
+        int count = 0;
         //private ArrayList envFile = new ArrayList();
         public ImageGeneratePage()
         {
@@ -28,6 +31,58 @@ namespace Pictora
 
         }
 
+        private void Test(object sender, EventArgs e)
+        {
+            Debug.WriteLine(sender);
+        }
+        private void ButtonShareClicked(object sender, EventArgs e)
+        {
+            ShareFile();
+        }
+
+        private void ButtonSaveClicked(object sender, EventArgs e)
+        {
+            DownloadFile();
+        }
+
+        private async Task ShareFile()
+        {
+
+            // If there is a way to do this with the HttpClient class (or anything else), so the complier doesn't send me a obsolite message, implement it that way.
+            WebClient webClient = new();
+
+            // This should just lead to the systems user folder (The one with your name on it.) If there is a better directory to use, please let me know ASAP.
+            string location = (Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()) + $"\\test.jpeg"; 
+            webClient.DownloadFile(GeneratedURL, location);
+
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = "Share generated image",
+                File = new ShareFile(location)
+            });
+        }
+
+        private async Task DownloadFile()
+        {
+            
+            // If there is a way to do this with the HttpClient class (or anything else), so the complier doesn't send me a obsolite message, implement it that way.
+            WebClient webClient = new();
+
+            // This should just lead to the systems user folder (The one with your name on it.) If there is a better directory to use, please let me know ASAP.
+            //
+            // Count is temperary, replace with a date and timestamp for the filename
+            string location = (Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()) + $"\\test{count}.jpeg";
+            webClient.DownloadFile(GeneratedURL, location);
+
+            count++;
+
+            // This isn't the proper way to implement this, but it should work for now.
+            // Look into what the actual way to do this is, assuming I'm actually alowed to.
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await DisplayAlert("Prompt", $"File downloaded to {location}", "Ok");
+            });
+        }
         private void GenerateButtonClicked(object sender, EventArgs e)
         {
             if (API_KEY.Equals("")) // If there isn't a key, display an error
@@ -95,9 +150,9 @@ namespace Pictora
             string result = reader.ReadToEnd();
 
             Progress progress_JSON = JsonSerializer.Deserialize<Progress>(result);
-            Debug.WriteLine(progress_JSON.status);
+
             // Have a while loop that rechecks the status every second until it is complete.
-            while (!progress_JSON.status.Equals("COMPLETED"))
+            while ((progress_JSON.status).Equals("IN_QUEUE"))
             {
                 Task.Delay(1000).Wait(); // Delay for 1 seconds
 
@@ -113,46 +168,37 @@ namespace Pictora
                 reader = new StreamReader(body);
                 result = reader.ReadToEnd();
                 progress_JSON = JsonSerializer.Deserialize<Progress>(result);
-                Debug.WriteLine(progress_JSON.status);
             }
 
 
-            // Check to see what the result was after exiting the while loop.
-            
-            // This doesn't seem to match what was on the page in the "Get the Result" section.
-            // It currently looks like this:
-            // {
-            //   "detail": [{
-            //     "type":"json_invalid",
-            //     "loc":["body",11],
-            //     "msg":"JSON decode error"m
-            //     "input"={},
-            //     "ctx":{
-            //       "error":"Expecting value"
-            //     }
-            //   }]
-            // }
-
-            
             requestUrl = progress_JSON.response_url;
+            Result result_JSON;
+
+            // This do-while makes sure the object being returned is the actual result.
+            do
+            {
+                Task.Delay(1000).Wait(); // Delay for 1 seconds
 
                 httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                 httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
 
-            responce = httpClient.Send(httpRequestMessage);
-            body = responce.Content.ReadAsStream();
+                responce = httpClient.Send(httpRequestMessage);
 
-            reader = new StreamReader(body);
-            result = reader.ReadToEnd();
-            Debug.WriteLine(result);
-            var result_JSON = JsonSerializer.Deserialize<Result>(result);
+                result = new StreamReader(responce.Content.ReadAsStream()).ReadToEnd();
+                result_JSON = JsonSerializer.Deserialize<Result>(result);
+                Debug.WriteLine(result_JSON.detail);
+            } while (result_JSON.detail != "");
+            
 
             Debug.WriteLine(result_JSON);
             Debug.WriteLine(result_JSON.images[0].url);
-            string generatedURL = result_JSON.images[0].url;
 
-            Generated_Image.Source = generatedURL;
-            
+            GeneratedURL = result_JSON.images[0].url;
+
+            Generated_Image.Source = GeneratedURL;
+            GenerateButton.Text = "Regenerate";
+            SaveControls.IsVisible = true;
+
             // TODO - Update the image and edit the page to add in more user elements
 
         }
