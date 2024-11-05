@@ -79,7 +79,7 @@
             </Grid>
 
             <Button Text="Generate"
-					Clicked="GenerateButtonClicked"/>
+					Clicked="GenerateButtonClicked" x:Name="GenerateButton"/>
 
 
 

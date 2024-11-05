@@ -6,6 +6,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+//Update this to Utility Request
+
+
 namespace Pictora.Services
 {
     public class ImageEditRequest

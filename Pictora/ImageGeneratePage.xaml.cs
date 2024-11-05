@@ -95,9 +95,9 @@ namespace Pictora
             string result = reader.ReadToEnd();
 
             Progress progress_JSON = JsonSerializer.Deserialize<Progress>(result);
-
+            Debug.WriteLine(progress_JSON.status);
             // Have a while loop that rechecks the status every second until it is complete.
-            while ((progress_JSON.status).Equals("IN_QUEUE"))
+            while (!progress_JSON.status.Equals("COMPLETED"))
             {
                 Task.Delay(1000).Wait(); // Delay for 1 seconds
 
@@ -113,31 +113,46 @@ namespace Pictora
                 reader = new StreamReader(body);
                 result = reader.ReadToEnd();
                 progress_JSON = JsonSerializer.Deserialize<Progress>(result);
+                Debug.WriteLine(progress_JSON.status);
             }
 
 
-            requestUrl = progress_JSON.response_url;
-            Result result_JSON;
+            // Check to see what the result was after exiting the while loop.
+            
+            // This doesn't seem to match what was on the page in the "Get the Result" section.
+            // It currently looks like this:
+            // {
+            //   "detail": [{
+            //     "type":"json_invalid",
+            //     "loc":["body",11],
+            //     "msg":"JSON decode error"m
+            //     "input"={},
+            //     "ctx":{
+            //       "error":"Expecting value"
+            //     }
+            //   }]
+            // }
 
-            // This do-while makes sure the object being returned is the actual result.
-            do
-            {
-                Task.Delay(1000).Wait(); // Delay for 1 seconds
+            
+            requestUrl = progress_JSON.response_url;
 
                 httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                 httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
 
-                responce = httpClient.Send(httpRequestMessage);
+            responce = httpClient.Send(httpRequestMessage);
+            body = responce.Content.ReadAsStream();
 
-                result = new StreamReader(responce.Content.ReadAsStream()).ReadToEnd();
-                result_JSON = JsonSerializer.Deserialize<Result>(result);
-                Debug.WriteLine(result_JSON.detail);
-            } while (result_JSON.detail != "");
-            
+            reader = new StreamReader(body);
+            result = reader.ReadToEnd();
+            Debug.WriteLine(result);
+            var result_JSON = JsonSerializer.Deserialize<Result>(result);
 
             Debug.WriteLine(result_JSON);
             Debug.WriteLine(result_JSON.images[0].url);
+            string generatedURL = result_JSON.images[0].url;
 
+            Generated_Image.Source = generatedURL;
+            
             // TODO - Update the image and edit the page to add in more user elements
 
         }
