@@ -3,11 +3,15 @@
              x:Class="Pictora.EditImagePage"
              Title="Image Editor"
              BackgroundColor="#0d0d3c">
-
-    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
         <!-- Image Canvas -->
-        <Grid Grid.Row="0" HeightRequest="300">
+        <Grid x:Name="ImageContainer" Grid.Row="0" HeightRequest="300">
             <Image x:Name="EditableImage" Aspect="AspectFit" Source="test.png"/>
+            <Grid x:Name="CaptionOverlay" 
+                  IsVisible="False"
+                  InputTransparent="False">
+                <!-- Captions will be added here dynamically -->
+            </Grid>
             <ActivityIndicator x:Name="LoadingIndicator" 
                              IsVisible="False"
                              IsRunning="False"
@@ -19,10 +23,12 @@
                         TextColor="White"
                         CornerRadius="10"
                         Grid.Column="0"/>
-                <Button Text="Add Captions"
+                <Button x:Name="AddCaptionButton"
+                        Text="Add Captions"
                         BackgroundColor="#FF6347"
                         TextColor="White"
                         CornerRadius="10"
+                        Clicked="OnAddCaptionClicked"
                         Grid.Column="1"/>
                 <Button Text="Draw Shapes"
                         BackgroundColor="#FF6347"
@@ -31,24 +37,64 @@
                         Grid.Column="2"/>
             </Grid>
         </Grid>
+
+        <!-- Caption Editor Panel -->
+        <Grid x:Name="CaptionEditorPanel" 
+              Grid.Row="1" 
+              IsVisible="False"
+              RowDefinitions="Auto,Auto"
+              Margin="10"
+              BackgroundColor="#1a1a4d"
+              Padding="10">
+            <Entry x:Name="CaptionTextEntry" 
+                   Placeholder="Enter caption text"
+                   PlaceholderColor="Gray"
+                   TextColor="White"
+                   Grid.Row="0"
+                   Margin="0,0,0,10"/>
+            <StackLayout Orientation="Horizontal" 
+                        Grid.Row="1" 
+                        Spacing="10"
+                        HorizontalOptions="Center">
+                <Button x:Name="AddTextButton" 
+                        Text="Add Text" 
+                        BackgroundColor="#FF6347"
+                        TextColor="White"
+                        CornerRadius="8"
+                        Clicked="OnAddTextButtonClicked"/>
+                <Button x:Name="DoneCaptioningButton" 
+                        Text="Done" 
+                        BackgroundColor="#FF6347"
+                        TextColor="White"
+                        CornerRadius="8"
+                        Clicked="OnDoneCaptioningClicked"/>
+            </StackLayout>
+        </Grid>
+
         <!-- Prompt Text Area -->
         <Editor x:Name="PromptEditor" 
-                Grid.Row="1" 
+                Grid.Row="2" 
                 Placeholder="Enter prompt to edit image" 
+                PlaceholderColor="Gray"
+                TextColor="White"
+                BackgroundColor="#1a1a4d"
                 AutoSize="TextChanges" 
-                MaxLength="500"/>
+                MaxLength="500"
+                Margin="10"/>
         <!-- Edit Button -->
         <Button x:Name="EditButton" 
-                Grid.Row="2" 
+                Grid.Row="3" 
                 Text="Edit"
                 BackgroundColor="#FF6347"
                 TextColor="White"
                 CornerRadius="8"
                 Margin="10"/>
         <!-- Filter Buttons -->
-        <StackLayout Grid.Row="3" 
+        <StackLayout Grid.Row="4" 
                      Orientation="Horizontal" 
-                     HorizontalOptions="Center">
+                     HorizontalOptions="Center"
+                     Spacing="10"
+                     Margin="0,10">
             <Button x:Name="Filter1Button" 
                     Text="Filter 1"
                     BackgroundColor="#FF6347"
@@ -67,7 +113,7 @@
         </StackLayout>
         <!-- Save Button -->
         <Button x:Name="SaveButton" 
-                Grid.Row="4" 
+                Grid.Row="5" 
                 Text="Save" 
                 BackgroundColor="#FF6347"
                 TextColor="White"

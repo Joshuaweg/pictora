@@ -116,9 +116,9 @@ namespace Pictora.Services
             string uri = imagePath;
             if (!uri.StartsWith("https://"))
             {
-            string base64Image = await ConvertImageToBase64WithCompression(imagePath);
-            Debug.WriteLine($"Base64 Image Length: {base64Image.Length}");
-            uri = $"data:image/jpeg;base64,{base64Image}";
+                string base64Image = await ConvertImageToBase64WithCompression(imagePath);
+                Debug.WriteLine($"Base64 Image Length: {base64Image.Length}");
+                uri = $"data:image/jpeg;base64,{base64Image}";
             }
 
             var requestBody = new Dictionary<string, object>

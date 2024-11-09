@@ -277,7 +277,7 @@ namespace Pictora
         }
 
         // ... (rest of your methods remain the same)
-    private async void OnAddCaptionClicked(object sender, EventArgs e)
+        private async void OnAddCaptionClicked(object sender, EventArgs e)
         {
             _isCaptionMode = !_isCaptionMode;
             CaptionEditorPanel.IsVisible = _isCaptionMode;
@@ -375,7 +375,7 @@ namespace Pictora
                 });
             }
         }
-    public static async Task<bool> CopyImageToEditDirectory(string sourceImagePath)
+        public static async Task<bool> CopyImageToEditDirectory(string sourceImagePath)
         {
             try
             {
