@@ -40,6 +40,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = Pictora.ImageGeneratePage.
 build_metadata.AdditionalFiles.TargetPath = ImageGeneratePage.xaml
 build_metadata.AdditionalFiles.RelativePath = ImageGeneratePage.xaml
 
+[C:/Users/Joshua Santillan/OneDrive/Documents/GitHub/pictora/Pictora/ImageUploadPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Pictora.ImageUploadPage.xaml
+build_metadata.AdditionalFiles.TargetPath = ImageUploadPage.xaml
+build_metadata.AdditionalFiles.RelativePath = ImageUploadPage.xaml
+
 [C:/Users/Joshua Santillan/OneDrive/Documents/GitHub/pictora/Pictora/LoginPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.LoginPage.xaml

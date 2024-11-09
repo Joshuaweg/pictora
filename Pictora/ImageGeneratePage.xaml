@@ -22,11 +22,36 @@
             HorizontalOptions="Center"
             SemanticProperties.Description="dot net bot in a race car number eight" />
 
+<<<<<<< HEAD
             <Label Text="Prompt" 
                    FontSize="18"
                    TextColor="#ECECEC"
                    HorizontalOptions="Center"
                    />
+=======
+			<HorizontalStackLayout
+				Padding="30,0"
+                Spacing="25"
+				x:Name="SaveControls"
+				IsVisible="False"
+				HorizontalOptions="Center"
+				>
+
+				<!-- Replace these button with icons after functionality is complete -->
+				<Button Text="Share"
+						MinimumWidthRequest="100"
+						Clicked="ButtonShareClicked"/>
+				<Button Text="Upload"
+						MinimumWidthRequest="100"
+						Clicked="ButtonUploadClicked"/> <!-- Replace with "ButtonUploadClicked" -->
+				<Button Text="Save"
+						MinimumWidthRequest="100"
+						Clicked="ButtonSaveClicked"/>
+					
+			</HorizontalStackLayout>
+
+            <Label Text="Prompt" />
+>>>>>>> fe091be79f0499cb892a7c68cf2dc123aae3ff14
 
             <Editor x:Name="Prompt"
                    Placeholder="Enter prompt to generate image"
@@ -118,6 +143,7 @@
             </Grid>
 
             <Button Text="Generate"
+<<<<<<< HEAD
                     x:Name="GenerateButton"
                     BackgroundColor="#8A2BE2" 
                     TextColor="White"
@@ -125,8 +151,30 @@
                     CornerRadius="8"
                     HeightRequest="45"
                     HorizontalOptions="Center"
+=======
+					x:Name="GenerateButton"
+>>>>>>> fe091be79f0499cb892a7c68cf2dc123aae3ff14
 					Clicked="GenerateButtonClicked"/>
+            
+            <HorizontalStackLayout
+	            Padding="30,0"
+                Spacing="25"
+	            x:Name="DevUpload"
+	            IsVisible="False"
+	            HorizontalOptions="Center"
+	            >
 
+<<<<<<< HEAD
+=======
+                <!-- Replace these button with icons after functionality is complete -->
+                <Button Text="Dev Upload"
+			            MinimumWidthRequest="100"
+			            Clicked="ButtonDevUploadClicked"/>
+            </HorizontalStackLayout>
+
+
+
+>>>>>>> fe091be79f0499cb892a7c68cf2dc123aae3ff14
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

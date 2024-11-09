@@ -8,6 +8,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.Http;
 using DotNetEnv;
+using System.Diagnostics;
+using System.Net;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+using Pictora.Services;
 
 
 namespace Pictora
@@ -15,6 +20,14 @@ namespace Pictora
     public partial class ImageGeneratePage : ContentPage
     {
         private string API_KEY = "";
+        private string GeneratedURL;
+        int count = 0;
+        Result result_JSON;
+
+        // TEMP: just in case you want to fill the database.
+        Image generated_image; 
+        MongoDBService mgdbs = new();
+
         //private ArrayList envFile = new ArrayList();
         public ImageGeneratePage()
         {
@@ -22,12 +35,65 @@ namespace Pictora
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string envPath = Path.Combine(baseDirectory, ".env");
 
-
             DotNetEnv.Env.Load(envPath);
             API_KEY = DotNetEnv.Env.GetString("FAL_API_KEY", "");
 
+            mgdbs = new(); // TEMP
+
         }
 
+        private void Test(object sender, EventArgs e)
+        {
+            Debug.WriteLine(sender);
+        }
+        private void ButtonShareClicked(object sender, EventArgs e)
+        {
+            ShareFile();
+        }
+
+        private void ButtonSaveClicked(object sender, EventArgs e)
+        {
+            DownloadFile();
+        }
+
+        private async Task ShareFile()
+        {
+
+            // If there is a way to do this with the HttpClient class (or anything else), so the complier doesn't send me a obsolite message, implement it that way.
+            WebClient webClient = new();
+
+            // This should just lead to the systems user folder (The one with your name on it.) If there is a better directory to use, please let me know ASAP.
+            string location = (Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()) + $"\\test.jpeg"; 
+            webClient.DownloadFile(GeneratedURL, location);
+
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = "Share generated image",
+                File = new ShareFile(location)
+            });
+        }
+
+        private async Task DownloadFile()
+        {
+            
+            // If there is a way to do this with the HttpClient class (or anything else), so the complier doesn't send me a obsolite message, implement it that way.
+            WebClient webClient = new();
+
+            // This should just lead to the systems user folder (The one with your name on it.) If there is a better directory to use, please let me know ASAP.
+            //
+            // Count is temperary, replace with a date and timestamp for the filename
+            string location = (Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()) + $"\\test{count}.jpeg";
+            webClient.DownloadFile(GeneratedURL, location);
+
+            count++;
+
+            // This isn't the proper way to implement this, but it should work for now.
+            // Look into what the actual way to do this is, assuming I'm actually alowed to.
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await DisplayAlert("Prompt", $"File downloaded to {location}", "Ok");
+            });
+        }
         private void GenerateButtonClicked(object sender, EventArgs e)
         {
             if (API_KEY.Equals("")) // If there isn't a key, display an error
@@ -40,9 +106,9 @@ namespace Pictora
                 return;
             }
 
-            prompt = ("\"prompt\": " + prompt);
+            prompt = ("\"prompt\": \"" + prompt + "\"");
 
-            String size = "\"image_size\": ";
+            String size = ",\"image_size\": ";
 
             switch (Size.SelectedIndex)
             {
@@ -55,7 +121,7 @@ namespace Pictora
                 // TODO - Add the rest later.
                 // Ignore the property for now
                 default:
-                    size = "";
+                    size += "\"square_hd\"";
                     break;     
             }
 
@@ -65,11 +131,13 @@ namespace Pictora
 
             if (!size.Equals(""))
             {
-                // Add the size
+                finalPrompt += $"{size}";
             }
 
             // End
             finalPrompt += $"}}";
+
+            Debug.WriteLine(finalPrompt);
 
             string requestUrl = "https://queue.fal.run/fal-ai/fast-sdxl";
 
@@ -92,22 +160,15 @@ namespace Pictora
             StreamReader reader = new(body);
             string result = reader.ReadToEnd();
 
-            Progress resultJSON = JsonSerializer.Deserialize<Progress>(result);
-
-            
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await DisplayAlert("Prompt", result, "Ok");
-                //await DisplayAlert("Prompt", resultJSON.status, "Ok");
-            });
+            Progress progress_JSON = JsonSerializer.Deserialize<Progress>(result);
 
             // Have a while loop that rechecks the status every second until it is complete.
-            while ((resultJSON.status).Equals("IN_QUEUE"))
+            while ((progress_JSON.status).Equals("IN_QUEUE"))
             {
-                Task.Delay(1000).Wait(); // Delay for 1 second
+                Task.Delay(1000).Wait(); // Delay for 1 seconds
 
                 // Check the request to see if it is done.
-                requestUrl = resultJSON.status_url;
+                requestUrl = progress_JSON.status_url;
 
                 httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                 httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
@@ -117,59 +178,198 @@ namespace Pictora
 
                 reader = new StreamReader(body);
                 result = reader.ReadToEnd();
-                resultJSON = JsonSerializer.Deserialize<Progress>(result);
+                progress_JSON = JsonSerializer.Deserialize<Progress>(result);
             }
 
 
-            // Check to see what the result was after exiting the while loop.
-            
-            // This doesn't seem to match what was on the page in the "Get the Result" section.
-            // It currently looks like this:
-            // {
-            //   "detail": [{
-            //     "type":"json_invalid",
-            //     "loc":["body",11],
-            //     "msg":"JSON decode error"m
-            //     "input"={},
-            //     "ctx":{
-            //       "error":"Expecting value"
-            //     }
-            //   }]
-            // }
+            requestUrl = progress_JSON.response_url;
 
-            /*
-            requestUrl = resultJSON.response_url;
-
-            httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-            httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
-
-            responce = httpClient.Send(httpRequestMessage);
-            body = responce.Content.ReadAsStream();
-
-            reader = new StreamReader(body);
-            result = reader.ReadToEnd();
-            resultJSON = JsonSerializer.Deserialize<Progress>(result);
-            */
-
-            MainThread.BeginInvokeOnMainThread(async () =>
+            // This do-while makes sure the object being returned is the actual result.
+            do
             {
-                await DisplayAlert("Prompt", result, "Ok");
-                await DisplayAlert("Prompt", resultJSON.status, "Ok");
-            });
-            
+                Task.Delay(1000).Wait(); // Delay for 1 seconds
 
+                httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
+
+                responce = httpClient.Send(httpRequestMessage);
+
+                result = new StreamReader(responce.Content.ReadAsStream()).ReadToEnd();
+                result_JSON = JsonSerializer.Deserialize<Result>(result);
+                Debug.WriteLine(result_JSON.detail);
+            } while (result_JSON.detail != "");
+
+            result_JSON.model = "Fast-SDXL"; // Replace with the value selected in model.
+            result_JSON.style = "None"; // Relpace with the value selected in style.
+
+            Debug.WriteLine(result_JSON);
+            Debug.WriteLine(result_JSON.images[0].url);
+            GeneratedURL = result_JSON.images[0].url;
+            Generated_Image.Source = GeneratedURL;
+            GenerateButton.Text = "Regenerate";
+            SaveControls.IsVisible = true;
+            DevUpload.IsVisible = true;
+
+            // Move the 'Image' class to the Save image page, where setting up this info is more relvant.
+            // Implementing this here would spam the database with generated images and upload images the user may not be happy with without their consent.
+            generated_image = new Image();
+            generated_image.ImageSize = new ImageSize();
+            generated_image.ImageUrl = GeneratedURL;
+            generated_image.ImageSize.Height = result_JSON.images[0].height; // 1024
+            generated_image.ImageSize.Width = result_JSON.images[0].width; // 1024
+            generated_image.Created = result_JSON.created;
+            generated_image.Prompt = result_JSON.prompt;
+            generated_image.Model = result_JSON.model;
+            generated_image.Style = result_JSON.style;
+            generated_image.Tags = new List<string>();
+            generated_image.UserId = 0;
+            generated_image.Upvotes = 0;
+            generated_image.Downvotes = 0;
+            generated_image.Description = "Generated image";
+            generated_image.Name = "Generated Image";
+            generated_image.NumericId = 0;
+
+            Debug.WriteLine($"G:{generated_image.Model}");
+            Debug.WriteLine($"R:{result_JSON.model}");
+            Debug.WriteLine(generated_image.Model == result_JSON.model);
+            
+            Debug.WriteLine(generated_image.Style);
+            Debug.WriteLine(result_JSON.style);
+            Debug.WriteLine(generated_image.Style == result_JSON.style);
+
+            Debug.WriteLine(generated_image.Created == result_JSON.created);
+
+            Debug.WriteLine(generated_image.Created);
+            Debug.WriteLine(result_JSON.created);
+
+            Debug.WriteLine(result_JSON.images[0].height);
+            Debug.WriteLine(result_JSON.images[0].width);
+
+
+            // Move this to when the user clicks on the 'Save' button in that layout.
+            
+            // This is only temperary. This is so the database doesn't get spamed with regenerated images.
+            //mgdbs.CreateAsync("images", generated_image);
+
+        }
+
+        private void ButtonUploadClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new ImageUploadPage());
+        }
+
+        // TEMPERARY: In case you want to want to upload the image without going through the save page. DEV USE ONLY!
+        private void ButtonDevUploadClicked(object sender, EventArgs e)
+        {
+            // Database gets assigned at the page creation.
+            Debug.WriteLine(generated_image);
+            Debug.WriteLine($"G:{generated_image.Model}");
+
+            Debug.WriteLine(generated_image.Style);
+
+
+            Debug.WriteLine(generated_image.Created);
+
+            Debug.WriteLine(generated_image.ImageSize.Height);
+            Debug.WriteLine(generated_image.ImageSize.Width);
+            mgdbs.CreateAsync("images", generated_image);
         }
 
         private class Progress
         {
             public string status { get; set; } = string.Empty;
-            public string request_id { get; set; } = string.Empty;
+            //public string request_id { get; set; } = string.Empty;
             public string response_url { get; set; } = string.Empty; // Result
             public string status_url { get; set; } = string.Empty; // Status Check
             //string cancel_url { get; set; } = string.Empty;
             //string logs { get; set; } = string.Empty;
             //string[] metrics;
             //int queue_position;
+        }
+
+        private class Result
+        {
+            // This is used to check if the actual result JSON object is the one that is being returned, should be blank if so.
+            public string detail { get; set; } = string.Empty; 
+            public List<Images> images { get; set; } = new();
+            // public Timings timings { get; set; } = new();
+            //public long seed { get; set; } = 0;
+            // public List<Bool> has_nsfw_concepts = new();
+            public string prompt { get; set; } = string.Empty;
+            public string style { get; set; } = string.Empty;
+            public string model { get; set; } = string.Empty;
+            public DateTime created { get; set; } = DateTime.Now; // Set by applcation
+
+        }
+
+        private class Images
+        {
+            public string url { get; set; } = string.Empty;
+            public int width { get; set; } = 0;
+            public int height { get; set; } = 0;
+            //public string content_type { get; set; } = string.Empty;
+
+        }
+
+        public class Image
+        {
+            [BsonId]
+            [BsonRepresentation(BsonType.ObjectId)]
+            public string Id { get; set; }
+
+            [BsonElement("id")]
+            public int NumericId { get; set; }
+
+            [BsonElement("name")]
+            public string Name { get; set; }
+
+            [BsonElement("model")]
+            public string Model { get; set; }
+
+            [BsonElement("style")]
+            public string Style { get; set; }
+
+            [BsonElement("prompt")]
+            public string Prompt { get; set; }
+
+            [BsonElement("description")]
+            public string Description { get; set; }
+
+            [BsonElement("userid")]
+            public int UserId { get; set; }
+
+            [BsonElement("created")]
+            public DateTime Created { get; set; }
+
+            [BsonElement("baseImage")]
+            public int BaseImage { get; set; }
+
+            [BsonElement("upvotes")]
+            public int Upvotes { get; set; }
+
+            [BsonElement("downvotes")]
+            public int Downvotes { get; set; }
+
+            [BsonElement("tags")]
+            public List<string> Tags { get; set; }
+
+            [BsonElement("image_size")]
+            public ImageSize ImageSize { get; set; }
+
+            [BsonElement("image_url")]
+            public string ImageUrl { get; set; }
+        }
+
+        public class ImageSize
+        {
+            [BsonElement("name")]
+            public string Name { get; set; }
+
+            [BsonElement("height")]
+            public int Height { get; set; }
+
+            [BsonElement("width")]
+            public int Width { get; set; }
         }
 
 
