@@ -11,8 +11,7 @@ namespace Pictora
 
         private async void OnLoginClicked(object sender, EventArgs e)
         {
-            // Add your authentication logic here
-            if (UsernameEntry.Text == "admin" && PasswordEntry.Text == "password") // Replace with actual authentication
+            if (UsernameEntry.Text == "admin" && PasswordEntry.Text == "password") // Replace with actual authentication later
             {
                 MessageLabel.Text = "";
                 await Navigation.PushAsync(new MainPage());

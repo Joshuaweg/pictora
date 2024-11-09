@@ -1,13 +1,15 @@
-﻿
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.ImageGeneratePage"
-             Title="Image Generator">
+             Title="Image Generator"
+             BackgroundColor="#0d0d3c">
 
     <ScrollView>
         <VerticalStackLayout
         Padding="30,0"
-        Spacing="25">
+        Spacing="25"
+        VerticalOptions="CenterAndExpand"
+        HorizontalOptions="CenterAndExpand">
 
             <Label Text=""
 				   x:Name="Debug_Label"/>
@@ -17,17 +19,33 @@
 			x:Name="Generated_Image"
             HeightRequest="185"
             Aspect="AspectFit"
+            HorizontalOptions="Center"
             SemanticProperties.Description="dot net bot in a race car number eight" />
 
-            <Label Text="Prompt" />
+            <Label Text="Prompt" 
+                   FontSize="18"
+                   TextColor="#ECECEC"
+                   HorizontalOptions="Center"
+                   />
 
             <Editor x:Name="Prompt"
+                   Placeholder="Enter prompt to generate image"
                    AutoSize ="TextChanges"
+                   BackgroundColor="#1c1c3c"
+                   TextColor="White"
+                   PlaceholderColor="#B0B0C3"
+                   Margin="0,10,0,20"
+                   HorizontalOptions="Fill"
                    />
 
 
             <Picker x:Name="Model"
-                    Title="Model">
+                    Title="Model"
+                    BackgroundColor="#1c1c3c"
+                    TextColor="White"
+                    TitleColor="#B0B0C3"
+                    HorizontalOptions="Fill"
+                    Margin="0,0,0,10">
                 <Picker.Items>
                     <x:String>Test</x:String>
                     <x:String>Test2</x:String>
@@ -36,7 +54,12 @@
             </Picker>
 
             <Picker x:Name="Style"
-                    Title="Style">
+                    Title="Style"
+                    BackgroundColor="#1c1c3c"
+                    TextColor="White"
+                    TitleColor="#B0B0C3"
+                    HorizontalOptions="Fill"
+                    Margin="0,0,0,10">
                 <Picker.Items>
                     <x:String>Test</x:String>
                     <x:String>Test2</x:String>
@@ -45,7 +68,12 @@
             </Picker>
 
             <Picker x:Name="Size"
-                    Title="Size">
+                    Title="Size"
+                    BackgroundColor="#1c1c3c"
+                    TextColor="White"
+                    TitleColor="#B0B0C3"
+                    HorizontalOptions="Fill"
+                    Margin="0,0 ,0,10">
                 <Picker.Items>
                     <x:String>Square (512x512)</x:String>
                     <x:String>Square HD (1024x1024)</x:String>
@@ -58,7 +86,7 @@
                 </Picker.Items>
             </Picker>
 
-            <Grid>
+            <Grid HorizontalOptions="Center" Margin="0,10,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -68,21 +96,36 @@
                 <Entry
                     x:Name="CustomHight"
                     Placeholder="Height"
+                    BackgroundColor="#1c1c3c"
+                    TextColor="White"
+                    PlaceholderColor="#B0B0C3"
+                    HorizontalOptions="Fill" 
                     />
                 <Label Text="×"
-                       Grid.Column="1"/>
+                       Grid.Column="1"
+                       TextColor="White"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center"/>
                 <Entry 
                     Grid.Column="2"
                     x:Name="CustomWidth"
                     Placeholder="Width"
+                    BackgroundColor="#1c1c3c"
+                    TextColor="White"
+                    PlaceholderColor="#B0B0C3"
+                    HorizontalOptions="Fill"
                     />
             </Grid>
 
             <Button Text="Generate"
+                    x:Name="GenerateButton"
+                    BackgroundColor="#8A2BE2" 
+                    TextColor="White"
+                    FontSize="18"
+                    CornerRadius="8"
+                    HeightRequest="45"
+                    HorizontalOptions="Center"
 					Clicked="GenerateButtonClicked"/>
-
-
-
 
         </VerticalStackLayout>
     </ScrollView>
