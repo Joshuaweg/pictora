@@ -8,6 +8,234 @@ namespace Pictora
         private readonly ImageEditingService _imageService;
         private readonly string _editImagesDirectory;
         private string _currentImagePath;
+        private bool _isCaptionMode = false;
+        private List<DraggableCaption> _captions = new List<DraggableCaption>();
+
+        // Move DraggableCaption class outside of constructor but keep it inside EditImagePage
+        private class DraggableCaption : Grid
+        {
+            private double _originalX;
+            private double _originalY;
+            private double _totalX;
+            private double _totalY;
+            private readonly Label _captionLabel;
+            private readonly Button _resizeHandle;
+            private double _startWidth;
+            private double _startHeight;
+
+
+            public DraggableCaption(string text)
+            {
+                MinimumWidthRequest = 50;
+                MinimumHeightRequest = 20;
+                WidthRequest = 200; // Default width
+                HeightRequest = 40;  // Default height
+                Padding = new Thickness(5);
+
+                RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+                ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+                ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                Label _captionLabel = new Label
+                {
+                    Text = text,
+                    TextColor = Colors.White,
+                    FontSize = 18,
+                    BackgroundColor = Colors.Black.WithAlpha(0.7f),
+                    HorizontalOptions = LayoutOptions.Fill,
+                    VerticalOptions = LayoutOptions.Fill,
+                    LineBreakMode = LineBreakMode.WordWrap
+                };
+
+                _resizeHandle = new Button
+                {
+                    Text = "⋰",
+                    FontSize = 14,
+                    TextColor = Colors.White,
+                    BackgroundColor = Colors.Transparent,
+                    WidthRequest = 24,
+                    HeightRequest = 24,
+                    Padding = new Thickness(0),
+                    Margin = new Thickness(0)
+                };
+
+                Add(_captionLabel);
+                Add(_resizeHandle);
+
+                // Enable drag gesture
+                var panGesture = new PanGestureRecognizer();
+                panGesture.PanUpdated += OnPanUpdated;
+                GestureRecognizers.Add(panGesture);
+
+                // Add tap gesture for editing/deleting
+                var resizePanGesture = new PanGestureRecognizer();
+                resizePanGesture.PanUpdated += OnResizePanUpdated;
+                _resizeHandle.GestureRecognizers.Add(resizePanGesture);
+
+                var tapGesture = new TapGestureRecognizer();
+                tapGesture.Tapped += OnCaptionTapped;
+                _captionLabel.GestureRecognizers.Add(tapGesture);
+
+                // Add a double tap gesture for font size adjustment
+                var doubleTapGesture = new TapGestureRecognizer { NumberOfTapsRequired = 2 };
+                doubleTapGesture.Tapped += OnDoubleTapped;
+                _captionLabel.GestureRecognizers.Add(doubleTapGesture);
+            }
+
+            private async void OnDoubleTapped(object sender, EventArgs e)
+            {
+                var action = await (Parent as EditImagePage)?.DisplayActionSheet(
+                    "Adjust Font Size",
+                    "Cancel",
+                    null,
+                    "Small (14)",
+                    "Medium (18)",
+                    "Large (24)",
+                    "Extra Large (32)");
+
+                switch (action)
+                {
+                    case "Small (14)":
+                        _captionLabel.FontSize = 14;
+                        break;
+                    case "Medium (18)":
+                        _captionLabel.FontSize = 18;
+                        break;
+                    case "Large (24)":
+                        _captionLabel.FontSize = 24;
+                        break;
+                    case "Extra Large (32)":
+                        _captionLabel.FontSize = 32;
+                        break;
+                }
+            }
+
+            private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
+            {
+                switch (e.StatusType)
+                {
+                    case GestureStatus.Started:
+                        _originalX = TranslationX;
+                        _originalY = TranslationY;
+                        break;
+
+                    case GestureStatus.Running:
+                        TranslationX = _originalX + e.TotalX;
+                        TranslationY = _originalY + e.TotalY;
+                        _totalX = e.TotalX;
+                        _totalY = e.TotalY;
+                        break;
+
+                    case GestureStatus.Completed:
+                        _originalX = TranslationX;
+                        _originalY = TranslationY;
+                        break;
+                }
+            }
+
+            private void OnResizePanUpdated(object sender, PanUpdatedEventArgs e)
+            {
+                switch (e.StatusType)
+                {
+                    case GestureStatus.Started:
+                        _startWidth = WidthRequest;
+                        _startHeight = HeightRequest;
+                        break;
+
+                    case GestureStatus.Running:
+                        // Calculate new size
+                        double newWidth = Math.Max(_startWidth + e.TotalX, MinimumWidthRequest);
+                        double newHeight = Math.Max(_startHeight + e.TotalY, MinimumHeightRequest);
+
+                        // Ensure we don't exceed image boundaries (assuming 1024x1024 max)
+                        newWidth = Math.Min(newWidth, 1024);
+                        newHeight = Math.Min(newHeight, 1024);
+
+                        WidthRequest = newWidth;
+                        HeightRequest = newHeight;
+                        break;
+                }
+            }
+
+            private async void OnCaptionTapped(object sender, EventArgs e)
+            {
+                var parent = Parent as EditImagePage;
+                if (parent != null)
+                {
+                    string action = await parent.DisplayActionSheet(
+                        "Caption Options",
+                        "Cancel",
+                        "Delete",
+                        "Edit Text",
+                        "Change Color");
+
+                    switch (action)
+                    {
+                        case "Delete":
+                            parent.DeleteCaption(this);
+                            break;
+                        case "Edit Text":
+                            await parent.EditCaption(this);
+                            break;
+                        case "Change Color":
+                            await ChangeTextColor();
+                            break;
+                    }
+                }
+            }
+
+
+            private async Task ChangeTextColor()
+            {
+                var parent = Parent as EditImagePage;
+                if (parent == null) return;
+
+                var action = await parent.DisplayActionSheet(
+                    "Select Text Color",
+                    "Cancel",
+                    null,
+                    "White",
+                    "Black",
+                    "Red",
+                    "Blue",
+                    "Green",
+                    "Yellow");
+
+                Color newColor = action switch
+                {
+                    "White" => Colors.White,
+                    "Black" => Colors.Black,
+                    "Red" => Colors.Red,
+                    "Blue" => Colors.Blue,
+                    "Green" => Colors.Green,
+                    "Yellow" => Colors.Yellow,
+                    _ => _captionLabel.TextColor
+                };
+
+                _captionLabel.TextColor = newColor;
+                // Adjust background color for better contrast
+                _captionLabel.BackgroundColor = IsLightColor(newColor) ?
+                    Colors.Black.WithAlpha(0.7f) :
+                    Colors.White.WithAlpha(0.7f);
+            }
+
+            private bool IsLightColor(Color color)
+            {
+                return (color.Red * 0.299 + color.Green * 0.587 + color.Blue * 0.114) > 0.5;
+            }
+
+            public string GetText()
+            {
+                return (Children[0] as Label)?.Text ?? "";
+            }
+
+            public void SetText(string newText)
+            {
+                if (Children[0] is Label label)
+                {
+                    label.Text = newText;
+                }
+            }
+        }
 
         public EditImagePage()
         {
@@ -22,6 +250,7 @@ namespace Pictora
                     $"Looking for .env at: {envPath}\n" +
                     $"File exists: {File.Exists(envPath)}", "OK");
             });
+
             DotNetEnv.Env.Load(envPath);
             string apiKey = DotNetEnv.Env.GetString("FAL_API_KEY");
             _imageService = new ImageEditingService(apiKey);
@@ -36,6 +265,7 @@ namespace Pictora
                 await DisplayAlert("Path Info",
                     $"Using directory: {_editImagesDirectory}", "OK");
             });
+
             SetupImageDirectory();
 
             // Wire up button click handlers
@@ -44,6 +274,65 @@ namespace Pictora
             Filter1Button.Clicked += (s, e) => ApplyFilter("vintage style, sepia tones, classic photography");
             Filter2Button.Clicked += (s, e) => ApplyFilter("neon lights, cyberpunk style, vibrant colors");
             Filter3Button.Clicked += (s, e) => ApplyFilter("watercolor painting style, artistic, soft colors");
+        }
+
+        // ... (rest of your methods remain the same)
+    private async void OnAddCaptionClicked(object sender, EventArgs e)
+        {
+            _isCaptionMode = !_isCaptionMode;
+            CaptionEditorPanel.IsVisible = _isCaptionMode;
+            CaptionOverlay.IsVisible = _isCaptionMode;
+            PromptEditor.IsVisible = !_isCaptionMode;
+            EditButton.IsVisible = !_isCaptionMode;
+
+            if (_isCaptionMode)
+            {
+                AddCaptionButton.Text = "Exit Captions";
+            }
+            else
+            {
+                AddCaptionButton.Text = "Add Captions";
+            }
+        }
+
+        private void OnAddTextButtonClicked(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(CaptionTextEntry.Text))
+                return;
+
+            var caption = new DraggableCaption(CaptionTextEntry.Text);
+            _captions.Add(caption);
+            CaptionOverlay.Children.Add(caption);
+            CaptionTextEntry.Text = string.Empty;
+        }
+
+        private void OnDoneCaptioningClicked(object sender, EventArgs e)
+        {
+            _isCaptionMode = false;
+            CaptionEditorPanel.IsVisible = false;
+            CaptionOverlay.IsVisible = true; // Keep overlay visible but not interactive
+            PromptEditor.IsVisible = true;
+            EditButton.IsVisible = true;
+            AddCaptionButton.Text = "Add Captions";
+        }
+
+        private void DeleteCaption(DraggableCaption caption)
+        {
+            _captions.Remove(caption);
+            CaptionOverlay.Children.Remove(caption);
+        }
+
+        private async Task EditCaption(DraggableCaption caption)
+        {
+            string result = await DisplayPromptAsync(
+                "Edit Caption",
+                "Enter new text:",
+                initialValue: caption.GetText());
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                caption.SetText(result);
+            }
         }
         private void SetupImageDirectory()
         {
@@ -117,11 +406,12 @@ namespace Pictora
                 LoadingIndicator.IsVisible = true;
                 LoadingIndicator.IsRunning = true;
                 EditButton.IsEnabled = false;
-
+                string _directory = "C:\\Users\\joshu\\AppData\\Local\\EditImages";
                 string negativePrompt = "cartoon, illustration, animation, face, male, female";
-
+                string fileName = "test.png";
+                _currentImagePath = Path.Combine(_directory, fileName);
                 var result = await _imageService.EditImageAsync(
-                    "https://fal-cdn.batuhan-941.workers.dev/files/tiger/IExuP-WICqaIesLZAZPur.jpeg",
+                    _currentImagePath,
                     prompt,
                     negativePrompt
                 );
@@ -215,9 +505,7 @@ namespace Pictora
         {
             await ProcessImageEdit(filterPrompt);
         }
-
-
-        private async void OnSaveButtonClicked(object sender, EventArgs e)
+        private async Task SaveImageWithCaptions()
         {
             try
             {
@@ -227,19 +515,37 @@ namespace Pictora
                     return;
                 }
 
-                // Get the Pictures folder
+                // Create a screenshot of the entire image container including captions
+                IView container = ImageContainer;
+                if (container == null) return;
+
+                // Take the screenshot without using statement
+                var screenshot = await container.CaptureAsync();
+                if (screenshot == null) return;
+
+                // Save the screenshot
                 string picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-                string fileName = $"pictora_edited_{DateTime.Now:yyyyMMddHHmmss}.jpg";
+                string fileName = $"pictora_captioned_{DateTime.Now:yyyyMMddHHmmss}.jpg";
                 string destinationPath = Path.Combine(picturesFolder, fileName);
 
-                // Copy the file
-                File.Copy(_currentImagePath, destinationPath, true);
-                await DisplayAlert("Success", $"Image saved to Pictures folder as {fileName}", "OK");
+                // Use FileStream to write the screenshot data
+                using (var stream = File.OpenWrite(destinationPath))
+                {
+                    await screenshot.CopyToAsync(stream);
+                }
+
+                await DisplayAlert("Success", $"Image saved with captions to Pictures folder as {fileName}", "OK");
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Failed to save image: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"Failed to save image with captions: {ex.Message}", "OK");
             }
+        }
+
+
+        private async void OnSaveButtonClicked(object sender, EventArgs e)
+        {
+            await SaveImageWithCaptions();
         }
     }
 }

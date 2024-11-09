@@ -5,12 +5,17 @@ using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Jpeg;
+
 
 //Update this to Utility Request
 
 
 namespace Pictora.Services
 {
+    using SharpImage = SixLabors.ImageSharp.Image;
     public class ImageEditRequest
     {
         [JsonPropertyName("image_url")]
@@ -67,14 +72,58 @@ namespace Pictora.Services
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Authorization", $"Key {apiKey}");
         }
+
+        private async Task<string> ConvertImageToBase64WithCompression(string imagePath)
+        {
+            try
+            {
+                using var image = await SharpImage.LoadAsync(imagePath);
+
+                // Calculate new dimensions while maintaining aspect ratio
+                int maxDimension = 1024; // Max dimension for either width or height
+                double scale = Math.Min((double)maxDimension / image.Width, (double)maxDimension / image.Height);
+                int newWidth = (int)(image.Width * scale);
+                int newHeight = (int)(image.Height * scale);
+
+                // Resize the image
+                image.Mutate(x => x.Resize(newWidth, newHeight));
+
+                // Compress to JPEG with quality setting
+                var jpegEncoder = new JpegEncoder
+                {
+                    Quality = 80 // Adjust quality (0-100) to balance size and quality
+                };
+
+                using var memoryStream = new MemoryStream();
+                await image.SaveAsync(memoryStream, jpegEncoder);
+
+                // Get the compressed size for debugging
+                var compressedSize = memoryStream.Length;
+                Debug.WriteLine($"Compressed Image Size: {compressedSize}");
+
+                return Convert.ToBase64String(memoryStream.ToArray());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to convert and compress image: {ex.Message}", ex);
+            }
+        }
+
+
         private async Task<string> SubmitRequest(string imagePath, string prompt, string negativePrompt)
         {
-            ImageUrlInfo ImageInfo = new ImageUrlInfo();
-            ImageInfo.Path = imagePath;
+            // Convert image to Base64
+            string uri = imagePath;
+            if (!uri.StartsWith("https://"))
+            {
+            string base64Image = await ConvertImageToBase64WithCompression(imagePath);
+            Debug.WriteLine($"Base64 Image Length: {base64Image.Length}");
+            uri = $"data:image/jpeg;base64,{base64Image}";
+            }
+
             var requestBody = new Dictionary<string, object>
             {
-                
-                ["image_url"] = ImageInfo,
+                ["image_url"] = uri,  // Direct Base64 string with data URL prefix or URL to image
                 ["prompt"] = prompt,
                 ["negative_prompt"] = negativePrompt,
                 ["image_size"] = "square_hd",
@@ -166,13 +215,6 @@ namespace Pictora.Services
                 Debug.WriteLine($"Error in EditImageAsync: {ex}");
                 throw;
             }
-        }
-
-        public async Task<string> ConvertImageToBase64(string imagePath)
-        {
-            byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-            string base64String = Convert.ToBase64String(imageBytes);
-            return $"data:image/png;base64,{base64String}";
         }
 
 
