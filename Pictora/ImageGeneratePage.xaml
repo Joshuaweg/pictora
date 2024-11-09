@@ -33,7 +33,7 @@
 						Clicked="ButtonShareClicked"/>
 				<Button Text="Upload"
 						MinimumWidthRequest="100"
-						Clicked="Test"/> <!-- Replace with "ButtonUploadClicked" -->
+						Clicked="ButtonUploadClicked"/> <!-- Replace with "ButtonUploadClicked" -->
 				<Button Text="Save"
 						MinimumWidthRequest="100"
 						Clicked="ButtonSaveClicked"/>
@@ -102,7 +102,20 @@
             <Button Text="Generate"
 					x:Name="GenerateButton"
 					Clicked="GenerateButtonClicked"/>
+            
+            <HorizontalStackLayout
+	            Padding="30,0"
+                Spacing="25"
+	            x:Name="DevUpload"
+	            IsVisible="False"
+	            HorizontalOptions="Center"
+	            >
 
+                <!-- Replace these button with icons after functionality is complete -->
+                <Button Text="Dev Upload"
+			            MinimumWidthRequest="100"
+			            Clicked="ButtonDevUploadClicked"/>
+            </HorizontalStackLayout>
 
 
 
