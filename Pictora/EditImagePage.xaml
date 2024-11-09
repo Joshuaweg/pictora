@@ -1,71 +1,77 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.EditImagePage"
-             Title="Image Editor">
+             Title="Image Editor"
+             BackgroundColor="#0d0d3c">
+
     <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto">
         <!-- Image Canvas -->
-        <Grid x:Name="ImageContainer" Grid.Row="0" HeightRequest="300">
+        <Grid Grid.Row="0" HeightRequest="300">
             <Image x:Name="EditableImage" Aspect="AspectFit" Source="test.png"/>
-            <Grid x:Name="CaptionOverlay" 
-                  IsVisible="False"
-                  InputTransparent="False">
-                <!-- Captions will be added here dynamically -->
-            </Grid>
             <ActivityIndicator x:Name="LoadingIndicator" 
                              IsVisible="False"
                              IsRunning="False"
                              HorizontalOptions="Center" 
                              VerticalOptions="Center"/>
             <Grid ColumnDefinitions="*,*,*" VerticalOptions="Start" Margin="10">
-                <Button Text="Inpainting" Grid.Column="0"/>
-                <Button x:Name="AddCaptionButton" Text="Add Captions" Grid.Column="1" Clicked="OnAddCaptionClicked"/>
-                <Button Text="Draw Shapes" Grid.Column="2"/>
+                <Button Text="Inpainting" 
+                        BackgroundColor="#FF6347"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Grid.Column="0"/>
+                <Button Text="Add Captions"
+                        BackgroundColor="#FF6347"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Grid.Column="1"/>
+                <Button Text="Draw Shapes"
+                        BackgroundColor="#FF6347"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Grid.Column="2"/>
             </Grid>
         </Grid>
-
-        <!-- Caption Editor Panel -->
-        <Grid x:Name="CaptionEditorPanel" 
-              Grid.Row="1" 
-              IsVisible="False"
-              RowDefinitions="Auto,Auto,Auto"
-              Margin="10">
-            <Entry x:Name="CaptionTextEntry" 
-                   Placeholder="Enter caption text"
-                   Grid.Row="0"
-                   Margin="0,0,0,10"/>
-            <StackLayout Orientation="Horizontal" Grid.Row="1" Spacing="10">
-                <Button x:Name="AddTextButton" 
-                        Text="Add Text" 
-                        Clicked="OnAddTextButtonClicked"/>
-                <Button x:Name="DoneCaptioningButton" 
-                        Text="Done" 
-                        Clicked="OnDoneCaptioningClicked"/>
-            </StackLayout>
-        </Grid>
-
         <!-- Prompt Text Area -->
         <Editor x:Name="PromptEditor" 
-                Grid.Row="2" 
+                Grid.Row="1" 
                 Placeholder="Enter prompt to edit image" 
                 AutoSize="TextChanges" 
                 MaxLength="500"/>
         <!-- Edit Button -->
         <Button x:Name="EditButton" 
-                Grid.Row="3" 
-                Text="Edit" 
+                Grid.Row="2" 
+                Text="Edit"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
                 Margin="10"/>
         <!-- Filter Buttons -->
-        <StackLayout Grid.Row="4" 
+        <StackLayout Grid.Row="3" 
                      Orientation="Horizontal" 
                      HorizontalOptions="Center">
-            <Button x:Name="Filter1Button" Text="Filter 1"/>
-            <Button x:Name="Filter2Button" Text="Filter 2"/>
-            <Button x:Name="Filter3Button" Text="Filter 3"/>
+            <Button x:Name="Filter1Button" 
+                    Text="Filter 1"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    CornerRadius="8"/>
+            <Button x:Name="Filter2Button" 
+                    Text="Filter 2"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    CornerRadius="8"/>
+            <Button x:Name="Filter3Button"
+                    Text="Filter 3"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    CornerRadius="8"/>
         </StackLayout>
         <!-- Save Button -->
         <Button x:Name="SaveButton" 
-                Grid.Row="5" 
+                Grid.Row="4" 
                 Text="Save" 
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
                 Margin="10"/>
     </Grid>
 </ContentPage>

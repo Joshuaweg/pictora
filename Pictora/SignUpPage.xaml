@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Pictora.SignUpPage"
+             Title="Sign Up"
+             BackgroundColor="#0d0d3c">
+   
+    <ScrollView>
+        <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="CenterAndExpand">
+
+            <!-- Logo Section -->
+            <Image
+                Source="pictoralogo.png"
+                HeightRequest="150"
+                Aspect="AspectFit"
+                HorizontalOptions="Center">
+                <Image.Clip>
+                    <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75" />
+                </Image.Clip>
+            </Image>
+
+            <!-- Page Title -->
+            <Label Text="Create Your Account"
+                   FontSize="28"
+                   TextColor="#ECECEC"
+                   HorizontalOptions="Center" />
+
+            <!-- Email Entry -->
+            <Entry
+                x:Name="EmailEntr"
+                Placeholder="Email"
+                PlaceholderColor="#B0B0C3"
+                TextColor="White"
+                BackgroundColor="#1c1c3c"
+                Margin="0,10,0,0"
+                HorizontalOptions="Fill" />
+
+            <!-- Username Entry -->
+            <Entry
+                x:Name="UsernameEntr"
+                Placeholder="Username"
+                PlaceholderColor="#B0B0C3"
+                TextColor="White"
+                BackgroundColor="#1c1c3c"
+                Margin="0,10,0,0"
+                HorizontalOptions="Fill" />
+
+            <!-- Password Entry -->
+            <Entry
+                x:Name="PasswordEntr"
+                Placeholder="Password"
+                PlaceholderColor="#B0B0C3"
+                TextColor="White"
+                BackgroundColor="#1c1c3c"
+                IsPassword="True"
+                Margin="0,10,0,0"
+                HorizontalOptions="Fill" />
+
+            <!-- Confirm Password Entry -->
+            <Entry
+                x:Name="ConfirmPasswordEntr"
+                Placeholder="Confirm Password"
+                PlaceholderColor="#B0B0C3"
+                TextColor="White"
+                BackgroundColor="#1c1c3c"
+                IsPassword="True"
+                Margin="0,10,0,0"
+                HorizontalOptions="Fill" />
+
+            <!-- Sign Up Button -->
+            <Button
+                x:Name="SignUpButton"
+                Text="Sign Up"
+                BackgroundColor="#FF8C00"
+                TextColor="White"
+                FontSize="18"
+                CornerRadius="8"
+                HeightRequest="45"
+                HorizontalOptions="Center"
+                Clicked="OnSignUpClicked" />
+
+            <!-- Error or Success Message -->
+            <Label
+                x:Name="MessageLabell"
+                Text=""
+                TextColor="Red"
+                HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

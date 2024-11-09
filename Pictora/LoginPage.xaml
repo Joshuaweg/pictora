@@ -1,49 +1,83 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Pictora.LoginPage">
+             x:Class="Pictora.LoginPage"
+             Title="Login"
+             BackgroundColor="#0d0d3c">
+
     <ScrollView>
         <VerticalStackLayout
-            Spacing="25"
             Padding="30,0"
-            VerticalOptions="Center">
+            Spacing="25"
+            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="CenterAndExpand">
 
+            <!-- Logo Section -->
             <Image
-                Source="mock_logo.png"
+                Source="pictoralogo.png"
                 HeightRequest="150"
+                WidthRequest="150"
                 Aspect="AspectFit"
-                SemanticProperties.Description="Login page logo" />
+                HorizontalOptions="Center">
+                <Image.Clip>
+                    <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75" />
+                </Image.Clip>
+            </Image>
 
+            <!-- Page Title -->
             <Label 
                 Text="Login"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
+                FontSize="28"
+                TextColor="#ECECEC" 
+                HorizontalOptions="Center"
+                Margin="0,10,0,10" />
 
+            <!-- Username Entry -->
             <Entry
                 x:Name="UsernameEntry"
                 Placeholder="Username"
-                SemanticProperties.Hint="Enter your username"
-                Margin="0,20,0,0"/>
+                FontSize="16"
+                TextColor="White"
+                BackgroundColor="#1A1A3C"
+                PlaceholderColor="#B0B0C3"
+                Margin="0,5,0,5"
+                WidthRequest="250"
+                HorizontalOptions="Center" />
 
+            <!-- Password Entry -->
             <Entry
                 x:Name="PasswordEntry"
                 Placeholder="Password"
                 IsPassword="True"
-                SemanticProperties.Hint="Enter your password"/>
+                FontSize="16"
+                TextColor="White"
+                BackgroundColor="#1A1A3C"
+                PlaceholderColor="#B0B0C3"
+                Margin="0,5,0,5"
+                WidthRequest="250"
+                HorizontalOptions="Center" />
 
+            <!-- Login Button -->
             <Button
                 x:Name="LoginButton"
                 Text="Login"
-                SemanticProperties.Hint="Attempts to log in with provided credentials"
-                Clicked="OnLoginClicked"
-                HorizontalOptions="Fill" />
+                BackgroundColor="#2196F3"
+                TextColor="White"
+                FontSize="18"
+                CornerRadius="8"
+                HeightRequest="45"
+                HorizontalOptions="Center"
+                Margin="0,10,0,10"
+                Clicked="OnLoginClicked" />
 
+            <!-- Message Label for Error Messages -->
             <Label
                 x:Name="MessageLabel"
                 Text=""
                 TextColor="Red"
-                HorizontalOptions="Center" />
+                FontSize="14"
+                HorizontalOptions="Center"
+                Margin="0,10,0,0" />
 
         </VerticalStackLayout>
     </ScrollView>

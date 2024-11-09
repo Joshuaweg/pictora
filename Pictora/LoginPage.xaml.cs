@@ -19,11 +19,15 @@ namespace Pictora
 
         private async void OnLoginClicked(object sender, EventArgs e)
         {
+<<<<<<< HEAD
+            if (UsernameEntry.Text == "admin" && PasswordEntry.Text == "password") // Replace with actual authentication later
+=======
             // Add your authentication logic here
             var users = await mgdbs.GetAllAsync<User>("users");
             var usernames = new List<string>();
             var passwords = new List<string>();
             foreach (var user in users)
+>>>>>>> fe091be79f0499cb892a7c68cf2dc123aae3ff14
             {
                 usernames.Add(user.Username);
                 passwords.Add(user.Password);
