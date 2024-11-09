@@ -14,7 +14,7 @@ namespace Pictora.Services
     public class ImageEditRequest
     {
         [JsonPropertyName("image_url")]
-        public string ImageUrl { get; set; } = "";
+        public ImageUrlInfo ImageUrl { get; set; }
 
         [JsonPropertyName("prompt")]
         public string Prompt { get; set; } = "";
@@ -69,9 +69,12 @@ namespace Pictora.Services
         }
         private async Task<string> SubmitRequest(string imagePath, string prompt, string negativePrompt)
         {
+            ImageUrlInfo ImageInfo = new ImageUrlInfo();
+            ImageInfo.Path = imagePath;
             var requestBody = new Dictionary<string, object>
             {
-                ["image_url"] = imagePath,
+                
+                ["image_url"] = ImageInfo,
                 ["prompt"] = prompt,
                 ["negative_prompt"] = negativePrompt,
                 ["image_size"] = "square_hd",
