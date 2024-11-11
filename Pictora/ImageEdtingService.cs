@@ -16,6 +16,44 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 namespace Pictora.Services
 {
     using SharpImage = SixLabors.ImageSharp.Image;
+    public class InpaintRequest
+    {
+        [JsonPropertyName("image_url")]
+        public string ImageUrl { get; set; } = "";
+
+        [JsonPropertyName("mask_url")]
+        public string MaskUrl { get; set; } = "";
+
+        [JsonPropertyName("prompt")]
+        public string Prompt { get; set; } = "";
+
+        [JsonPropertyName("negative_prompt")]
+        public string NegativePrompt { get; set; } = "";
+
+        [JsonPropertyName("image_size")]
+        public string ImageSize { get; set; } = "square_hd";
+
+        [JsonPropertyName("num_inference_steps")]
+        public int NumInferenceSteps { get; set; } = 25;
+
+        [JsonPropertyName("guidance_scale")]
+        public float GuidanceScale { get; set; } = 7.5f;
+
+        [JsonPropertyName("strength")]
+        public float Strength { get; set; } = 0.95f;
+
+        [JsonPropertyName("num_images")]
+        public int NumImages { get; set; } = 1;
+
+        [JsonPropertyName("enable_safety_checker")]
+        public bool EnableSafetyChecker { get; set; } = true;
+
+        [JsonPropertyName("safety_checker_version")]
+        public string SafetyCheckerVersion { get; set; } = "v1";
+
+        [JsonPropertyName("format")]
+        public string Format { get; set; } = "jpeg";
+    }
     public class ImageEditRequest
     {
         [JsonPropertyName("image_url")]
@@ -67,12 +105,51 @@ namespace Pictora.Services
     {
         private readonly HttpClient _client;
         private const string BASE_URL = "https://queue.fal.run/fal-ai/fast-sdxl";
+        private const string INPAINT_URL = "https://queue.fal.run/fal-ai/fast-sdxl/inpainting";
         public ImageEditingService(string apiKey)
         {
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Authorization", $"Key {apiKey}");
         }
 
+        public async Task<string> ConvertImageToBase64WithCompression(byte[] img)
+        {
+                try
+                {
+                    // Create a memory stream from the byte array
+                    using var inputStream = new MemoryStream(img);
+                    // Load the image from the memory stream
+                    using var image = await SharpImage.LoadAsync(inputStream);
+
+                    // Calculate new dimensions while maintaining aspect ratio
+                    int maxDimension = 1024; // Max dimension for either width or height
+                    double scale = Math.Min((double)maxDimension / image.Width, (double)maxDimension / image.Height);
+                    int newWidth = (int)(image.Width * scale);
+                    int newHeight = (int)(image.Height * scale);
+
+                    // Resize the image
+                    image.Mutate(x => x.Resize(newWidth, newHeight));
+
+                    // Compress to JPEG with quality setting
+                    var jpegEncoder = new JpegEncoder
+                    {
+                        Quality = 80 // Adjust quality (0-100) to balance size and quality
+                    };
+
+                    using var outputStream = new MemoryStream();
+                    await image.SaveAsync(outputStream, jpegEncoder);
+
+                    // Get the compressed size for debugging
+                    var compressedSize = outputStream.Length;
+                    Debug.WriteLine($"Compressed Image Size: {compressedSize}");
+
+                    return Convert.ToBase64String(outputStream.ToArray());
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Failed to convert and compress image: {ex.Message}", ex);
+                }
+            }
         private async Task<string> ConvertImageToBase64WithCompression(string imagePath)
         {
             try
@@ -109,6 +186,110 @@ namespace Pictora.Services
             }
         }
 
+        private async Task<string> SubmitInpaintRequest(string imageDataUri, string maskDataUri, string prompt, string negativePrompt)
+        {
+            var request = new InpaintRequest
+            {
+                ImageUrl = imageDataUri,
+                MaskUrl = maskDataUri,
+                Prompt = prompt,
+                NegativePrompt = negativePrompt
+            };
+
+            var content = new StringContent(
+                JsonSerializer.Serialize(request),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _client.PostAsync(INPAINT_URL, content);
+            var responseText = await response.Content.ReadAsStringAsync();
+
+            Debug.WriteLine($"Inpaint Initial Response: {responseText}");
+
+            using JsonDocument document = JsonDocument.Parse(responseText);
+            return document.RootElement.GetProperty("request_id").GetString()
+                ?? throw new Exception("No request ID in response");
+        }
+
+        public async Task<ImageEditResponse> InpaintImageAsync(
+            string imageDataUri,
+            string maskDataUri,
+            string prompt,
+            string negativePrompt = "")
+        {
+            try
+            {
+                // Submit the initial inpainting request
+                string requestId = await SubmitInpaintRequest(imageDataUri, maskDataUri, prompt, negativePrompt);
+                Debug.WriteLine($"Got inpaint request ID: {requestId}");
+
+                // Poll for completion using existing status check method
+                while (true)
+                {
+                    string status = await CheckRequestStatus(requestId);
+                    Debug.WriteLine($"Inpaint Status: {status}");
+
+                    switch (status.ToUpper())
+                    {
+                        case "COMPLETED":
+                            return await GetRequestResult(requestId);
+                        case "FAILED":
+                            throw new Exception("Inpainting request failed");
+                        case "PENDING":
+                        case "PROCESSING":
+                        case "IN_PROGRESS":
+                        case "IN_QUEUE":
+                            await Task.Delay(1000); // Wait 1 second before checking again
+                            continue;
+                        default:
+                            throw new Exception($"Unknown status: {status}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in InpaintImageAsync: {ex}");
+                throw;
+            }
+        }
+
+        public async Task<byte[]> CreateMaskImage(byte[] drawingData, int width, int height)
+        {
+            try
+            {
+                using var image = SharpImage.Load(drawingData);
+
+                // Ensure the image is in the correct format for the mask
+                image.Mutate(x => x
+                    .Resize(width, height)
+                    .Grayscale()  // Convert to grayscale
+                    .BinaryThreshold(0.5f)); // Convert to binary black and white
+
+                using var memStream = new MemoryStream();
+                await image.SaveAsPngAsync(memStream);
+                return memStream.ToArray();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error creating mask image: {ex}");
+                throw;
+            }
+        }
+
+        public async Task<string> ConvertToBase64DataUri(byte[] imageData, string mimeType = "image/png")
+        {
+            try
+            {
+                string base64String = Convert.ToBase64String(imageData);
+                return $"data:{mimeType};base64,{base64String}";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error converting to base64: {ex}");
+                throw;
+            }
+        }
 
         private async Task<string> SubmitRequest(string imagePath, string prompt, string negativePrompt)
         {

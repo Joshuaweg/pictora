@@ -1,46 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.EditImagePage"
              Title="Image Editor"
              BackgroundColor="#0d0d3c">
     <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
-        <!-- Image Canvas -->
-        <Grid x:Name="ImageContainer" Grid.Row="0" HeightRequest="300">
-            <Image x:Name="EditableImage" Aspect="AspectFit" Source="test.png"/>
-            <Grid x:Name="CaptionOverlay" 
-                  IsVisible="False"
-                  InputTransparent="False">
-                <!-- Captions will be added here dynamically -->
+        <!-- Top Buttons -->
+        <Grid ColumnDefinitions="*,*,*" VerticalOptions="Start" Margin="10" Grid.Row="0">
+            <Button x:Name="InpaintButton"
+                    Text="Inpainting" 
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    CornerRadius="10"
+                    Grid.Column="0"
+                    Clicked="OnInpaintButtonClicked"/>
+            <Button x:Name="AddCaptionButton"
+                    Text="Add Captions"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    CornerRadius="10"
+                    Clicked="OnAddCaptionClicked"
+                    Grid.Column="1"/>
+            <Button Text="Draw Shapes"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    CornerRadius="10"
+                    Grid.Column="2"/>
+        </Grid>
+
+        <!-- Main Image Container -->
+        <Grid Grid.Row="1" 
+              x:Name="MainContainer"
+              Margin="10">
+
+            <!-- Base Image Content -->
+            <Grid x:Name="ImageContainer"
+                  WidthRequest="300"
+                  HeightRequest="300"
+                  BackgroundColor="Transparent"
+                  HorizontalOptions="Center">
+                <Image x:Name="EditableImage" 
+                       Aspect="AspectFit"
+                       HorizontalOptions="Fill"
+                       VerticalOptions="Fill"
+                       Source="test.png"/>
+                <Grid x:Name="CaptionOverlay" 
+                      IsVisible="False"
+                      InputTransparent="False"
+                      BackgroundColor="Transparent">
+                </Grid>
+                <ActivityIndicator x:Name="LoadingIndicator" 
+                                 IsVisible="False"
+                                 IsRunning="False"
+                                 HorizontalOptions="Center" 
+                                 VerticalOptions="Center"/>
             </Grid>
-            <ActivityIndicator x:Name="LoadingIndicator" 
-                             IsVisible="False"
-                             IsRunning="False"
-                             HorizontalOptions="Center" 
-                             VerticalOptions="Center"/>
-            <Grid ColumnDefinitions="*,*,*" VerticalOptions="Start" Margin="10">
-                <Button Text="Inpainting" 
-                        BackgroundColor="#FF6347"
-                        TextColor="White"
-                        CornerRadius="10"
-                        Grid.Column="0"/>
-                <Button x:Name="AddCaptionButton"
-                        Text="Add Captions"
-                        BackgroundColor="#FF6347"
-                        TextColor="White"
-                        CornerRadius="10"
-                        Clicked="OnAddCaptionClicked"
-                        Grid.Column="1"/>
-                <Button Text="Draw Shapes"
-                        BackgroundColor="#FF6347"
-                        TextColor="White"
-                        CornerRadius="10"
-                        Grid.Column="2"/>
+
+            <!-- Inpainting Overlay -->
+            <Grid x:Name="InpaintingCanvas" 
+      IsVisible="False"
+      BackgroundColor="Transparent"
+      InputTransparent="False">
+                <Image x:Name="DarkenedImage"
+           Aspect="AspectFit"
+           HorizontalOptions="Fill"
+           VerticalOptions="Fill"
+           Opacity="0.6"/>
+                <GraphicsView x:Name="MaskCanvas"
+                  HorizontalOptions="Fill"
+                  VerticalOptions="Fill"
+                  Background="Transparent">
+                    <GraphicsView.GestureRecognizers>
+                        <PanGestureRecognizer PanUpdated="OnMaskCanvasPanUpdated"/>
+                    </GraphicsView.GestureRecognizers>
+                </GraphicsView>
+                <StackLayout Orientation="Horizontal" 
+                 HorizontalOptions="Center"
+                 VerticalOptions="End"
+                 Spacing="10"
+                 Margin="0,0,0,10">
+                    <Button x:Name="UndoButton"
+                Text="Undo"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"/>
+                    <Button x:Name="ClearButton"
+                Text="Clear"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"/>
+                    <Button x:Name="ApplyButton"
+                Text="Apply Inpainting"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"/>
+                </StackLayout>
             </Grid>
         </Grid>
 
+        <!-- Rest of your existing content remains the same -->
         <!-- Caption Editor Panel -->
         <Grid x:Name="CaptionEditorPanel" 
-              Grid.Row="1" 
+              Grid.Row="2" 
               IsVisible="False"
               RowDefinitions="Auto,Auto"
               Margin="10"
@@ -71,9 +132,9 @@
             </StackLayout>
         </Grid>
 
-        <!-- Prompt Text Area -->
+        <!-- Prompt Editor -->
         <Editor x:Name="PromptEditor" 
-                Grid.Row="2" 
+                Grid.Row="3" 
                 Placeholder="Enter prompt to edit image" 
                 PlaceholderColor="Gray"
                 TextColor="White"
@@ -81,16 +142,18 @@
                 AutoSize="TextChanges" 
                 MaxLength="500"
                 Margin="10"/>
+
         <!-- Edit Button -->
         <Button x:Name="EditButton" 
-                Grid.Row="3" 
+                Grid.Row="4" 
                 Text="Edit"
                 BackgroundColor="#FF6347"
                 TextColor="White"
                 CornerRadius="8"
                 Margin="10"/>
+
         <!-- Filter Buttons -->
-        <StackLayout Grid.Row="4" 
+        <StackLayout Grid.Row="5" 
                      Orientation="Horizontal" 
                      HorizontalOptions="Center"
                      Spacing="10"
@@ -111,9 +174,10 @@
                     TextColor="White"
                     CornerRadius="8"/>
         </StackLayout>
+
         <!-- Save Button -->
         <Button x:Name="SaveButton" 
-                Grid.Row="5" 
+                Grid.Row="6" 
                 Text="Save" 
                 BackgroundColor="#FF6347"
                 TextColor="White"
