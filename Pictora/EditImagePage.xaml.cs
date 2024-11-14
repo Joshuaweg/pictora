@@ -651,6 +651,7 @@ namespace Pictora
         private async void OnSaveButtonClicked_Upload(object sender, EventArgs e)
         {
             await SaveImageWithCaptions();
+            await Shell.Current.GoToAsync(".."); // Go back a page. (Doesn't send the image back with it though.)
         }
 
         private void InitializeInpainting()
