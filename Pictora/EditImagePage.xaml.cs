@@ -4,6 +4,8 @@ using SixLabors.ImageSharp;
 using System.Diagnostics;
 using PointFt = Microsoft.Maui.Graphics.PointF;
 using ColorM = Microsoft.Maui.Graphics.Color;
+using Pictora.Models;
+
 
 
 namespace Pictora
@@ -324,6 +326,46 @@ namespace Pictora
             Filter3Button.Clicked += (s, e) => ApplyFilter("watercolor painting style, artistic, soft colors");
         }
 
+        public EditImagePage(Pictora.Models.Image url)
+        {
+            InitializeComponent();
+
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string envPath = Path.Combine(baseDirectory, ".env");
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await DisplayAlert("Debug Info",
+                    $"Looking for .env at: {envPath}\n" +
+                    $"File exists: {File.Exists(envPath)}", "OK");
+            });
+
+            DotNetEnv.Env.Load(envPath);
+            string apiKey = DotNetEnv.Env.GetString("FAL_API_KEY");
+            _imageService = new ImageEditingService(apiKey);
+
+            // Set up the edit images directory
+            //string appDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            //_editImagesDirectory = Path.Combine(appDirectory, "EditImages");
+            string _editImage = url.ImageUrl;
+            var uri = new Uri(_editImage);
+            _currentImagePath = url.ImageUrl;
+
+            //SetupImageDirectory();
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                EditableImage.Source = ImageSource.FromUri(uri);
+            });
+
+            // Wire up button click handlers
+            EditButton.Clicked += OnEditButtonClicked;
+            SaveButton.Clicked += OnSaveButtonClicked_Upload;
+            Filter1Button.Clicked += (s, e) => ApplyFilter("vintage style, sepia tones, classic photography");
+            Filter2Button.Clicked += (s, e) => ApplyFilter("neon lights, cyberpunk style, vibrant colors");
+            Filter3Button.Clicked += (s, e) => ApplyFilter("watercolor painting style, artistic, soft colors");
+        }
+
         // ... (rest of your methods remain the same)
         private async void OnAddCaptionClicked(object sender, EventArgs e)
         {
@@ -553,13 +595,13 @@ namespace Pictora
         {
             await ProcessImageEdit(filterPrompt);
         }
-        private async Task SaveImageWithCaptions()
+        private async Task SaveImageWithCaptions() // EDIT HERE OR SAVE FOR TRANSFER.
         {
             try
             {
-                if (_currentImagePath == null || !File.Exists(_currentImagePath))
+                if (_currentImagePath == null)
                 {
-                    await DisplayAlert("Error", "No image to save", "OK");
+                    await DisplayAlert("Error", $"{_currentImagePath == null}, {!File.Exists(_currentImagePath)}", "OK");
                     return;
                 }
                 bool wasLoadingVisible = LoadingIndicator.IsVisible;
@@ -602,6 +644,11 @@ namespace Pictora
 
 
             private async void OnSaveButtonClicked(object sender, EventArgs e)
+        {
+            await SaveImageWithCaptions();
+        }
+
+        private async void OnSaveButtonClicked_Upload(object sender, EventArgs e)
         {
             await SaveImageWithCaptions();
         }

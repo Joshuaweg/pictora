@@ -13,6 +13,7 @@ using System.Net;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using Pictora.Services;
+using Pictora.Models;
 
 
 namespace Pictora
@@ -25,7 +26,7 @@ namespace Pictora
         Result result_JSON;
 
         // TEMP: just in case you want to fill the database.
-        Image generated_image; 
+        Pictora.Models.Image generated_image; 
         MongoDBService mgdbs = new();
 
         //private ArrayList envFile = new ArrayList();
@@ -210,9 +211,8 @@ namespace Pictora
             SaveControls.IsVisible = true;
             DevUpload.IsVisible = true;
 
-            // Move the 'Image' class to the Save image page, where setting up this info is more relvant.
             // Implementing this here would spam the database with generated images and upload images the user may not be happy with without their consent.
-            generated_image = new Image();
+            generated_image = new Pictora.Models.Image();
             generated_image.ImageSize = new ImageSize();
             generated_image.ImageUrl = GeneratedURL;
             generated_image.ImageSize.Height = result_JSON.images[0].height; // 1024
@@ -221,30 +221,13 @@ namespace Pictora
             generated_image.Prompt = result_JSON.prompt;
             generated_image.Model = result_JSON.model;
             generated_image.Style = result_JSON.style;
-            generated_image.Tags = new List<string>();
-            generated_image.UserId = 0;
+            generated_image.Tags = new List<string>(); // Defined on save page
+            generated_image.UserId = 0;                // Defined on login page
             generated_image.Upvotes = 0;
             generated_image.Downvotes = 0;
-            generated_image.Description = "Generated image";
-            generated_image.Name = "Generated Image";
-            generated_image.NumericId = 0;
-
-            Debug.WriteLine($"G:{generated_image.Model}");
-            Debug.WriteLine($"R:{result_JSON.model}");
-            Debug.WriteLine(generated_image.Model == result_JSON.model);
-            
-            Debug.WriteLine(generated_image.Style);
-            Debug.WriteLine(result_JSON.style);
-            Debug.WriteLine(generated_image.Style == result_JSON.style);
-
-            Debug.WriteLine(generated_image.Created == result_JSON.created);
-
-            Debug.WriteLine(generated_image.Created);
-            Debug.WriteLine(result_JSON.created);
-
-            Debug.WriteLine(result_JSON.images[0].height);
-            Debug.WriteLine(result_JSON.images[0].width);
-
+            generated_image.Description = "Generated image";  // Defined on save page
+            generated_image.Name = "Generated Image";  // Defined on save page
+            generated_image.NumericId = 0;             // Defined by the database
 
             // Move this to when the user clicks on the 'Save' button in that layout.
             
@@ -255,7 +238,10 @@ namespace Pictora
 
         private void ButtonUploadClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new ImageUploadPage());
+            //string json = JsonSerializer.Serialize<Result>(result_JSON);
+            //Navigation.PushAsync(new ImageUploadPage(json));
+
+            Navigation.PushAsync(new ImageUploadPage(result_JSON));
         }
 
         // TEMPERARY: In case you want to want to upload the image without going through the save page. DEV USE ONLY!
@@ -275,6 +261,7 @@ namespace Pictora
             mgdbs.CreateAsync("images", generated_image);
         }
 
+        /*
         private class Progress
         {
             public string status { get; set; } = string.Empty;
@@ -296,8 +283,8 @@ namespace Pictora
             //public long seed { get; set; } = 0;
             // public List<Bool> has_nsfw_concepts = new();
             public string prompt { get; set; } = string.Empty;
-            public string style { get; set; } = string.Empty;
-            public string model { get; set; } = string.Empty;
+            public string style { get; set; } = string.Empty; // Set by applcation
+            public string model { get; set; } = string.Empty; // Set by applcation
             public DateTime created { get; set; } = DateTime.Now; // Set by applcation
 
         }
@@ -309,68 +296,7 @@ namespace Pictora
             public int height { get; set; } = 0;
             //public string content_type { get; set; } = string.Empty;
 
-        }
-
-        public class Image
-        {
-            [BsonId]
-            [BsonRepresentation(BsonType.ObjectId)]
-            public string Id { get; set; }
-
-            [BsonElement("id")]
-            public int NumericId { get; set; }
-
-            [BsonElement("name")]
-            public string Name { get; set; }
-
-            [BsonElement("model")]
-            public string Model { get; set; }
-
-            [BsonElement("style")]
-            public string Style { get; set; }
-
-            [BsonElement("prompt")]
-            public string Prompt { get; set; }
-
-            [BsonElement("description")]
-            public string Description { get; set; }
-
-            [BsonElement("userid")]
-            public int UserId { get; set; }
-
-            [BsonElement("created")]
-            public DateTime Created { get; set; }
-
-            [BsonElement("baseImage")]
-            public int BaseImage { get; set; }
-
-            [BsonElement("upvotes")]
-            public int Upvotes { get; set; }
-
-            [BsonElement("downvotes")]
-            public int Downvotes { get; set; }
-
-            [BsonElement("tags")]
-            public List<string> Tags { get; set; }
-
-            [BsonElement("image_size")]
-            public ImageSize ImageSize { get; set; }
-
-            [BsonElement("image_url")]
-            public string ImageUrl { get; set; }
-        }
-
-        public class ImageSize
-        {
-            [BsonElement("name")]
-            public string Name { get; set; }
-
-            [BsonElement("height")]
-            public int Height { get; set; }
-
-            [BsonElement("width")]
-            public int Width { get; set; }
-        }
+        } */
 
 
     }
