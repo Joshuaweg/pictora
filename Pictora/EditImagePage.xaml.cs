@@ -601,7 +601,7 @@ namespace Pictora
             {
                 if (_currentImagePath == null)
                 {
-                    await DisplayAlert("Error", $"{_currentImagePath == null}, {!File.Exists(_currentImagePath)}", "OK");
+                    await DisplayAlert("Error", $"Cannot find the image.", "OK");
                     return;
                 }
                 bool wasLoadingVisible = LoadingIndicator.IsVisible;
