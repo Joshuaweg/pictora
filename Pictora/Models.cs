@@ -54,7 +54,7 @@ namespace Pictora.Models {
             height = h;
 
             // There seems to be a limit on how large of an image this AI model can generate. The limit is (1344 x 1344)
-            // Anything lower then (500x500) is just going to look like a color smear. Not sure what the absolut limit is though.
+            // Anything lower then (500x500) is just going to look like a color smear. Not sure what the absolute limit is though.
             if (w > 1344)
                 w = 1344;
             else if (w < 500)
