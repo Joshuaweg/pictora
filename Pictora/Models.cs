@@ -12,6 +12,8 @@ namespace Pictora.Models {
     }
 
     public class Prompt_Size {
+
+        // If there was a way to make these read-only if called outside of this class, I'd use that instad of setting them as 'public'
         public int width { get; set; } = 1028;
         public int height { get; set; } = 1028;
 
@@ -56,14 +58,14 @@ namespace Pictora.Models {
             // There seems to be a limit on how large of an image this AI model can generate. The limit is (1344 x 1344)
             // Anything lower then (500x500) is just going to look like a color smear. Not sure what the absolute limit is though.
             if (w > 1344)
-                w = 1344;
+                width = 1344;
             else if (w < 500)
-                w = 500;
+                width = 500;
 
             if (h > 1344)
-                h = 1344;
+                height = 1344;
             else if (h < 500)
-                h = 500;
+                height = 500;
         }
 
 

@@ -114,24 +114,17 @@ namespace Pictora
             // A safty check if the user uses the custom size option.
             if (Size.SelectedIndex == 7)
             {
-                try
+                try // Checks for numerical input (Valid size range is checked in the Models.cs file)
                 {
-                    int a = Int32.Parse(CustomWidth.Text);
-                    int b = Int32.Parse(CustomHeight.Text);
-                    if ((a < 0) || (b < 0)) {
-                        Debug.Print("Dimesions are below 0");
-                        return;
-                    }
+                    var a = Int32.Parse(CustomWidth.Text);
+                    var b = Int32.Parse(CustomHeight.Text);
                 } catch // Non-valid number input
                 {
                     Debug.Print("Empty or invalid input");
                     return;
                 }
                     
-                }
-
-
-
+            }
 
             // TODO - Add the options for handling models and loras
 
