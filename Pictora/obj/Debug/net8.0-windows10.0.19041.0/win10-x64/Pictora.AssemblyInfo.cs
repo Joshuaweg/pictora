@@ -18,7 +18,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Pictora")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+dccfd00711d8b8fb3e4fa07174014a7fc3d72f03")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+7da10c1f62cae528e0312f5d9e72af35ba364c7d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Pictora")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Pictora")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

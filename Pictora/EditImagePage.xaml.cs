@@ -15,12 +15,14 @@ namespace Pictora
         private readonly ImageEditingService _imageService;
         private readonly string _editImagesDirectory;
         private string _currentImagePath;
+        private string _fileToSendBack;
         private bool _isCaptionMode = false;
         private List<DraggableCaption> _captions = new List<DraggableCaption>();
         private bool _isInpaintingMode = false;
         private List<PointFt> _currentPath = new List<PointFt>();
         private List<List<PointFt>> _paths = new List<List<PointFt>>();
         private IDrawable _maskDrawable;
+        
 
         private class MaskDrawable : IDrawable
         {
@@ -635,6 +637,8 @@ namespace Pictora
                 LoadingIndicator.IsVisible = wasLoadingVisible;
 
                 await DisplayAlert("Success", "Image saved to Pictures folder", "OK");
+
+                _fileToSendBack = Path.Combine(picturesFolder, fileName);
             }
             catch (Exception ex)
             {
@@ -651,7 +655,7 @@ namespace Pictora
         private async void OnSaveButtonClicked_Upload(object sender, EventArgs e)
         {
             await SaveImageWithCaptions();
-            await Shell.Current.GoToAsync(".."); // Go back a page. (Doesn't send the image back with it though.)
+            await Shell.Current.GoToAsync($"..?file={_fileToSendBack}"); // Go back a page. (Doesn't send the image back with it though.)
         }
 
         private void InitializeInpainting()

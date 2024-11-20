@@ -118,7 +118,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Entry
-                    x:Name="CustomHight"
+                    x:Name="CustomHeight"
                     Placeholder="Height"
                     BackgroundColor="#1c1c3c"
                     TextColor="White"

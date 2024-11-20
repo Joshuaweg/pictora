@@ -15,10 +15,13 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using Pictora.Services;
 using Pictora.Models;
+using Microsoft.Maui.Devices.Sensors;
 
+[QueryProperty(nameof(EditedImage), "file")]
 public partial class ImageUploadPage : ContentPage
 {
     Pictora.Models.Image generated_image;
+    string edited_image; // Parameter, need to be converted to a url either by code or uploading to a private service.
 	public ImageUploadPage(Result image)
 	{
         InitializeComponent();
@@ -44,6 +47,22 @@ public partial class ImageUploadPage : ContentPage
 
     }
 
+    public string EditedImage
+    {
+        set
+        {
+            edited_image = value;
+            OnUpdateImage(edited_image);
+        }
+    }
+
+    private void OnUpdateImage(string value)
+    {
+        Generated_Image.Source = value;
+        Debug.Print(generated_image.ImageUrl);
+        Debug.Print(value);
+    }
+
     private void ButtonEditClicked(object sender, EventArgs e)
     {
         Navigation.PushAsync(new EditImagePage(generated_image));
@@ -54,6 +73,19 @@ public partial class ImageUploadPage : ContentPage
         generated_image.Description = Description.Text;
         generated_image.Name = Title.Text;
 
+        // If the image has been edited, use this url.
+        if (edited_image != null)
+        {
+            // generated_image.ImageUrl = edited_image
+            Debug.Print("I need to convert the generated file to a url.");
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await DisplayAlert("Notice", "I still need to convert the edited file to a url. \n\n Nothing has been uploaded", "Ok");
+            });
+            return;
+        }
+
+        Debug.Print("Upload should be fine if it gets to this point.");
         // Figure out how to get the UserID
         // Set up a NumericID
 
@@ -68,6 +100,8 @@ public partial class ImageUploadPage : ContentPage
 
     private List<string> getTags(string text)
     {
+
+        if (text == null) return [];
         List<string> tags = text.Split(' ').ToList();
         return tags;
     }
