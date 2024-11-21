@@ -48,7 +48,10 @@
         {
             Navigation.PushAsync(new ImageGeneratePage());
         }
-
+        private void OnImageGalleryClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new ImageGalleryPage());
+        }
     }
 
 }

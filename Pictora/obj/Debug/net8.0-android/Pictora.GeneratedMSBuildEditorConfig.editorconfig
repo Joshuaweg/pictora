@@ -36,6 +36,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = Pictora.EditImagePage.xaml
 build_metadata.AdditionalFiles.TargetPath = EditImagePage.xaml
 build_metadata.AdditionalFiles.RelativePath = EditImagePage.xaml
 
+[C:/Users/Matthew Bellman/Documents/GitHub/pictora/pictora/ImageGalleryPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Pictora.ImageGalleryPage.xaml
+build_metadata.AdditionalFiles.TargetPath = ImageGalleryPage.xaml
+build_metadata.AdditionalFiles.RelativePath = ImageGalleryPage.xaml
+
 [C:/Users/Matthew Bellman/Documents/GitHub/pictora/pictora/ImageGeneratePage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.ImageGeneratePage.xaml
