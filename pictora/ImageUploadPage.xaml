@@ -4,24 +4,25 @@
              x:Class="Pictora.ImageUploadPage"
              Title="ImageUploadPage"
              BackgroundColor="#0d0d3c">
-    <VerticalStackLayout
+    <ScrollView>
+        <VerticalStackLayout
         Padding="30,0"
         Spacing="25"
         VerticalOptions="CenterAndExpand"
         HorizontalOptions="CenterAndExpand">
 
-        <Image
+            <Image
         Source="pictoralogo.png"
         x:Name="Generated_Image"
         HeightRequest="185"
         Aspect="AspectFit"
         HorizontalOptions="Center"
         SemanticProperties.Description="dot net bot in a race car number eight" />
-        
-        <Label Text="Title" 
+
+            <Label Text="Title" 
         TextColor="#B0B0C3"/>
 
-        <Editor x:Name="Title"
+            <Editor x:Name="Title"
            Placeholder="Enter the title of the Image"
            AutoSize ="TextChanges"
            BackgroundColor="#1c1c3c"
@@ -31,10 +32,10 @@
            HorizontalOptions="Fill"
            />
 
-        <Label Text="Tags (Use Space to seperate tags)" 
+            <Label Text="Tags (Use Space to seperate tags)" 
             TextColor="#B0B0C3"/>
-        
-        <Editor x:Name="Tags"
+
+            <Editor x:Name="Tags"
            Placeholder="Enter tags to help other users find your image."
            AutoSize ="TextChanges"
            BackgroundColor="#1c1c3c"
@@ -44,10 +45,10 @@
            HorizontalOptions="Fill"
            />
 
-        <Label Text="Description" 
+            <Label Text="Description" 
             TextColor="#B0B0C3"/>
-        
-        <Editor x:Name="Description"
+
+            <Editor x:Name="Description"
            Placeholder="Describe what this image is about."
            AutoSize ="TextChanges"
            BackgroundColor="#1c1c3c"
@@ -57,7 +58,7 @@
            HorizontalOptions="Fill"
          />
 
-        <Button Text="Edit"
+            <Button Text="Edit"
 					MinimumWidthRequest="100"
                     BackgroundColor="#FF6347" 
                     TextColor="White"
@@ -68,7 +69,7 @@
                 Clicked="ButtonEditClicked"
 					/>
 
-        <Button Text="Upload"
+            <Button Text="Upload"
 					MinimumWidthRequest="100"
                     BackgroundColor="#8A2BE2"
                     TextColor="White"
@@ -78,5 +79,6 @@
                     HorizontalOptions="Center"
                 Clicked="ButtonUploadClicked"
 					/>
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

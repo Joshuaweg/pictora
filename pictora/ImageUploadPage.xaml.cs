@@ -86,9 +86,13 @@ public partial class ImageUploadPage : ContentPage
         }
 
         Debug.Print("Upload should be fine if it gets to this point.");
-        // Figure out how to get the UserID
-        // Set up a NumericID
+        // * Figure out how to get the UserID
+        // Does this app even reconize if the user is logged in? That is imporatant for getting a user ID.
 
+        // * Set up a NumericID
+        // Go through the image database, and find the next unsued NumericId.
+
+        // Do not uncoment this until both of the unset fields have been set properly.
         /*
         MongoDBService mgdbs = new();
         mgdbs.CreateAsync("images", generated_image);
