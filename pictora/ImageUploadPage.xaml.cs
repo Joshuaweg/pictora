@@ -1,4 +1,7 @@
+
+
 namespace Pictora;
+using Pictora.Models;
 
 public partial class ImageUploadPage : ContentPage
 {
@@ -6,4 +9,9 @@ public partial class ImageUploadPage : ContentPage
 	{
 		InitializeComponent();
 	}
+    public ImageUploadPage(Result data)
+    {
+        InitializeComponent();
+    }
+
 }
