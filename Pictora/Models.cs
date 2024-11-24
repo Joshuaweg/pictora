@@ -81,7 +81,7 @@ namespace Pictora.Models {
     public class Result
     {
         public string detail { get; set; } = string.Empty;
-        public List<Images> images { get; set; } = new();
+        public List<Images> images { get; set; } = [];
         public string prompt { get; set; } = string.Empty;
         public string style { get; set; } = string.Empty;
         public string model { get; set; } = string.Empty;
