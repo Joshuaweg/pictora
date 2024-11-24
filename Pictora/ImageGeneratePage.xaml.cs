@@ -13,6 +13,7 @@ using System.Net;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using Pictora.Services;
+using Pictora.Models;
 
 
 namespace Pictora
@@ -71,6 +72,12 @@ namespace Pictora
                 Title = "Share generated image",
                 File = new ShareFile(location)
             });
+        }
+        private async Task UploadButtonClicked(object sender, EventArgs e)
+        {
+            // This should just lead to the systems user folder (The one with your name on it.) If there is a better directory to use, please let me know ASAP.
+            string location = (Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()) + $"\\test.jpeg";
+            await Navigation.PushAsync(new ImageUploadPage(result_JSON));
         }
 
         private async Task DownloadFile()
@@ -287,20 +294,6 @@ namespace Pictora
             //int queue_position;
         }
 
-        private class Result
-        {
-            // This is used to check if the actual result JSON object is the one that is being returned, should be blank if so.
-            public string detail { get; set; } = string.Empty; 
-            public List<Images> images { get; set; } = new();
-            // public Timings timings { get; set; } = new();
-            //public long seed { get; set; } = 0;
-            // public List<Bool> has_nsfw_concepts = new();
-            public string prompt { get; set; } = string.Empty;
-            public string style { get; set; } = string.Empty;
-            public string model { get; set; } = string.Empty;
-            public DateTime created { get; set; } = DateTime.Now; // Set by applcation
-
-        }
 
         private class Images
         {

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "xSy8VcPj1cY=",
+  "dgSpecHash": "ZsFcAWag4jo=",
   "success": true,
   "projectFilePath": "C:\\Users\\joshu\\OneDrive\\Desktop\\pictora\\pictora\\Pictora\\Pictora.csproj",
   "expectedPackageFiles": [
@@ -28,7 +28,7 @@
     "C:\\Users\\joshu\\.nuget\\packages\\microsoft.maui.graphics\\8.0.82\\microsoft.maui.graphics.8.0.82.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\microsoft.maui.graphics.win2d.winui.desktop\\8.0.82\\microsoft.maui.graphics.win2d.winui.desktop.8.0.82.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\microsoft.maui.resizetizer\\8.0.82\\microsoft.maui.resizetizer.8.0.82.nupkg.sha512",
-    "C:\\Users\\joshu\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.10\\microsoft.net.illink.tasks.8.0.10.nupkg.sha512",
+    "C:\\Users\\joshu\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.11\\microsoft.net.illink.tasks.8.0.11.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\microsoft.netcore.targets\\1.1.3\\microsoft.netcore.targets.1.1.3.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\microsoft.win32.primitives\\4.3.0\\microsoft.win32.primitives.4.3.0.nupkg.sha512",
@@ -249,7 +249,7 @@
     "C:\\Users\\joshu\\.nuget\\packages\\xamarin.kotlinx.coroutines.android\\1.7.2.1\\xamarin.kotlinx.coroutines.android.1.7.2.1.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\xamarin.kotlinx.coroutines.core.jvm\\1.7.2.1\\xamarin.kotlinx.coroutines.core.jvm.1.7.2.1.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\zstdsharp.port\\0.7.3\\zstdsharp.port.0.7.3.nupkg.sha512",
-    "C:\\Users\\joshu\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.44\\microsoft.windows.sdk.net.ref.10.0.19041.44.nupkg.sha512"
+    "C:\\Users\\joshu\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.53\\microsoft.windows.sdk.net.ref.10.0.19041.53.nupkg.sha512"
   ],
   "logs": []
 }
