@@ -26,7 +26,7 @@ namespace Pictora
         Result result_JSON;
 
         // TEMP: just in case you want to fill the database.
-        Image generated_image; 
+        Pictora.Models.Image generated_image; 
         MongoDBService mgdbs = new();
 
         //private ArrayList envFile = new ArrayList();
@@ -73,12 +73,6 @@ namespace Pictora
                 File = new ShareFile(location)
             });
         }
-        private async Task UploadButtonClicked(object sender, EventArgs e)
-        {
-            // This should just lead to the systems user folder (The one with your name on it.) If there is a better directory to use, please let me know ASAP.
-            string location = (Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()) + $"\\test.jpeg";
-            await Navigation.PushAsync(new ImageUploadPage(result_JSON));
-        }
 
         private async Task DownloadFile()
         {
@@ -113,27 +107,42 @@ namespace Pictora
                 return;
             }
 
-            prompt = ("\"prompt\": \"" + prompt + "\"");
+            //prompt = ("\"prompt\": \"" + prompt + "\"");
 
-            String size = ",\"image_size\": ";
 
-            switch (Size.SelectedIndex)
+
+            // A safty check if the user uses the custom size option.
+            if (Size.SelectedIndex == 7)
             {
-                /*case 0:
-                    size += "square";
-                    break;
-                case 1:
-                    size += "square_hd";
-                    break;*/
-                // TODO - Add the rest later.
-                // Ignore the property for now
-                default:
-                    size += "\"square_hd\"";
-                    break;     
+                try // Checks for numerical input (Valid size range is checked in the Models.cs file)
+                {
+                    var a = Int32.Parse(CustomWidth.Text);
+                    var b = Int32.Parse(CustomHeight.Text);
+                } catch // Non-valid number input
+                {
+                    Debug.Print("Empty or invalid input");
+                    return;
+                }
+                    
             }
 
             // TODO - Add the options for handling models and loras
 
+            Prompt inputPrompt = new();
+
+            inputPrompt.prompt = prompt;
+
+            if (Size.SelectedIndex == 7)
+            {
+                inputPrompt.image_size.SetValues(Int32.Parse(CustomWidth.Text), Int32.Parse(CustomHeight.Text));
+            }
+            else
+            {
+                inputPrompt.image_size.SetValues(Size.SelectedIndex);
+                
+            }
+            
+            /*
             string finalPrompt = $"{{{prompt}";
 
             if (!size.Equals(""))
@@ -142,7 +151,9 @@ namespace Pictora
             }
 
             // End
-            finalPrompt += $"}}";
+            finalPrompt += $"}}";*/
+
+            string finalPrompt = JsonSerializer.Serialize<Prompt>(inputPrompt);
 
             Debug.WriteLine(finalPrompt);
 
@@ -204,6 +215,12 @@ namespace Pictora
                 result = new StreamReader(responce.Content.ReadAsStream()).ReadToEnd();
                 result_JSON = JsonSerializer.Deserialize<Result>(result);
                 Debug.WriteLine(result_JSON.detail);
+
+                if (result_JSON.detail == "Internal Server Error")
+                {
+                    Debug.WriteLine("Something went wrong.");
+                    return;
+                }
             } while (result_JSON.detail != "");
 
             result_JSON.model = "Fast-SDXL"; // Replace with the value selected in model.
@@ -217,9 +234,8 @@ namespace Pictora
             SaveControls.IsVisible = true;
             DevUpload.IsVisible = true;
 
-            // Move the 'Image' class to the Save image page, where setting up this info is more relvant.
             // Implementing this here would spam the database with generated images and upload images the user may not be happy with without their consent.
-            generated_image = new Image();
+            generated_image = new Pictora.Models.Image();
             generated_image.ImageSize = new ImageSize();
             generated_image.ImageUrl = GeneratedURL;
             generated_image.ImageSize.Height = result_JSON.images[0].height; // 1024
@@ -228,30 +244,13 @@ namespace Pictora
             generated_image.Prompt = result_JSON.prompt;
             generated_image.Model = result_JSON.model;
             generated_image.Style = result_JSON.style;
-            generated_image.Tags = new List<string>();
-            generated_image.UserId = 0;
+            generated_image.Tags = new List<string>(); // Defined on save page
+            generated_image.UserId = 0;                // Defined on login page
             generated_image.Upvotes = 0;
             generated_image.Downvotes = 0;
-            generated_image.Description = "Generated image";
-            generated_image.Name = "Generated Image";
-            generated_image.NumericId = 0;
-
-            Debug.WriteLine($"G:{generated_image.Model}");
-            Debug.WriteLine($"R:{result_JSON.model}");
-            Debug.WriteLine(generated_image.Model == result_JSON.model);
-            
-            Debug.WriteLine(generated_image.Style);
-            Debug.WriteLine(result_JSON.style);
-            Debug.WriteLine(generated_image.Style == result_JSON.style);
-
-            Debug.WriteLine(generated_image.Created == result_JSON.created);
-
-            Debug.WriteLine(generated_image.Created);
-            Debug.WriteLine(result_JSON.created);
-
-            Debug.WriteLine(result_JSON.images[0].height);
-            Debug.WriteLine(result_JSON.images[0].width);
-
+            generated_image.Description = "Generated image";  // Defined on save page
+            generated_image.Name = "Generated Image";  // Defined on save page
+            generated_image.NumericId = 0;             // Defined by the database
 
             // Move this to when the user clicks on the 'Save' button in that layout.
             
@@ -262,7 +261,10 @@ namespace Pictora
 
         private void ButtonUploadClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new ImageUploadPage());
+            //string json = JsonSerializer.Serialize<Result>(result_JSON);
+            //Navigation.PushAsync(new ImageUploadPage(json));
+
+            Navigation.PushAsync(new ImageUploadPage(result_JSON));
         }
 
         // TEMPERARY: In case you want to want to upload the image without going through the save page. DEV USE ONLY!
@@ -282,6 +284,7 @@ namespace Pictora
             mgdbs.CreateAsync("images", generated_image);
         }
 
+        /*
         private class Progress
         {
             public string status { get; set; } = string.Empty;
@@ -294,6 +297,20 @@ namespace Pictora
             //int queue_position;
         }
 
+        private class Result
+        {
+            // This is used to check if the actual result JSON object is the one that is being returned, should be blank if so.
+            public string detail { get; set; } = string.Empty; 
+            public List<Images> images { get; set; } = new();
+            // public Timings timings { get; set; } = new();
+            //public long seed { get; set; } = 0;
+            // public List<Bool> has_nsfw_concepts = new();
+            public string prompt { get; set; } = string.Empty;
+            public string style { get; set; } = string.Empty; // Set by applcation
+            public string model { get; set; } = string.Empty; // Set by applcation
+            public DateTime created { get; set; } = DateTime.Now; // Set by applcation
+
+        }
 
         private class Images
         {
@@ -302,68 +319,7 @@ namespace Pictora
             public int height { get; set; } = 0;
             //public string content_type { get; set; } = string.Empty;
 
-        }
-
-        public class Image
-        {
-            [BsonId]
-            [BsonRepresentation(BsonType.ObjectId)]
-            public string Id { get; set; }
-
-            [BsonElement("id")]
-            public int NumericId { get; set; }
-
-            [BsonElement("name")]
-            public string Name { get; set; }
-
-            [BsonElement("model")]
-            public string Model { get; set; }
-
-            [BsonElement("style")]
-            public string Style { get; set; }
-
-            [BsonElement("prompt")]
-            public string Prompt { get; set; }
-
-            [BsonElement("description")]
-            public string Description { get; set; }
-
-            [BsonElement("userid")]
-            public int UserId { get; set; }
-
-            [BsonElement("created")]
-            public DateTime Created { get; set; }
-
-            [BsonElement("baseImage")]
-            public int BaseImage { get; set; }
-
-            [BsonElement("upvotes")]
-            public int Upvotes { get; set; }
-
-            [BsonElement("downvotes")]
-            public int Downvotes { get; set; }
-
-            [BsonElement("tags")]
-            public List<string> Tags { get; set; }
-
-            [BsonElement("image_size")]
-            public ImageSize ImageSize { get; set; }
-
-            [BsonElement("image_url")]
-            public string ImageUrl { get; set; }
-        }
-
-        public class ImageSize
-        {
-            [BsonElement("name")]
-            public string Name { get; set; }
-
-            [BsonElement("height")]
-            public int Height { get; set; }
-
-            [BsonElement("width")]
-            public int Width { get; set; }
-        }
+        } */
 
 
     }
