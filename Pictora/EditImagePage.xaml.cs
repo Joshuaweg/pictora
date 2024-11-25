@@ -4,8 +4,6 @@ using SixLabors.ImageSharp;
 using System.Diagnostics;
 using PointFt = Microsoft.Maui.Graphics.PointF;
 using ColorM = Microsoft.Maui.Graphics.Color;
-using Pictora.Models;
-
 
 
 namespace Pictora
@@ -21,11 +19,14 @@ namespace Pictora
         private List<PointFt> _currentPath = new List<PointFt>();
         private List<List<PointFt>> _paths = new List<List<PointFt>>();
         private IDrawable _maskDrawable;
+        private PointFt _lastTouchPoint;
+        private ScrollView _inpaintScrollView;
+        private GraphicsView _maskCanvas;
 
         private class MaskDrawable : IDrawable
         {
             private readonly List<List<PointFt>> _paths;
-            private float _strokeWidth = 20f;
+            private const float STROKE_WIDTH = 20f;
 
             public MaskDrawable(List<List<PointFt>> paths)
             {
@@ -34,24 +35,36 @@ namespace Pictora
 
             public void Draw(ICanvas canvas, RectF dirtyRect)
             {
+                if (_paths == null || !_paths.Any()) return;
+
+                // Set up drawing parameters
                 canvas.StrokeColor = Colors.White;
-                canvas.StrokeSize = _strokeWidth;
+                canvas.StrokeSize = STROKE_WIDTH;
                 canvas.StrokeLineCap = LineCap.Round;
                 canvas.StrokeLineJoin = LineJoin.Round;
+                canvas.FillColor = Colors.White;
 
                 foreach (var path in _paths)
                 {
                     if (path.Count < 2) continue;
 
-                    PathF pathF = new PathF();
+                    // Create and draw the path
+                    var pathF = new PathF();
                     pathF.MoveTo(path[0].X, path[0].Y);
 
                     for (int i = 1; i < path.Count; i++)
                     {
-                        pathF.LineTo((float)path[i].X, (float)path[i].Y);
+                        pathF.LineTo(path[i].X, path[i].Y);
                     }
 
+                    // Draw the stroke
                     canvas.DrawPath(pathF);
+
+                    // Draw dots at each point for better visibility
+                    foreach (var point in path)
+                    {
+                        canvas.FillCircle(point.X, point.Y, STROKE_WIDTH / 2);
+                    }
                 }
             }
         }
@@ -81,12 +94,12 @@ namespace Pictora
                 RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
                 ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
                 ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                Label _captionLabel = new Label
+                _captionLabel = new Label
                 {
                     Text = text,
                     TextColor = Colors.White,
                     FontSize = 18,
-                    BackgroundColor = Colors.Black.WithAlpha(0.2f),
+                    BackgroundColor = Colors.Black.WithAlpha(0.0f),
                     HorizontalOptions = LayoutOptions.Fill,
                     VerticalOptions = LayoutOptions.Fill,
                     LineBreakMode = LineBreakMode.WordWrap
@@ -263,8 +276,8 @@ namespace Pictora
                 _captionLabel.TextColor = newColor;
                 // Adjust background color for better contrast
                 _captionLabel.BackgroundColor = IsLightColor(newColor) ?
-                    Colors.Black.WithAlpha(0.7f) :
-                    Colors.White.WithAlpha(0.7f);
+                    Colors.Black.WithAlpha(0.0f) :
+                    Colors.White.WithAlpha(0.0f);
             }
 
             private bool IsLightColor(ColorM color)
@@ -286,7 +299,7 @@ namespace Pictora
             }
         }
 
-        public EditImagePage()
+        public EditImagePage(Pictora.Models.Image generated_image=null)
         {
             InitializeComponent();
 
@@ -324,46 +337,53 @@ namespace Pictora
             Filter1Button.Clicked += (s, e) => ApplyFilter("vintage style, sepia tones, classic photography");
             Filter2Button.Clicked += (s, e) => ApplyFilter("neon lights, cyberpunk style, vibrant colors");
             Filter3Button.Clicked += (s, e) => ApplyFilter("watercolor painting style, artistic, soft colors");
+            MaskCanvas.StartInteraction += OnStartDrawing;
+            MaskCanvas.DragInteraction += OnDrawing;
+            MaskCanvas.EndInteraction += OnEndDrawing;
+        }
+        private void OnStartDrawing(object sender, TouchEventArgs e)
+        {
+            try
+            {
+                var point = e.Touches.FirstOrDefault();
+                if (point.IsEmpty) return;
+
+                _currentPath = new List<PointFt>();
+                _currentPath.Add(new PointFt((float)point.X, (float)point.Y));
+                _paths.Add(_currentPath);
+                UpdateMaskCanvas();
+                Debug.WriteLine($"Started drawing at: {point.X}, {point.Y}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnStartDrawing: {ex.Message}");
+            }
         }
 
-        public EditImagePage(Pictora.Models.Image url)
+        private void OnDrawing(object sender, TouchEventArgs e)
         {
-            InitializeComponent();
+            if (_currentPath == null) return;
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string envPath = Path.Combine(baseDirectory, ".env");
-
-            MainThread.BeginInvokeOnMainThread(async () =>
+            try
             {
-                await DisplayAlert("Debug Info",
-                    $"Looking for .env at: {envPath}\n" +
-                    $"File exists: {File.Exists(envPath)}", "OK");
-            });
+                var point = e.Touches.FirstOrDefault();
+                if (point.IsEmpty) return;
 
-            DotNetEnv.Env.Load(envPath);
-            string apiKey = DotNetEnv.Env.GetString("FAL_API_KEY");
-            _imageService = new ImageEditingService(apiKey);
-
-            // Set up the edit images directory
-            //string appDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            //_editImagesDirectory = Path.Combine(appDirectory, "EditImages");
-            string _editImage = url.ImageUrl;
-            var uri = new Uri(_editImage);
-            _currentImagePath = url.ImageUrl;
-
-            //SetupImageDirectory();
-
-            MainThread.BeginInvokeOnMainThread(() =>
+                var newPoint = new PointFt((float)point.X, (float)point.Y);
+                _currentPath.Add(newPoint);
+                UpdateMaskCanvas();
+                Debug.WriteLine($"Drawing at: {point.X}, {point.Y}");
+            }
+            catch (Exception ex)
             {
-                EditableImage.Source = ImageSource.FromUri(uri);
-            });
+                Debug.WriteLine($"Error in OnDrawing: {ex.Message}");
+            }
+        }
 
-            // Wire up button click handlers
-            EditButton.Clicked += OnEditButtonClicked;
-            SaveButton.Clicked += OnSaveButtonClicked_Upload;
-            Filter1Button.Clicked += (s, e) => ApplyFilter("vintage style, sepia tones, classic photography");
-            Filter2Button.Clicked += (s, e) => ApplyFilter("neon lights, cyberpunk style, vibrant colors");
-            Filter3Button.Clicked += (s, e) => ApplyFilter("watercolor painting style, artistic, soft colors");
+        private void OnEndDrawing(object sender, TouchEventArgs e)
+        {
+            _currentPath = null;
+            Debug.WriteLine("Completed drawing");
         }
 
         // ... (rest of your methods remain the same)
@@ -595,13 +615,13 @@ namespace Pictora
         {
             await ProcessImageEdit(filterPrompt);
         }
-        private async Task SaveImageWithCaptions() // EDIT HERE OR SAVE FOR TRANSFER.
+        private async Task SaveImageWithCaptions()
         {
             try
             {
-                if (_currentImagePath == null)
+                if (_currentImagePath == null || !File.Exists(_currentImagePath))
                 {
-                    await DisplayAlert("Error", $"Cannot find the image.", "OK");
+                    await DisplayAlert("Error", "No image to save", "OK");
                     return;
                 }
                 bool wasLoadingVisible = LoadingIndicator.IsVisible;
@@ -648,12 +668,6 @@ namespace Pictora
             await SaveImageWithCaptions();
         }
 
-        private async void OnSaveButtonClicked_Upload(object sender, EventArgs e)
-        {
-            await SaveImageWithCaptions();
-            await Shell.Current.GoToAsync(".."); // Go back a page. (Doesn't send the image back with it though.)
-        }
-
         private void InitializeInpainting()
         {
             var inpaintButton = this.FindByName<Button>("InpaintButton");
@@ -682,13 +696,17 @@ namespace Pictora
                 // Create a darkened copy of the current image
                 DarkenedImage.Source = EditableImage.Source;
 
+                // Match the size of the darkened image to the original
+                InpaintContainer.WidthRequest = ImageContainer.Width;
+                InpaintContainer.HeightRequest = ImageContainer.Height;
+
+                // Set the GraphicsView to match the image size
+                MaskCanvas.WidthRequest = ImageContainer.Width;
+                MaskCanvas.HeightRequest = ImageContainer.Height;
+
                 // Clear any existing paths
                 _paths.Clear();
                 _currentPath = null;
-
-                // Make sure the canvas is ready
-                MaskCanvas.Drawable = null;
-                MaskCanvas.Invalidate();
 
                 // Initialize with empty drawable
                 UpdateMaskCanvas();
@@ -705,34 +723,98 @@ namespace Pictora
 
         private void OnMaskCanvasPanUpdated(object sender, PanUpdatedEventArgs e)
         {
+            try
+            {
+                var canvas = sender as GraphicsView;
+                if (canvas == null) return;
+
+                PointFt point;
+                if (e.StatusType == GestureStatus.Started)
+                {
+                    // Store the initial position
+                    point = new PointFt((float)e.TotalX, (float)e.TotalY);
+                    _lastTouchPoint = point;
+
+                    _currentPath = new List<PointFt>();
+                    _currentPath.Add(new PointFt((float)point.X, (float)point.Y));
+                    _paths.Add(_currentPath);
+                    Debug.WriteLine($"Started drawing at: {point.X}, {point.Y}");
+                }
+                else if (e.StatusType == GestureStatus.Running && _currentPath != null)
+                {
+                    // Calculate the new position based on the delta from last position
+                    var newX = _lastTouchPoint.X + e.TotalX;
+                    var newY = _lastTouchPoint.Y + e.TotalY;
+
+                    var newPoint = new PointFt((float)newX, (float)newY);
+                    _currentPath.Add(newPoint);
+                    _lastTouchPoint = new PointFt((float)newX, (float)newY);
+
+                    UpdateMaskCanvas();
+                    Debug.WriteLine($"Drawing at: {newX}, {newY}");
+                }
+                else if (e.StatusType == GestureStatus.Completed)
+                {
+                    Debug.WriteLine($"Completed drawing at: {_lastTouchPoint.X}, {_lastTouchPoint.Y}");
+                    _currentPath = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnMaskCanvasPanUpdated: {ex.Message}");
+            }
+        }
+        private void OnDragStarting(object sender, DragStartingEventArgs e)
+        {
             var canvas = sender as GraphicsView;
             if (canvas == null) return;
 
-            // Get touch point relative to the canvas
-            var touchPoint = new PointFt((float)e.TotalX, (float)e.TotalY);
-
-            switch (e.StatusType)
+            try
             {
-                case GestureStatus.Started:
+                var position = e.GetPosition(canvas);
+                if (position.HasValue)
+                {
                     _currentPath = new List<PointFt>();
-                    _currentPath.Add(touchPoint);
+                    _currentPath.Add(new PointFt((float)position.Value.X, (float)position.Value.Y));
                     _paths.Add(_currentPath);
-                    break;
-
-                case GestureStatus.Running:
-                    if (_currentPath != null)
-                    {
-                        // Add the new point
-                        _currentPath.Add(touchPoint);
-                        UpdateMaskCanvas();
-                    }
-                    break;
-
-                case GestureStatus.Completed:
-                    _currentPath = null;
-                    break;
+                    Debug.WriteLine($"Started drawing at: {position.Value.X}, {position.Value.Y}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnDragStarting: {ex.Message}");
             }
         }
+
+        private void OnPointerMoved(object sender, PointerEventArgs e)
+        {
+            var canvas = sender as GraphicsView;
+            if (canvas == null || _currentPath == null) return;
+
+            try
+            {
+                var position = e.GetPosition(canvas);
+                if (position.HasValue)
+                {
+                    var newPoint = new PointFt((float)position.Value.X, (float)position.Value.Y);
+                    _currentPath.Add(newPoint);
+                    UpdateMaskCanvas();
+                    Debug.WriteLine($"Drawing at: {position.Value.X}, {position.Value.Y}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnPointerMoved: {ex.Message}");
+            }
+        }
+
+        private void OnDropCompleted(object sender, DropCompletedEventArgs e)
+        {
+            Debug.WriteLine("Completed drawing");
+            _currentPath = null;
+        }
+
+
 
         private void UpdateMaskCanvas()
         {

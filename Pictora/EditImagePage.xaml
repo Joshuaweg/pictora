@@ -35,65 +35,75 @@
 
             <!-- Base Image Content -->
             <Grid x:Name="ImageContainer"
-                  WidthRequest="300"
-                  HeightRequest="300"
-                  BackgroundColor="Transparent"
-                  HorizontalOptions="Center">
+          WidthRequest="300"
+          HeightRequest="300"
+          BackgroundColor="Transparent"
+          HorizontalOptions="Center">
                 <Image x:Name="EditableImage" 
-                       Aspect="AspectFit"
-                       HorizontalOptions="Fill"
-                       VerticalOptions="Fill"
-                       Source="test.png"/>
+               Aspect="AspectFit"
+               HorizontalOptions="Fill"
+               VerticalOptions="Fill"/>
                 <Grid x:Name="CaptionOverlay" 
-                      IsVisible="False"
-                      InputTransparent="False"
-                      BackgroundColor="Transparent">
-                </Grid>
+              IsVisible="False"
+              InputTransparent="False"
+              BackgroundColor="Transparent"/>
                 <ActivityIndicator x:Name="LoadingIndicator" 
-                                 IsVisible="False"
-                                 IsRunning="False"
-                                 HorizontalOptions="Center" 
-                                 VerticalOptions="Center"/>
+                          IsVisible="False"
+                          IsRunning="False"
+                          HorizontalOptions="Center" 
+                          VerticalOptions="Center"/>
             </Grid>
 
             <!-- Inpainting Overlay -->
+            <!-- Replace the existing InpaintingCanvas Grid with this updated version -->
             <Grid x:Name="InpaintingCanvas" 
-      IsVisible="False"
-      BackgroundColor="Transparent"
-      InputTransparent="False">
-                <Image x:Name="DarkenedImage"
-           Aspect="AspectFit"
-           HorizontalOptions="Fill"
-           VerticalOptions="Fill"
-           Opacity="0.6"/>
-                <GraphicsView x:Name="MaskCanvas"
-                  HorizontalOptions="Fill"
-                  VerticalOptions="Fill"
-                  Background="Transparent">
-                    <GraphicsView.GestureRecognizers>
-                        <PanGestureRecognizer PanUpdated="OnMaskCanvasPanUpdated"/>
-                    </GraphicsView.GestureRecognizers>
-                </GraphicsView>
+     IsVisible="False"
+          BackgroundColor="Transparent"
+          InputTransparent="False"
+          HorizontalOptions="Fill"
+          VerticalOptions="Fill">
+
+                    <!-- Add margin for buttons -->
+                    <Grid x:Name="InpaintContainer"
+              HorizontalOptions="Center"
+              VerticalOptions="Center">
+                        <Image x:Name="DarkenedImage"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   Opacity="0.6"/>
+                    <GraphicsView x:Name="MaskCanvas"
+             HorizontalOptions="Fill"
+             VerticalOptions="Fill"
+             Background="Transparent" />
+
+                </Grid>
+               
+
                 <StackLayout Orientation="Horizontal" 
                  HorizontalOptions="Center"
                  VerticalOptions="End"
                  Spacing="10"
-                 Margin="0,0,0,10">
+                 Margin="0,0,0,10"
+                 ZIndex="1">
                     <Button x:Name="UndoButton"
                 Text="Undo"
                 BackgroundColor="#FF6347"
                 TextColor="White"
-                CornerRadius="8"/>
+                CornerRadius="8"
+                Clicked="OnUndoButtonClicked"/>
                     <Button x:Name="ClearButton"
                 Text="Clear"
                 BackgroundColor="#FF6347"
                 TextColor="White"
-                CornerRadius="8"/>
+                CornerRadius="8"
+                Clicked="OnClearButtonClicked"/>
                     <Button x:Name="ApplyButton"
                 Text="Apply Inpainting"
                 BackgroundColor="#FF6347"
                 TextColor="White"
-                CornerRadius="8"/>
+                CornerRadius="8"
+                 Clicked="OnApplyInpaintingClicked"/>
                 </StackLayout>
             </Grid>
         </Grid>

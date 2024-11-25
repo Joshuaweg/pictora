@@ -34,6 +34,10 @@ namespace Pictora.Services
         public async Task<List<T>> GetAllAsync<T>(string collectionName)
         {
             var collection = _database.GetCollection<T>(collectionName);
+            foreach (var item in collection.Find(_ => true).ToList())
+            {
+                System.Console.WriteLine(item);
+            }
             return await collection.Find(_ => true).ToListAsync();
         }
         // get max id from any collection and return next id

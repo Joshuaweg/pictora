@@ -107,27 +107,42 @@ namespace Pictora
                 return;
             }
 
-            prompt = ("\"prompt\": \"" + prompt + "\"");
+            //prompt = ("\"prompt\": \"" + prompt + "\"");
 
-            String size = ",\"image_size\": ";
 
-            switch (Size.SelectedIndex)
+
+            // A safty check if the user uses the custom size option.
+            if (Size.SelectedIndex == 7)
             {
-                /*case 0:
-                    size += "square";
-                    break;
-                case 1:
-                    size += "square_hd";
-                    break;*/
-                // TODO - Add the rest later.
-                // Ignore the property for now
-                default:
-                    size += "\"square_hd\"";
-                    break;     
+                try // Checks for numerical input (Valid size range is checked in the Models.cs file)
+                {
+                    var a = Int32.Parse(CustomWidth.Text);
+                    var b = Int32.Parse(CustomHeight.Text);
+                } catch // Non-valid number input
+                {
+                    Debug.Print("Empty or invalid input");
+                    return;
+                }
+                    
             }
 
             // TODO - Add the options for handling models and loras
 
+            Prompt inputPrompt = new();
+
+            inputPrompt.prompt = prompt;
+
+            if (Size.SelectedIndex == 7)
+            {
+                inputPrompt.image_size.SetValues(Int32.Parse(CustomWidth.Text), Int32.Parse(CustomHeight.Text));
+            }
+            else
+            {
+                inputPrompt.image_size.SetValues(Size.SelectedIndex);
+                
+            }
+            
+            /*
             string finalPrompt = $"{{{prompt}";
 
             if (!size.Equals(""))
@@ -136,7 +151,9 @@ namespace Pictora
             }
 
             // End
-            finalPrompt += $"}}";
+            finalPrompt += $"}}";*/
+
+            string finalPrompt = JsonSerializer.Serialize<Prompt>(inputPrompt);
 
             Debug.WriteLine(finalPrompt);
 
@@ -198,6 +215,12 @@ namespace Pictora
                 result = new StreamReader(responce.Content.ReadAsStream()).ReadToEnd();
                 result_JSON = JsonSerializer.Deserialize<Result>(result);
                 Debug.WriteLine(result_JSON.detail);
+
+                if (result_JSON.detail == "Internal Server Error")
+                {
+                    Debug.WriteLine("Something went wrong.");
+                    return;
+                }
             } while (result_JSON.detail != "");
 
             result_JSON.model = "Fast-SDXL"; // Replace with the value selected in model.

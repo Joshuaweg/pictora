@@ -2,7 +2,7 @@
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+        //int count = 0;
 
         public MainPage()
         {
@@ -60,7 +60,10 @@
         {
             Navigation.PushAsync(new ImageGeneratePage());
         }
-
+        private void OnImageGalleryClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new ImageGalleryPage());
+        }
     }
 
 }

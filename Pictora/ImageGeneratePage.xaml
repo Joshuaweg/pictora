@@ -12,9 +12,6 @@
             HorizontalOptions="CenterAndExpand"
             >
 
-            <Label Text=""
-				   x:Name="Debug_Label"/>
-						
             <Image
             Source="pictoralogo.png"
 			x:Name="Generated_Image"
@@ -23,11 +20,13 @@
             HorizontalOptions="Center"
             SemanticProperties.Description="dot net bot in a race car number eight" />
 
+            <!--
             <Label Text="Prompt" 
                    FontSize="18"
                    TextColor="#ECECEC"
                    HorizontalOptions="Center"
                    />
+            -->
                 <HorizontalStackLayout
 				Padding="30,0"
                 Spacing="25"
@@ -118,7 +117,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Entry
-                    x:Name="CustomHight"
+                    x:Name="CustomHeight"
                     Placeholder="Height"
                     BackgroundColor="#1c1c3c"
                     TextColor="White"
