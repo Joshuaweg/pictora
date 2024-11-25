@@ -299,7 +299,7 @@ namespace Pictora
             }
         }
 
-        public EditImagePage()
+        public EditImagePage(Pictora.Models.Image generated_image=null)
         {
             InitializeComponent();
 

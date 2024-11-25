@@ -1,7 +1,38 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+using System.Diagnostics;
 
 namespace Pictora.Models {
+
+    public class TimestampToDateTimeSerializer : SerializerBase<DateTime>
+    {
+        public override DateTime Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        {
+            var type = context.Reader.GetCurrentBsonType();
+            switch (type)
+            {
+                case BsonType.Timestamp:
+                    var timestamp = context.Reader.ReadTimestamp();
+                    // Convert the timestamp to milliseconds and use DateTimeOffset to handle large values
+                    var seconds = timestamp / 100000000000;
+                    return DateTime.UnixEpoch.AddSeconds(seconds);
+                case BsonType.DateTime:
+                    var dateTime = context.Reader.ReadDateTime();
+                    return DateTimeOffset.FromUnixTimeMilliseconds(dateTime).DateTime;
+                case BsonType.String:
+                    return DateTime.Parse(context.Reader.ReadString());
+                default:
+                    throw new NotSupportedException($"Cannot convert {type} to DateTime");
+            }
+        }
+
+        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, DateTime value)
+        {
+            context.Writer.WriteDateTime(value.Ticks);
+        }
+    }
 
     public class Prompt
     {
@@ -123,6 +154,7 @@ namespace Pictora.Models {
         public int UserId { get; set; }
 
         [BsonElement("created")]
+        [BsonSerializer(typeof(TimestampToDateTimeSerializer))]
         public DateTime Created { get; set; }
 
         [BsonElement("baseImage")]
