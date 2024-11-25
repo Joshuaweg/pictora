@@ -32,6 +32,8 @@
                     Grid.Column="2"
                     Grid.Row="0"
                     SemanticProperties.Description="dot net bot in a race car number eight" />
+                
+                <!-- If you are designing the UI, the images get disabled in code due to there not being enough for all 9. You can comment that section out while designing the UI. -->
                 <Image
                     Source="pictoralogo.png"
                     x:Name="Generated_Image_4"
