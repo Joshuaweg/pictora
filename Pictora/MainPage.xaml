@@ -1,83 +1,175 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Pictora.MainPage"
-             BackgroundColor="#0d0d3c"> <!-- Dark background -->
+             x:Class="Pictora.MainPage">
+    <Grid>
+        <!-- Background Image -->
+        <Image Source="background.png"
+               Aspect="AspectFill"
+               IsOpaque="True"
+               Opacity="0.9"
+               VerticalOptions="FillAndExpand"
+               HorizontalOptions="FillAndExpand" />
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25"
+        <ScrollView>
+            <VerticalStackLayout
+            Padding="0,20,0,20"
+            Spacing="15"
             VerticalOptions="CenterAndExpand"
             HorizontalOptions="CenterAndExpand">
-            
-            <!-- Logo Section -->
-            <Image
+
+                <!-- Logo Section -->
+                <Image
                 Source="pictoralogo.png"
                 HeightRequest="150"
                 WidthRequest="150"
                 Aspect="AspectFit"
                 HorizontalOptions="Center">
-                <Image.Clip> 
-                    <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75" /> <!-- Makes Pictora Logo Circular -->
-                </Image.Clip>
-            </Image>
+                    <Image.Clip>
+                        <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75" />
+                        <!-- Makes Pictora Logo Circular -->
+                    </Image.Clip>
+                </Image>
 
-            <!-- Greeting Section -->
-            <Label Text="Welcome to Pictora"
-                   FontSize="28"
-                   TextColor="#ECECEC" 
+                <!-- Greeting Section -->
+                <Label Text="Welcome to Pictora"
+                   FontSize="32"
+                   FontFamily="OpenSans-Bold"
+                   TextColor="#FFFFFF" 
                    HorizontalOptions="Center"
-                   Margin="0,10,0,10"/>
+                   Margin="0,10,0,5">
+                   <Label.Shadow>
+                       <Shadow Brush="#000000" Opacity="0.3" Radius="3" Offset="2,2" />
+                       <!-- Subtle shadow -->
+                    </Label.Shadow>
+                </Label>
 
-            <!-- Navigation Buttons -->
-            <Button x:Name="LoginBtn"
+                <Label Text="Craft The Extraordinary"
+                   FontSize="18"
+                   FontFamily="OpenSans-BoldItalic"
+                   TextColor="#F0F0F0"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,30">
+                   <Label.Shadow>
+                       <Shadow Brush="Black" Opacity="0.3" Radius="2" Offset="1,1" />
+                       <!-- Subtle shadow -->
+                    </Label.Shadow>
+                </Label>
+
+                <!-- Navigation Buttons -->
+                <Button x:Name="LoginBtn"
                     Text="Login"
                     BackgroundColor="#2196F3" 
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
                     FontSize="18"
-                    CornerRadius="8"
-                    HeightRequest="45"
-                    WidthRequest="200"
+                    FontAttributes="Bold"
+                    CornerRadius="22"
+                    HeightRequest="50"
+                    WidthRequest="220"
                     HorizontalOptions="Center"
-                    Margin="0,5,0,5"
-                    Clicked="OnLoginClicked" />
+                    Margin="0,8,0,8"
+                    Clicked="OnLoginClicked"
+                    Pressed="OnButtonPressed"
+                    Released="OnButtonReleased">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        <!-- Subtle shadow -->
+                    </Button.Shadow>
+                </Button>
 
-            <Button x:Name="SignUpBtn"
+
+                <Button x:Name="SignUpBtn"
                     Text="Sign Up"
                     BackgroundColor="#FF8C00" 
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
                     FontSize="18"
-                    CornerRadius="8"
-                    HeightRequest="45"
-                    WidthRequest="200"
+                    FontAttributes="Bold"
+                    CornerRadius="22"
+                    HeightRequest="50"
+                    WidthRequest="220"
                     HorizontalOptions="Center"
-                    Margin="0,5,0,5"
-                    Clicked="OnSignUpClicked" />
+                    Margin="0,8,0,8"
+                    Clicked="OnSignUpClicked"
+                    Pressed="OnButtonPressed"
+                    Released="OnButtonReleased">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        <!-- Subtle shadow -->
+                    </Button.Shadow>
+                </Button>
 
 
-            <Button x:Name="ImageEditBtn"
+                <Button x:Name="ImageEditBtn"
                     Text="Image Editor"
-                    BackgroundColor="#FF6347" 
+                    BackgroundColor="#FF6347"
+                    FontFamily="Nunito-Bold"
                     FontSize="18"
-                    CornerRadius="8"
-                    HeightRequest="45"
-                    WidthRequest="200"
+                    FontAttributes="Bold"
+                    CornerRadius="22"
+                    HeightRequest="50"
+                    WidthRequest="220"
                     HorizontalOptions="Center"
-                    Margin="0,5,0,5"
-                    Clicked="OnImageEditClicked"/>
+                    Margin="0,8,0,8"
+                    Clicked="OnImageEditClicked"
+                    Pressed="OnButtonPressed"
+                    Released="OnButtonReleased">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        <!-- Subtle shadow -->
+                    </Button.Shadow>
+                </Button>
 
-            <Button x:Name="ImageGenerateBtn"
+                <Button x:Name="ImageGenerateBtn"
                     Text="Image Generator"
-                    BackgroundColor="#8A2BE2" 
+                    BackgroundColor="#8A2BE2"
+                    FontFamily="Nunito-Bold"
                     FontSize="18"
-                    CornerRadius="8"
-                    HeightRequest="45"
-                    WidthRequest="200"
+                    FontAttributes="Bold"
+                    CornerRadius="22"
+                    HeightRequest="50"
+                    WidthRequest="220"
                     HorizontalOptions="Center"
-                    Margin="0,5,0,5"
-                    Clicked="OnImageGeneratedClicked" />
-            <!-- Below is old code; not sure if it was okay to delete
+                    Margin="0,8,0,8"
+                    Clicked="OnImageGeneratedClicked"
+                    Pressed="OnButtonPressed"
+                    Released="OnButtonReleased">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        <!-- Subtle shadow -->
+                    </Button.Shadow>
+                </Button>
+
+                <BoxView 
+                    HeightRequest="2" 
+                    WidthRequest="150" 
+                    HorizontalOptions="Center" 
+                    BackgroundColor="#ECECEC" 
+                    Margin="0,10,0,10">
+                    <BoxView.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="2" Offset="1,1" />
+                    </BoxView.Shadow>
+                </BoxView>
+
+
+                <Label 
+                    Text="About Us | Privacy Policy"
+                    FontSize="12"
+                    FontFamily="OpenSans-Italic"
+                    TextColor="#F0F0F0" 
+                    HorizontalOptions="Center" 
+                    VerticalOptions="End" 
+                    Padding="0,20,0,10">
+                    <Label.Shadow>
+                        <Shadow Brush="Black" Opacity="0.3" Radius="1" Offset="1,1" />
+                    </Label.Shadow>
+                </Label>
+
+                <!--GestureRecognizers="{Binding FooterTapped}" />-->
+
+
+                <!-- Below is old code; not sure if it was okay to delete
             <Label
                 Text="Hello, World!"
                 Style="{StaticResource Headline}"
@@ -130,7 +222,7 @@
                 Clicked="OnImageGeneratedClicked"
                 HorizontalOptions="Fill" />
             -->
-        </VerticalStackLayout>
-    </ScrollView>
-
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

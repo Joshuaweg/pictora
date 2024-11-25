@@ -2,83 +2,245 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.LoginPage"
-             Title="Login"
-             BackgroundColor="#0d0d3c">
+             Title="Login">
+    <Grid>
+        <!-- Background Image -->
+        <Image Source="background.png"
+               Aspect="AspectFill"
+               IsOpaque="True"
+               Opacity="0.9"
+               VerticalOptions="FillAndExpand"
+               HorizontalOptions="FillAndExpand" />
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25"
-            VerticalOptions="CenterAndExpand"
-            HorizontalOptions="CenterAndExpand">
+        <ScrollView>
+            <VerticalStackLayout
+                Padding="0,20,0,20"
+                Spacing="15"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="CenterAndExpand">
 
-            <!-- Logo Section -->
-            <Image
-                Source="pictoralogo.png"
-                HeightRequest="150"
-                WidthRequest="150"
-                Aspect="AspectFit"
-                HorizontalOptions="Center">
-                <Image.Clip>
-                    <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75" />
-                </Image.Clip>
-            </Image>
+                <!-- Logo Section -->
+                <Image
+                    Source="pictoralogo.png"
+                    HeightRequest="150"
+                    WidthRequest="150"
+                    Aspect="AspectFit"
+                    HorizontalOptions="Center">
+                    <Image.Clip>
+                        <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75" />
+                    </Image.Clip>
+                </Image>
 
-            <!-- Page Title -->
-            <Label 
-                Text="Login"
-                FontSize="28"
-                TextColor="#ECECEC" 
-                HorizontalOptions="Center"
-                Margin="0,10,0,10" />
+                <!-- Page Title -->
+                <Label 
+                    Text="Welcome Back"
+                    FontFamily="OpenSans-Bold"
+                    FontSize="26"
+                    TextColor="#FFFFFF" 
+                    HorizontalOptions="Center"
+                    Margin="0,10,0,5">
+                    <Label.Shadow>
+                        <Shadow Brush="#000000" Opacity="0.3" Radius="3" Offset="2,2" />
+                        <!-- Subtle shadow -->
+                    </Label.Shadow>
+                </Label>
 
-            <!-- Username Entry -->
-            <Entry
-                x:Name="UsernameEntry"
-                Placeholder="Username"
-                FontSize="16"
-                TextColor="White"
-                BackgroundColor="#1A1A3C"
-                PlaceholderColor="#B0B0C3"
-                Margin="0,5,0,5"
-                WidthRequest="250"
-                HorizontalOptions="Center" />
 
-            <!-- Password Entry -->
-            <Entry
-                x:Name="PasswordEntry"
-                Placeholder="Password"
-                IsPassword="True"
-                FontSize="16"
-                TextColor="White"
-                BackgroundColor="#1A1A3C"
-                PlaceholderColor="#B0B0C3"
-                Margin="0,5,0,5"
-                WidthRequest="250"
-                HorizontalOptions="Center" />
+                <!-- Username Entry -->
+                <Frame
+                    BackgroundColor="#1A1A3C"
+                    BorderColor="#2196F3"
+                    CornerRadius="22"
+                    Padding="0"
+                    HasShadow="True"
+                    Margin="0,5,0,5"
+                    WidthRequest="250"
+                    HeightRequest="50"
+                    HorizontalOptions="Center">
 
-            <!-- Login Button -->
-            <Button
-                x:Name="LoginButton"
-                Text="Login"
-                BackgroundColor="#2196F3"
-                TextColor="White"
-                FontSize="18"
-                CornerRadius="8"
-                HeightRequest="45"
-                HorizontalOptions="Center"
-                Margin="0,10,0,10"
-                Clicked="OnLoginClicked" />
+                    <Grid>
+                        <!-- Icon -->
+                        <Image
+                        Source="username_icon.png"
+                        WidthRequest="20"
+                        HeightRequest="20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        Margin="10,0,0,0" />
 
-            <!-- Message Label for Error Messages -->
-            <Label
-                x:Name="MessageLabel"
-                Text=""
-                TextColor="Red"
-                FontSize="14"
-                HorizontalOptions="Center"
-                Margin="0,10,0,0" />
+                    <Entry
+                        x:Name="UsernameEntry"
+                        Placeholder="Username"
+                        FontSize="16"
+                        FontFamily="Nunito-Bold"
+                        TextColor="White"
+                        BackgroundColor="Transparent"
+                        PlaceholderColor="#B0B0C3"
+                        HorizontalTextAlignment="Center"/>
+                    </Grid>
+                </Frame>
 
-        </VerticalStackLayout>
-    </ScrollView>
+                <!-- Password Entry -->
+                <Frame
+                    BackgroundColor="#1A1A3C"
+                    BorderColor="#2196F3"
+                    CornerRadius="22"
+                    Padding="0"
+                    HasShadow="True"
+                    Margin="0,5,0,5"
+                    WidthRequest="250"
+                    HeightRequest="50"
+                    HorizontalOptions="Center">
+
+                    <Grid>
+                        <!-- Icon -->
+                        <Image
+                        Source="password_icon.png"
+                        WidthRequest="20"
+                        HeightRequest="20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        Margin="10,0,0,0" />
+
+                        <Entry
+                        x:Name="PasswordEntry"
+                        Placeholder="Password"
+                        IsPassword="True"
+                        FontSize="16"
+                        FontFamily="Nunito-Bold"
+                        TextColor="White"
+                        BackgroundColor="Transparent"
+                        PlaceholderColor="#B0B0C3"
+                        HorizontalTextAlignment="Center"/>
+                    </Grid>
+                </Frame>
+
+                <!-- Login Button -->
+                <Button
+                    x:Name="LoginButton"
+                    Text="Login"
+                    BackgroundColor="#2196F3"
+                    TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    CornerRadius="22"
+                    HeightRequest="50"
+                    WidthRequest="250"
+                    HorizontalOptions="Center"
+                    Margin="0,10,0,10"
+                    Clicked="OnLoginClicked"
+                    Pressed="OnButtonPressed"
+                    Released="OnButtonReleased">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
+                        <!-- Subtle shadow -->
+                    </Button.Shadow>
+                </Button>
+                
+
+                <!-- "Or Login with:" Label -->
+                <Label 
+                    Text="Or Login with:"
+                    FontSize="15"
+                    TextColor="#FFFFFF"
+                    FontFamily="Nunito-Bold"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Margin="0,5,0,5" />
+
+                <!-- Alternative Login Options -->
+                <HorizontalStackLayout 
+                    HorizontalOptions="Center" 
+                    Spacing="20"
+                    Margin="0,5,0,10">
+
+                    <!-- Fingerprint Login -->
+                    <ImageButton
+                        Source="fingerprint_icon.png"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        BackgroundColor="Transparent"
+                        CornerRadius="25"
+                        HorizontalOptions="Center">
+                        <!--Clicked="OnFingerprintLoginClicked">-->
+                        <ImageButton.Shadow>
+                            <Shadow Brush="Black" Opacity="0.3" Radius="6" Offset="2,2" />
+                        </ImageButton.Shadow>
+                    </ImageButton>
+
+                    <!-- Face ID Login -->
+                    <ImageButton
+                        Source="face_id_icon.png"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        BackgroundColor="Transparent"
+                        CornerRadius="10"
+                        HorizontalOptions="Center">
+                        <!--Clicked="OnFaceIDLoginClicked">-->
+                        <ImageButton.Shadow>
+                            <Shadow Brush="Black" Opacity="0.3" Radius="6" Offset="2,2" />
+                        </ImageButton.Shadow>
+                    </ImageButton>
+
+                    <!-- Lock/Login Key -->
+                    <ImageButton
+                        Source="lock_id_icon.png"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        BackgroundColor="Transparent"
+                        CornerRadius="10"
+                        HorizontalOptions="Center">
+                        <!--Clicked="OnLockLoginClicked">-->
+                        <ImageButton.Shadow>
+                            <Shadow Brush="Black" Opacity="0.3" Radius="6" Offset="2,2" />
+                        </ImageButton.Shadow>
+                    </ImageButton>
+
+                </HorizontalStackLayout>
+
+                <!-- Forgot Password and Sign-up Links -->
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,10,0,10">
+                    <Label
+                        Text="Forgot Password?"
+                        FontFamily="Nunito-Bold"
+                        TextColor="#FFFFFF"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        HorizontalOptions="Center" />
+                    <!--GestureRecognizers="{Binding ForgotPasswordCommand}" />-->
+                    <Label
+                        Text="Sign-up"
+                        TextColor="#FFFFFF"
+                        FontFamily="Nunito-Bold"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        HorizontalOptions="Center" />
+                    <!--GestureRecognizers="{Binding SignupCommand}" />-->
+                </VerticalStackLayout>
+                
+                
+                <!-- Footer -->
+                <Label
+                    Text="Get Help"
+                    FontSize="14"
+                    TextColor="#FFFFFF"
+                    FontFamily="Nunito-Bold"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End"
+                    Margin="0,10,0,10" />
+
+                <!-- Message Label for Error Messages -->
+                <Label
+                    x:Name="MessageLabel"
+                    Text=""
+                    TextColor="Red"
+                    FontSize="14"
+                    HorizontalOptions="Center"
+                    Margin="0,10,0,0" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

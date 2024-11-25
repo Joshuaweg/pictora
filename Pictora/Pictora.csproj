@@ -58,6 +58,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Fonts\Nunito-Bold.ttf" />
+    <None Remove="Resources\Fonts\OpenSans-Bold.ttf" />
+    <None Remove="Resources\Fonts\OpenSans-BoldItalic.ttf" />
+    <None Remove="Resources\Fonts\OpenSans-ExtraBold.ttf" />
+    <None Remove="Resources\Fonts\OpenSans-Italic.ttf" />
+    <None Remove="Resources\Fonts\OpenSans-LightItalic.ttf" />
+    <None Remove="Resources\Images\background.png" />
+    <None Remove="Resources\Images\face_id_icon.png" />
+    <None Remove="Resources\Images\fingerprint_icon.png" />
+    <None Remove="Resources\Images\lock_id_icon.png" />
+    <None Remove="Resources\Images\password_icon.png" />
+    <None Remove="Resources\Images\username_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />

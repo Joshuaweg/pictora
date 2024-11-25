@@ -40,6 +40,18 @@
         {
             await Navigation.PushAsync(new SignUpPage());
         }
+        private async void OnButtonPressed(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            await button.ScaleTo(0.95, 50); // Slightly shrink the button
+        }
+
+        private async void OnButtonReleased(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            await button.ScaleTo(1, 50); // Restore to original size
+        }
+
         private void OnImageEditClicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new EditImagePage());
