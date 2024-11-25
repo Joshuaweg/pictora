@@ -142,7 +142,7 @@
                 <!-- Change this button to a different color -->
                 <Button x:Name="ImageGalleryBtn"
                     Text="Image Gallery"
-                    BackgroundColor="#009999"
+                    BackgroundColor="#008080"
                     FontFamily="Nunito-Bold"
                     FontSize="18"
                     FontAttributes="Bold"

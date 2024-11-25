@@ -55,15 +55,25 @@
                     WidthRequest="250"
                     HeightRequest="50"
                     HorizontalOptions="Center">
-                    <Entry
+                    <Grid>
+                        <!-- Icon -->
+                        <Image
+                        Source="email_icon.png"
+                        WidthRequest="20"
+                        HeightRequest="20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        Margin="10,0,0,0" />
+                        <Entry
                         x:Name="EmailEntr"
                         Placeholder="Email"
-                        PlaceholderColor="#B0B0C3"
+                        PlaceholderColor="#FFFFFF"
                         FontSize="16"
                         FontFamily="Nunito-Bold"
                         TextColor="White"
                         BackgroundColor="Transparent"
                         HorizontalTextAlignment="Center" />
+                    </Grid>
                 </Frame>
 
                 <!-- Username Entry -->
@@ -77,15 +87,25 @@
                     WidthRequest="250"
                     HeightRequest="50"
                     HorizontalOptions="Center">
-                    <Entry
+                    <Grid>
+                        <!-- Icon -->
+                        <Image
+                        Source="username_icon.png"
+                        WidthRequest="20"
+                        HeightRequest="20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        Margin="10,0,0,0" />
+                        <Entry
                         x:Name="UsernameEntr"
                         Placeholder="Username"
-                        PlaceholderColor="#B0B0C3"
+                        PlaceholderColor="#FFFFFF"
                         FontSize="16"
                         FontFamily="Nunito-Bold"
                         TextColor="White"
                         BackgroundColor="Transparent"
                         HorizontalTextAlignment="Center" />
+                    </Grid>
                 </Frame>
 
                 <!-- Password Entry -->
@@ -99,16 +119,26 @@
                     WidthRequest="250"
                     HeightRequest="50"
                     HorizontalOptions="Center">
-                    <Entry
+                    <Grid>
+                        <!-- Icon -->
+                        <Image
+                        Source="password_icon.png"
+                        WidthRequest="20"
+                        HeightRequest="20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        Margin="10,0,0,0" />
+                        <Entry
                         x:Name="PasswordEntr"
                         Placeholder="Password"
                         IsPassword="True"
-                        PlaceholderColor="#B0B0C3"
+                        PlaceholderColor="#FFFFFF"
                         FontSize="16"
                         FontFamily="Nunito-Bold"
                         TextColor="White"
                         BackgroundColor="Transparent"
                         HorizontalTextAlignment="Center" />
+                    </Grid>
                 </Frame>
 
                 <!-- Confirm Password Entry -->
@@ -122,16 +152,27 @@
                     WidthRequest="250"
                     HeightRequest="50"
                     HorizontalOptions="Center">
-                    <Entry
+                    <Grid>
+                        <!-- Icon -->
+                        <Image
+                        Source="password_icon.png"
+                        WidthRequest="20"
+                        HeightRequest="20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        Margin="10,0,0,0" />
+
+                        <Entry
                         x:Name="ConfirmPasswordEntr"
                         Placeholder="Confirm Password"
                         IsPassword="True"
-                        PlaceholderColor="#B0B0C3"
+                        PlaceholderColor="#FFFFFF"
                         FontSize="16"
                         FontFamily="Nunito-Bold"
                         TextColor="White"
                         BackgroundColor="Transparent"
                         HorizontalTextAlignment="Center" />
+                    </Grid>
                 </Frame>
 
                 <!-- Sign Up Button -->
@@ -161,6 +202,18 @@
                     Text=""
                     TextColor="Red"
                     HorizontalOptions="Center" />
+                <Label 
+                    Text="Already Have An Account?"
+                    FontSize="14"
+                    FontFamily="Nunito-Bold"
+                    TextColor="#FFFFFF" 
+                    HorizontalOptions="Center" 
+                    VerticalOptions="End" 
+                    Padding="0,20,0,10">
+                    <Label.Shadow>
+                        <Shadow Brush="Black" Opacity="0.3" Radius="1" Offset="1,1" />
+                    </Label.Shadow>
+                </Label>
 
             </VerticalStackLayout>
         </ScrollView>

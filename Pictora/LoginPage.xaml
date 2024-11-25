@@ -75,7 +75,7 @@
                         FontFamily="Nunito-Bold"
                         TextColor="White"
                         BackgroundColor="Transparent"
-                        PlaceholderColor="#B0B0C3"
+                        PlaceholderColor="#FFFFFF"
                         HorizontalTextAlignment="Center"/>
                     </Grid>
                 </Frame>
@@ -110,7 +110,7 @@
                         FontFamily="Nunito-Bold"
                         TextColor="White"
                         BackgroundColor="Transparent"
-                        PlaceholderColor="#B0B0C3"
+                        PlaceholderColor="#FFFFFF"
                         HorizontalTextAlignment="Center"/>
                     </Grid>
                 </Frame>
