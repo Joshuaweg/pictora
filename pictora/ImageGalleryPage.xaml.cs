@@ -17,36 +17,36 @@ public partial class ImageGalleryPage : ContentPage
 		InitializeComponent();
         mgdbs = new();
 
-        // Why is the only way of getting info out of a database an async methoid?
-        // And why is there no documentation on how this methoid works?
-
-        // mgdbs.GetAllAsync<Images>("images")
-
-        // var collect = Task.Run(async () => await mgdbs.GetAllAsync<Image>("images")).Result;
+        // Async is the most incovenient thing, thanks for making me have to learn lambda.
+        var collect = Task.Run(async () => await mgdbs.GetAllAsync<Image>("images")).Result;
         
-        // Debug.WriteLine("DEBUG " + collect);
+        Debug.WriteLine("DEBUG " + collect);
 
-        // I'm uncertain if the following code would've worked, but I can't get an async methoid to finish in the codes currernt area,
-        // and using 'wait()' basicly freezes the applcation. This is just so I can tell Joshua that I know what I have to do to get images
-        // in theory, but not in practice. (Why did you have to write the 'Get' functions in a async way?)
-
-        /*
         var urls = new List<String>();
         foreach (var i in collect)
         {
-            urls.Add(i.BaseImage);
+            urls.Add(i.ImageUrl.ToString());
+            Debug.WriteLine(i.ImageUrl);
         }
 
         
-        // Check to see how many urls there are
-        Debug.WriteLine("URL COUNT ", urls.Count);
+        // Check to see how many urls there are, so I know how many images I need to set up.
+        Debug.WriteLine("URL COUNT " + urls.Count);
 
-        // First three for now, add the rest when I'm certain about the image count.
-        Generated_Image_1.Source = urls[0];
-        Generated_Image_2.Source = urls[1];
-        Generated_Image_3.Source = urls[2];
+        Generated_Image_1.Source = urls[1];
+        Generated_Image_2.Source = urls[2];
+        Generated_Image_3.Source = urls[3];
 
-         */
+        // There is only 3 images, so hide the rest.
+        // The list actually had four, but the first one is blank.
+        // If you are designing a UI, disable this block to see the rows.
+        Generated_Image_4.IsVisible = false;
+        Generated_Image_5.IsVisible = false;
+        Generated_Image_5.IsVisible = false;
+        Generated_Image_6.IsVisible = false;
+        Generated_Image_7.IsVisible = false;
+        Generated_Image_8.IsVisible = false;
+        Generated_Image_9.IsVisible = false;
 
     }
 
