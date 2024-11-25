@@ -5,27 +5,41 @@
              Title="Image Editor"
              BackgroundImageSource="background.png">
     <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+        
+        
         <!-- Top Buttons -->
         <Grid ColumnDefinitions="*,*,*" VerticalOptions="Start" Margin="10" Grid.Row="0">
             <Button x:Name="InpaintButton"
                     Text="Inpainting" 
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
                     CornerRadius="10"
                     Grid.Column="0"
+                    Margin="5"
                     Clicked="OnInpaintButtonClicked"/>
             <Button x:Name="AddCaptionButton"
                     Text="Add Captions"
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
                     CornerRadius="10"
                     Clicked="OnAddCaptionClicked"
-                    Grid.Column="1"/>
+                    Grid.Column="1"
+                    Margin="5"/>
             <Button Text="Draw Shapes"
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
                     CornerRadius="10"
-                    Grid.Column="2"/>
+                    Grid.Column="2"
+                    Margin="5"/>
         </Grid>
 
         <!-- Main Image Container -->
@@ -148,6 +162,8 @@
                 Placeholder="Enter prompt to edit image" 
                 PlaceholderColor="Gray"
                 TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
                 BackgroundColor="#1a1a4d"
                 AutoSize="TextChanges" 
                 MaxLength="500"
@@ -159,6 +175,9 @@
                 Text="Edit"
                 BackgroundColor="#FF6347"
                 TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontSize="16"
+                FontAttributes="Bold"
                 CornerRadius="8"
                 Margin="10"/>
 
@@ -172,16 +191,25 @@
                     Text="Filter 1"
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
                     CornerRadius="8"/>
             <Button x:Name="Filter2Button" 
                     Text="Filter 2"
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
                     CornerRadius="8"/>
             <Button x:Name="Filter3Button"
                     Text="Filter 3"
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
                     CornerRadius="8"/>
         </StackLayout>
 
@@ -191,6 +219,9 @@
                 Text="Save" 
                 BackgroundColor="#FF6347"
                 TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontSize="16"
+                FontAttributes="Bold"
                 CornerRadius="8"
                 Margin="10"/>
     </Grid>
