@@ -81,7 +81,7 @@
             <!-- Change this button to a different color -->
             <Button x:Name="ImageGalleryBtn"
         Text="Image Gallery"
-        BackgroundColor="#8A2BE2" 
+        BackgroundColor="#009999" 
         FontSize="18"
         CornerRadius="8"
         HeightRequest="45"
