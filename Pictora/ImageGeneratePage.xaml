@@ -6,19 +6,31 @@
 
     <ScrollView>
         <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25"
+            Padding="0,20,0,20"
+            Spacing="15"
             VerticalOptions="CenterAndExpand"
             HorizontalOptions="CenterAndExpand"
             >
-
+            <!-- Logo Section -->
             <Image
+                Source="pictoralogo.png"
+                x:Name="Generated_Image"
+                HeightRequest="150"
+                WidthRequest="150"
+                Aspect="AspectFit"
+                HorizontalOptions="Center">
+                <Image.Clip>
+                    <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75" />
+                </Image.Clip>
+            </Image>
+
+            <!--<Image
             Source="pictoralogo.png"
 			x:Name="Generated_Image"
             HeightRequest="185"
             Aspect="AspectFit"
             HorizontalOptions="Center"
-            SemanticProperties.Description="dot net bot in a race car number eight" />
+            SemanticProperties.Description="dot net bot in a race car number eight" />-->
 
             <!--
             <Label Text="Prompt" 
