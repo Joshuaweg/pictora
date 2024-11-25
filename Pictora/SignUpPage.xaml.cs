@@ -76,7 +76,7 @@ namespace Pictora
             MessageLabell.Text = "Sign-up successful!";
             
             // Navigate back to login page after sign-up
-            await Navigation.PopAsync();
+            await Navigation.PushAsync(new LoginPage());
         }
 
         private async void OnButtonPressed(object sender, EventArgs e)

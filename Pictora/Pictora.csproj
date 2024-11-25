@@ -84,6 +84,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="DashboardPage.xaml.cs">
+      <DependentUpon>DashboardPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <MauiXaml Update="EditImagePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -94,6 +100,9 @@
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="DashboardPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="SignUpPage.xaml">

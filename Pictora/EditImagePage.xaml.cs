@@ -972,6 +972,7 @@ namespace Pictora
             {
                 await DisplayAlert("Error", $"Failed to process inpainting: {ex.Message}", "OK");
             }
+            
         }
     }
 }

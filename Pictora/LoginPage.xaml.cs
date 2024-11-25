@@ -43,7 +43,7 @@ namespace Pictora
                     string password = builder.ToString();
                     if (password == passwords[idx])
                     {
-                        await Navigation.PushAsync(new MainPage());
+                        await Navigation.PushAsync(new DashboardPage());
                     }
                     else
                     {

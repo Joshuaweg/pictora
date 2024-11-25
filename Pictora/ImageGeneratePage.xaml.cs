@@ -95,168 +95,157 @@ namespace Pictora
                 await DisplayAlert("Prompt", $"File downloaded to {location}", "Ok");
             });
         }
-        private void GenerateButtonClicked(object sender, EventArgs e)
+        private async void GenerateButtonClicked(object sender, EventArgs e)
         {
-            if (API_KEY.Equals("")) // If there isn't a key, display an error
-                return;
-
-            String prompt = Prompt.Text;
-
-            if (prompt.Equals("")) // If there isn't a prompt, display an error
+            try
             {
-                return;
-            }
-
-            //prompt = ("\"prompt\": \"" + prompt + "\"");
-
-
-
-            // A safty check if the user uses the custom size option.
-            if (Size.SelectedIndex == 7)
-            {
-                try // Checks for numerical input (Valid size range is checked in the Models.cs file)
+                if (string.IsNullOrEmpty(API_KEY))
                 {
-                    var a = Int32.Parse(CustomWidth.Text);
-                    var b = Int32.Parse(CustomHeight.Text);
-                } catch // Non-valid number input
-                {
-                    Debug.Print("Empty or invalid input");
+                    await DisplayAlert("Error", "API key is not set", "OK");
                     return;
                 }
-                    
-            }
 
-            // TODO - Add the options for handling models and loras
-
-            Prompt inputPrompt = new();
-
-            inputPrompt.prompt = prompt;
-
-            if (Size.SelectedIndex == 7)
-            {
-                inputPrompt.image_size.SetValues(Int32.Parse(CustomWidth.Text), Int32.Parse(CustomHeight.Text));
-            }
-            else
-            {
-                inputPrompt.image_size.SetValues(Size.SelectedIndex);
-                
-            }
-            
-            /*
-            string finalPrompt = $"{{{prompt}";
-
-            if (!size.Equals(""))
-            {
-                finalPrompt += $"{size}";
-            }
-
-            // End
-            finalPrompt += $"}}";*/
-
-            string finalPrompt = JsonSerializer.Serialize<Prompt>(inputPrompt);
-
-            Debug.WriteLine(finalPrompt);
-
-            string requestUrl = "https://queue.fal.run/fal-ai/fast-sdxl";
-
-            /*
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await DisplayAlert("Prompt", $"{finalPrompt}", "Ok");
-            });
-            */
-
-            HttpRequestMessage httpRequestMessage = new(HttpMethod.Post, requestUrl);
-
-            httpRequestMessage.Content = new StringContent(finalPrompt, Encoding.UTF8, "application/json");
-            httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
-
-            HttpClient httpClient = new();
-            HttpResponseMessage responce = httpClient.Send(httpRequestMessage);
-            Stream body = responce.Content.ReadAsStream();
-
-            StreamReader reader = new(body);
-            string result = reader.ReadToEnd();
-
-            Progress progress_JSON = JsonSerializer.Deserialize<Progress>(result);
-
-            // Have a while loop that rechecks the status every second until it is complete.
-            while ((progress_JSON.status).Equals("IN_QUEUE"))
-            {
-                Task.Delay(1000).Wait(); // Delay for 1 seconds
-
-                // Check the request to see if it is done.
-                requestUrl = progress_JSON.status_url;
-
-                httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
-
-                responce = httpClient.Send(httpRequestMessage);
-                body = responce.Content.ReadAsStream();
-
-                reader = new StreamReader(body);
-                result = reader.ReadToEnd();
-                progress_JSON = JsonSerializer.Deserialize<Progress>(result);
-            }
-
-
-            requestUrl = progress_JSON.response_url;
-
-            // This do-while makes sure the object being returned is the actual result.
-            do
-            {
-                Task.Delay(1000).Wait(); // Delay for 1 seconds
-
-                httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
-
-                responce = httpClient.Send(httpRequestMessage);
-
-                result = new StreamReader(responce.Content.ReadAsStream()).ReadToEnd();
-                result_JSON = JsonSerializer.Deserialize<Result>(result);
-                Debug.WriteLine(result_JSON.detail);
-
-                if (result_JSON.detail == "Internal Server Error")
+                string prompt = Prompt.Text;
+                if (string.IsNullOrEmpty(prompt))
                 {
-                    Debug.WriteLine("Something went wrong.");
+                    await DisplayAlert("Error", "Please enter a prompt", "OK");
                     return;
                 }
-            } while (result_JSON.detail != "");
 
-            result_JSON.model = "Fast-SDXL"; // Replace with the value selected in model.
-            result_JSON.style = "None"; // Relpace with the value selected in style.
+                // Disable generate button and show loading indicator
+                GenerateButton.IsEnabled = false;
+                LoadingIndicator.IsVisible = true;
+                LoadingIndicator.IsRunning = true;
 
-            Debug.WriteLine(result_JSON);
-            Debug.WriteLine(result_JSON.images[0].url);
-            GeneratedURL = result_JSON.images[0].url;
-            Generated_Image.Source = GeneratedURL;
-            GenerateButton.Text = "Regenerate";
-            SaveControls.IsVisible = true;
-            DevUpload.IsVisible = true;
+                // A safety check if the user uses the custom size option.
+                if (Size.SelectedIndex == 7)
+                {
+                    try
+                    {
+                        var width = Int32.Parse(CustomWidth.Text);
+                        var height = Int32.Parse(CustomHeight.Text);
+                    }
+                    catch
+                    {
+                        await DisplayAlert("Error", "Please enter valid width and height values", "OK");
+                        return;
+                    }
+                }
 
-            // Implementing this here would spam the database with generated images and upload images the user may not be happy with without their consent.
-            generated_image = new Pictora.Models.Image();
-            generated_image.ImageSize = new ImageSize();
-            generated_image.ImageUrl = GeneratedURL;
-            generated_image.ImageSize.Height = result_JSON.images[0].height; // 1024
-            generated_image.ImageSize.Width = result_JSON.images[0].width; // 1024
-            generated_image.Created = result_JSON.created;
-            generated_image.Prompt = result_JSON.prompt;
-            generated_image.Model = result_JSON.model;
-            generated_image.Style = result_JSON.style;
-            generated_image.Tags = new List<string>(); // Defined on save page
-            generated_image.UserId = 0;                // Defined on login page
-            generated_image.Upvotes = 0;
-            generated_image.Downvotes = 0;
-            generated_image.Description = "Generated image";  // Defined on save page
-            generated_image.Name = "Generated Image";  // Defined on save page
-            generated_image.NumericId = 0;             // Defined by the database
+                // Create the prompt object
+                Prompt inputPrompt = new();
+                inputPrompt.prompt = prompt;
 
-            // Move this to when the user clicks on the 'Save' button in that layout.
-            
-            // This is only temperary. This is so the database doesn't get spamed with regenerated images.
-            //mgdbs.CreateAsync("images", generated_image);
+                if (Size.SelectedIndex == 7)
+                {
+                    inputPrompt.image_size.SetValues(Int32.Parse(CustomWidth.Text), Int32.Parse(CustomHeight.Text));
+                }
+                else
+                {
+                    inputPrompt.image_size.SetValues(Size.SelectedIndex);
+                }
 
+                string finalPrompt = JsonSerializer.Serialize<Prompt>(inputPrompt);
+                string requestUrl = "https://queue.fal.run/fal-ai/fast-sdxl";
+
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    // Initial request
+                    var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    httpRequestMessage.Content = new StringContent(finalPrompt, Encoding.UTF8, "application/json");
+                    httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
+
+                    var response = await httpClient.SendAsync(httpRequestMessage);
+                    var result = await response.Content.ReadAsStringAsync();
+                    var progress_JSON = JsonSerializer.Deserialize<Progress>(result);
+
+                    // Check queue status
+                    while ((progress_JSON.status).Equals("IN_QUEUE"))
+                    {
+                        await Task.Delay(1000);
+
+                        httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, progress_JSON.status_url);
+                        httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
+
+                        response = await httpClient.SendAsync(httpRequestMessage);
+                        result = await response.Content.ReadAsStringAsync();
+                        progress_JSON = JsonSerializer.Deserialize<Progress>(result);
+                    }
+
+                    // Get final result
+                    requestUrl = progress_JSON.response_url;
+                    Result result_JSON;
+
+                    do
+                    {
+                        await Task.Delay(1000);
+
+                        httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                        httpRequestMessage.Headers.Add("Authorization", $"Key {API_KEY}");
+
+                        response = await httpClient.SendAsync(httpRequestMessage);
+                        result = await response.Content.ReadAsStringAsync();
+                        result_JSON = JsonSerializer.Deserialize<Result>(result);
+
+                        if (result_JSON.detail == "Internal Server Error")
+                        {
+                            await DisplayAlert("Error", "An error occurred while generating the image", "OK");
+                            return;
+                        }
+                    } while (result_JSON.detail != "");
+
+                    // Set the result properties
+                    result_JSON.model = "Fast-SDXL";
+                    result_JSON.style = "None";
+
+                    GeneratedURL = result_JSON.images[0].url;
+
+                    // Update UI on main thread
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        Generated_Image.Source = GeneratedURL;
+                        GenerateButton.Text = "Regenerate";
+                        SaveControls.IsVisible = true;
+                        DevUpload.IsVisible = true;
+                    });
+
+                    // Create image object
+                    generated_image = new Pictora.Models.Image
+                    {
+                        ImageUrl = GeneratedURL,
+                        ImageSize = new ImageSize
+                        {
+                            Height = result_JSON.images[0].height,
+                            Width = result_JSON.images[0].width
+                        },
+                        Created = result_JSON.created,
+                        Prompt = result_JSON.prompt,
+                        Model = result_JSON.model,
+                        Style = result_JSON.style,
+                        Tags = new List<string>(),
+                        UserId = 0,
+                        Upvotes = 0,
+                        Downvotes = 0,
+                        Description = "Generated image",
+                        Name = "Generated Image",
+                        NumericId = 0
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+            }
+            finally
+            {
+                // Always hide loading indicator and enable button
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    LoadingIndicator.IsRunning = false;
+                    LoadingIndicator.IsVisible = false;
+                    GenerateButton.IsEnabled = true;
+                });
+            }
         }
 
         private void ButtonUploadClicked(object sender, EventArgs e)

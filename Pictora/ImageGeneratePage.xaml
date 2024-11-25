@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.ImageGeneratePage"
              Title="Image Generator"
-             BackgroundColor="#0d0d3c">
+              BackgroundImageSource="background.png">
 
     <ScrollView>
         <VerticalStackLayout
@@ -11,7 +11,7 @@
             VerticalOptions="CenterAndExpand"
             HorizontalOptions="CenterAndExpand"
             >
-
+            <Grid>
             <Image
             Source="pictoralogo.png"
 			x:Name="Generated_Image"
@@ -19,6 +19,17 @@
             Aspect="AspectFit"
             HorizontalOptions="Center"
             SemanticProperties.Description="dot net bot in a race car number eight" />
+                <ActivityIndicator 
+     x:Name="LoadingIndicator" 
+     IsVisible="False"
+     IsRunning="False"
+     Color="White"
+     Scale="2"
+     HorizontalOptions="Center" 
+     VerticalOptions="Center"/>
+            </Grid>
+
+
 
             <!--
             <Label Text="Prompt" 
@@ -49,7 +60,7 @@
 			</HorizontalStackLayout>
 
                 <Label Text="Prompt" 
-                       TextColor="#B0B0C3"/>
+                       TextColor="Black"/>
 
                 <Editor x:Name="Prompt"
                    Placeholder="Enter prompt to generate image"
@@ -66,7 +77,7 @@
                     Title="Model"
                     BackgroundColor="#1c1c3c"
                     TextColor="White"
-                    TitleColor="#B0B0C3"
+                    TitleColor="DarkCyan"
                     HorizontalOptions="Fill"
                     Margin="0,0,0,10">
                 <Picker.Items>
@@ -80,7 +91,7 @@
                     Title="Style"
                     BackgroundColor="#1c1c3c"
                     TextColor="White"
-                    TitleColor="#B0B0C3"
+                    TitleColor="Black"
                     HorizontalOptions="Fill"
                     Margin="0,0,0,10">
                 <Picker.Items>
@@ -94,7 +105,7 @@
                     Title="Size"
                     BackgroundColor="#1c1c3c"
                     TextColor="White"
-                    TitleColor="#B0B0C3"
+                    TitleColor="Black"
                     HorizontalOptions="Fill"
                     Margin="0,0 ,0,10">
                 <Picker.Items>

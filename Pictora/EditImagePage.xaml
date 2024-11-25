@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.EditImagePage"
              Title="Image Editor"
-             BackgroundColor="#0d0d3c">
+             BackgroundImageSource="background.png">
     <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
         <!-- Top Buttons -->
         <Grid ColumnDefinitions="*,*,*" VerticalOptions="Start" Margin="10" Grid.Row="0">
