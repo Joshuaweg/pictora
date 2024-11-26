@@ -150,19 +150,31 @@ public partial class ImageGalleryPage : ContentPage
         };
 
         // Add hover/tap effect
-        var tapGesture = new TapGestureRecognizer();
+        var hoverGesture = new PointerGestureRecognizer();
+        //var tapGesture = new TapGestureRecognizer();
+
+        hoverGesture.PointerEntered += (s, e) => { overlay.IsVisible = true; };
+        hoverGesture.PointerExited += (s, e) => { overlay.IsVisible = false; };
+        hoverGesture.PointerPressed += (s, e) => 
+        {
+            Debug.WriteLine(s);
+        };
+
+        /*
         tapGesture.Tapped += (s, e) =>
         {
             if (overlay.IsVisible)
             {
                 overlay.IsVisible = false;
+                Debug.WriteLine("Vis");
             }
             else
             {
                 overlay.IsVisible = true;
             }
-        };
-        frame.GestureRecognizers.Add(tapGesture);
+        };*/
+
+        frame.GestureRecognizers.Add(hoverGesture);
 
         return frame;
     }
