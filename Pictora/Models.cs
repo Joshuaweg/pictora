@@ -20,6 +20,7 @@ namespace Pictora.Models {
                     return DateTime.UnixEpoch.AddSeconds(seconds);
                 case BsonType.DateTime:
                     var dateTime = context.Reader.ReadDateTime();
+                    dateTime = dateTime/ 100000000000;
                     return DateTimeOffset.FromUnixTimeMilliseconds(dateTime).DateTime;
                 case BsonType.String:
                     return DateTime.Parse(context.Reader.ReadString());
