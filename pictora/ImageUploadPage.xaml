@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.ImageUploadPage"
              Title="ImageUploadPage"
-             BackgroundColor="#0d0d3c">
+              BackgroundImageSource="background.png">
     <ScrollView>
         <VerticalStackLayout
         Padding="30,0"
