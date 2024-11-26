@@ -224,5 +224,15 @@
                 FontAttributes="Bold"
                 CornerRadius="8"
                 Margin="10"/>
+        <Button x:Name="UploadButton" 
+         Grid.Row="6" 
+         Text="Upload" 
+         BackgroundColor="#FF6347"
+         TextColor="White"
+         FontFamily="Nunito-Bold"
+         FontSize="16"
+         FontAttributes="Bold"
+         CornerRadius="8"
+         Margin="10"/>
     </Grid>
 </ContentPage>

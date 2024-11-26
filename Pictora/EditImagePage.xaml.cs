@@ -305,6 +305,7 @@ namespace Pictora
 
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string envPath = Path.Combine(baseDirectory, ".env");
+            string uri = "";
 
             MainThread.BeginInvokeOnMainThread(async () =>
             {
@@ -312,7 +313,12 @@ namespace Pictora
                     $"Looking for .env at: {envPath}\n" +
                     $"File exists: {File.Exists(envPath)}", "OK");
             });
+            if (generated_image == null) {
 
+            }
+            else {
+                uri = generated_image.ImageUrl;
+            }
             DotNetEnv.Env.Load(envPath);
             string apiKey = DotNetEnv.Env.GetString("FAL_API_KEY");
             _imageService = new ImageEditingService(apiKey);
@@ -320,6 +326,7 @@ namespace Pictora
             // Set up the edit images directory
             string appDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             _editImagesDirectory = Path.Combine(appDirectory, "EditImages");
+            
             string _editImage = Path.Combine(_editImagesDirectory, "test.png");
 
             // Debug the path being used
@@ -329,7 +336,8 @@ namespace Pictora
                     $"Using directory: {_editImagesDirectory}", "OK");
             });
 
-            SetupImageDirectory();
+            SetupImageDirectory(uri);
+
 
             // Wire up button click handlers
             EditButton.Clicked += OnEditButtonClicked;
@@ -444,8 +452,9 @@ namespace Pictora
                 caption.SetText(result);
             }
         }
-        private void SetupImageDirectory()
+        private void SetupImageDirectory(string path = "")
         {
+            Debug.WriteLine("image path: " + path);
             try
             {
                 // Create the EditImages directory if it doesn't exist
@@ -459,23 +468,23 @@ namespace Pictora
                 }
 
                 _currentImagePath = Path.Combine(_editImagesDirectory, "test.png");
-
-                if (!File.Exists(_currentImagePath))
-                {
-                    MainThread.BeginInvokeOnMainThread(async () =>
-                    {
-                        await DisplayAlert("Info",
-                            $"Please place test.png at:\n{_currentImagePath}", "OK");
-                    });
+                if (!path.Equals("")) {
+                    _currentImagePath = path;
                 }
-                else
-                {
+               
                     // Update the image source
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        EditableImage.Source = ImageSource.FromFile(_currentImagePath);
+                        if (path.Equals(""))
+                        {
+                            EditableImage.Source = ImageSource.FromFile(_currentImagePath);
+                        }
+                        else {
+                            Uri web_image = new Uri(path);
+                            EditableImage.Source = ImageSource.FromUri(web_image);
+                        }
                     });
-                }
+                
             }
             catch (Exception ex)
             {
@@ -962,6 +971,7 @@ namespace Pictora
                         EditableImage.Source = ImageSource.FromFile(tempImagePath);
                     });
                     _currentImagePath = tempImagePath;
+                    
                 }
                 else
                 {

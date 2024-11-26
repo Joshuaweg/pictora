@@ -174,7 +174,7 @@ namespace Pictora
 
                     // Get final result
                     requestUrl = progress_JSON.response_url;
-                    Result result_JSON;
+                    
 
                     do
                     {
@@ -253,6 +253,7 @@ namespace Pictora
             //string json = JsonSerializer.Serialize<Result>(result_JSON);
             //Navigation.PushAsync(new ImageUploadPage(json));
 
+            Debug.WriteLine(result_JSON);
             Navigation.PushAsync(new ImageUploadPage(result_JSON));
         }
 
