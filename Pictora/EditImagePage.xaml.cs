@@ -868,9 +868,22 @@ namespace Pictora
 
  
                 byte[] maskData = await CreateMaskImageAsync();
-                // Load the image data
-                byte[] imageData = await File.ReadAllBytesAsync(_currentImagePath);
-
+                byte[] imageData = null;
+               // Load the image data
+               Debug.WriteLine(_currentImagePath);
+                if (_currentImagePath.Contains("http"))
+                {
+                    //get bytes from uri
+                    imageData = await GetBase64fromUrl(_currentImagePath);
+                    Debug.WriteLine(imageData);
+                    // Process the inpainting
+                }
+                else
+                {
+                    //get bytes from file
+                    imageData = await File.ReadAllBytesAsync(_currentImagePath);
+                }
+                Debug.WriteLine(imageData);
                 // Process the inpainting
                 await ProcessInpaintingEdit(imageData,maskData, PromptEditor.Text);
 
@@ -932,6 +945,14 @@ namespace Pictora
             byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
             return Convert.ToBase64String(imageBytes);
         }
+        private async  Task<byte[]> GetBase64fromUrl(string url)
+        {
+
+                HttpClient _client = new HttpClient(); ;
+                byte[] imageBytes = await _client.GetByteArrayAsync(url);
+                return imageBytes;
+           
+        }
 
         private async Task<string> GetBase64FromBitmap(byte[] bitmapData)
         {
@@ -948,7 +969,7 @@ namespace Pictora
             try
             {
                 string negativePrompt = "cartoon, illustration, animation, face, male, female";
-
+                Debug.WriteLine("Inpainting:\n");
                 var result = await _imageService.InpaintImageAsync(
                     imageDataUri,
                     maskDataUri,
