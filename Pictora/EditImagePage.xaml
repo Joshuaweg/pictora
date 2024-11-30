@@ -4,7 +4,7 @@
              x:Class="Pictora.EditImagePage"
              Title="Image Editor"
              BackgroundImageSource="background.png">
-    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto">
         
         
         <!-- Top Buttons -->
@@ -225,7 +225,7 @@
                 CornerRadius="8"
                 Margin="10"/>
         <Button x:Name="UploadButton" 
-         Grid.Row="6" 
+         Grid.Row="7" 
          Text="Upload" 
          BackgroundColor="#FF6347"
          TextColor="White"

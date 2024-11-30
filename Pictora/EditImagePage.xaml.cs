@@ -314,10 +314,11 @@ namespace Pictora
                     $"File exists: {File.Exists(envPath)}", "OK");
             });
             if (generated_image == null) {
-
+                UploadButton.IsVisible = false;
             }
             else {
                 uri = generated_image.ImageUrl;
+                UploadButton.Clicked += OnUploadButtonClicked;
             }
             DotNetEnv.Env.Load(envPath);
             string apiKey = DotNetEnv.Env.GetString("FAL_API_KEY");
@@ -348,7 +349,9 @@ namespace Pictora
             MaskCanvas.StartInteraction += OnStartDrawing;
             MaskCanvas.DragInteraction += OnDrawing;
             MaskCanvas.EndInteraction += OnEndDrawing;
+
         }
+
         private void OnStartDrawing(object sender, TouchEventArgs e)
         {
             try
@@ -624,14 +627,14 @@ namespace Pictora
         {
             await ProcessImageEdit(filterPrompt);
         }
-        private async Task SaveImageWithCaptions()
+        private async Task<String> SaveImageWithCaptions()
         {
             try
             {
-                if (_currentImagePath == null || !File.Exists(_currentImagePath))
+                if (_currentImagePath == null)
                 {
                     await DisplayAlert("Error", "No image to save", "OK");
-                    return;
+                    return null;
                 }
                 bool wasLoadingVisible = LoadingIndicator.IsVisible;
                 LoadingIndicator.IsVisible = false;
@@ -664,17 +667,25 @@ namespace Pictora
                 LoadingIndicator.IsVisible = wasLoadingVisible;
 
                 await DisplayAlert("Success", "Image saved to Pictures folder", "OK");
+
+                return Path.Combine(picturesFolder, fileName);
             }
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"Failed to save image: {ex.Message}", "OK");
+                return null;
             }
         }
 
-
-            private async void OnSaveButtonClicked(object sender, EventArgs e)
+        private async void OnSaveButtonClicked(object sender, EventArgs e)
         {
             await SaveImageWithCaptions();
+        }
+
+        private async void OnUploadButtonClicked(object? sender, EventArgs e)
+        {
+            string _fileToSendBack = await SaveImageWithCaptions();
+            await Shell.Current.GoToAsync($"..?file={_fileToSendBack}");
         }
 
         private void InitializeInpainting()
