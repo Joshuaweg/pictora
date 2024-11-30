@@ -188,7 +188,7 @@
                      Spacing="10"
                      Margin="0,10">
             <Button x:Name="Filter1Button" 
-                    Text="Filter 1"
+                    Text="Black and White"
                     BackgroundColor="#FF6347"
                     TextColor="White"
                     FontFamily="Nunito-Bold"

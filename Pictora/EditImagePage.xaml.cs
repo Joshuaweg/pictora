@@ -4,6 +4,8 @@ using SixLabors.ImageSharp;
 using System.Diagnostics;
 using PointFt = Microsoft.Maui.Graphics.PointF;
 using ColorM = Microsoft.Maui.Graphics.Color;
+using SixLabors.ImageSharp.PixelFormats;
+using System.Numerics;
 
 
 namespace Pictora
@@ -14,6 +16,10 @@ namespace Pictora
         private readonly string _editImagesDirectory;
         private string _currentImagePath;
         private bool _isCaptionMode = false;
+        private bool _isBlackAndWhite = false;
+        private bool _isBlueShift = false;
+        private bool _isVintage = false;
+        private string _originalImagePath;
         private List<DraggableCaption> _captions = new List<DraggableCaption>();
         private bool _isInpaintingMode = false;
         private List<PointFt> _currentPath = new List<PointFt>();
@@ -142,7 +148,7 @@ namespace Pictora
 
             private async void OnDoubleTapped(object sender, EventArgs e)
             {
-                
+
                 if (_parentPage == null) return;  // Exit if parent page is not found
 
                 string action = await _parentPage.DisplayActionSheet(
@@ -224,26 +230,26 @@ namespace Pictora
             private async void OnCaptionTapped(object sender, EventArgs e)
             {
                 if (_parentPage == null) return;
-                
-                    string action = await _parentPage.DisplayActionSheet(
-                        "Caption Options",
-                        "Cancel",
-                        "Delete",
-                        "Edit Text",
-                        "Change Color");
 
-                    switch (action)
-                    {
-                        case "Delete":
-                            _parentPage.DeleteCaption(this);
-                            break;
-                        case "Edit Text":
-                            await _parentPage.EditCaption(this);
-                            break;
-                        case "Change Color":
-                            await ChangeTextColor();
-                            break;
-                    }
+                string action = await _parentPage.DisplayActionSheet(
+                    "Caption Options",
+                    "Cancel",
+                    "Delete",
+                    "Edit Text",
+                    "Change Color");
+
+                switch (action)
+                {
+                    case "Delete":
+                        _parentPage.DeleteCaption(this);
+                        break;
+                    case "Edit Text":
+                        await _parentPage.EditCaption(this);
+                        break;
+                    case "Change Color":
+                        await ChangeTextColor();
+                        break;
+                }
             }
 
 
@@ -299,7 +305,7 @@ namespace Pictora
             }
         }
 
-        public EditImagePage(Pictora.Models.Image generated_image=null)
+        public EditImagePage(Pictora.Models.Image generated_image = null)
         {
             InitializeComponent();
 
@@ -313,10 +319,12 @@ namespace Pictora
                     $"Looking for .env at: {envPath}\n" +
                     $"File exists: {File.Exists(envPath)}", "OK");
             });
-            if (generated_image == null) {
+            if (generated_image == null)
+            {
                 UploadButton.IsVisible = false;
             }
-            else {
+            else
+            {
                 uri = generated_image.ImageUrl;
                 UploadButton.Clicked += OnUploadButtonClicked;
             }
@@ -327,7 +335,7 @@ namespace Pictora
             // Set up the edit images directory
             string appDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             _editImagesDirectory = Path.Combine(appDirectory, "EditImages");
-            
+
             string _editImage = Path.Combine(_editImagesDirectory, "test.png");
 
             // Debug the path being used
@@ -343,9 +351,11 @@ namespace Pictora
             // Wire up button click handlers
             EditButton.Clicked += OnEditButtonClicked;
             SaveButton.Clicked += OnSaveButtonClicked;
-            Filter1Button.Clicked += (s, e) => ApplyFilter("vintage style, sepia tones, classic photography");
-            Filter2Button.Clicked += (s, e) => ApplyFilter("neon lights, cyberpunk style, vibrant colors");
-            Filter3Button.Clicked += (s, e) => ApplyFilter("watercolor painting style, artistic, soft colors");
+            Filter1Button.Clicked += OnFilter1ButtonClicked;
+            Filter2Button.Clicked += OnFilter2ButtonClicked;
+            Filter2Button.Text = "Blue Shift";
+            Filter3Button.Clicked += OnFilter3ButtonClicked;
+            Filter3Button.Text = "Vintage";
             MaskCanvas.StartInteraction += OnStartDrawing;
             MaskCanvas.DragInteraction += OnDrawing;
             MaskCanvas.EndInteraction += OnEndDrawing;
@@ -471,23 +481,25 @@ namespace Pictora
                 }
 
                 _currentImagePath = Path.Combine(_editImagesDirectory, "test.png");
-                if (!path.Equals("")) {
+                if (!path.Equals(""))
+                {
                     _currentImagePath = path;
                 }
-               
-                    // Update the image source
-                    MainThread.BeginInvokeOnMainThread(() =>
+
+                // Update the image source
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (path.Equals(""))
                     {
-                        if (path.Equals(""))
-                        {
-                            EditableImage.Source = ImageSource.FromFile(_currentImagePath);
-                        }
-                        else {
-                            Uri web_image = new Uri(path);
-                            EditableImage.Source = ImageSource.FromUri(web_image);
-                        }
-                    });
-                
+                        EditableImage.Source = ImageSource.FromFile(_currentImagePath);
+                    }
+                    else
+                    {
+                        Uri web_image = new Uri(path);
+                        EditableImage.Source = ImageSource.FromUri(web_image);
+                    }
+                });
+
             }
             catch (Exception ex)
             {
@@ -877,11 +889,11 @@ namespace Pictora
                 LoadingIndicator.IsVisible = true;
                 LoadingIndicator.IsRunning = true;
 
- 
+
                 byte[] maskData = await CreateMaskImageAsync();
                 byte[] imageData = null;
-               // Load the image data
-               Debug.WriteLine(_currentImagePath);
+                // Load the image data
+                Debug.WriteLine(_currentImagePath);
                 if (_currentImagePath.Contains("http"))
                 {
                     //get bytes from uri
@@ -896,7 +908,7 @@ namespace Pictora
                 }
                 Debug.WriteLine(imageData);
                 // Process the inpainting
-                await ProcessInpaintingEdit(imageData,maskData, PromptEditor.Text);
+                await ProcessInpaintingEdit(imageData, maskData, PromptEditor.Text);
 
                 // Reset inpainting mode
                 _isInpaintingMode = false;
@@ -956,13 +968,13 @@ namespace Pictora
             byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
             return Convert.ToBase64String(imageBytes);
         }
-        private async  Task<byte[]> GetBase64fromUrl(string url)
+        private async Task<byte[]> GetBase64fromUrl(string url)
         {
 
-                HttpClient _client = new HttpClient(); ;
-                byte[] imageBytes = await _client.GetByteArrayAsync(url);
-                return imageBytes;
-           
+            HttpClient _client = new HttpClient(); ;
+            byte[] imageBytes = await _client.GetByteArrayAsync(url);
+            return imageBytes;
+
         }
 
         private async Task<string> GetBase64FromBitmap(byte[] bitmapData)
@@ -1003,7 +1015,7 @@ namespace Pictora
                         EditableImage.Source = ImageSource.FromFile(tempImagePath);
                     });
                     _currentImagePath = tempImagePath;
-                    
+
                 }
                 else
                 {
@@ -1014,7 +1026,261 @@ namespace Pictora
             {
                 await DisplayAlert("Error", $"Failed to process inpainting: {ex.Message}", "OK");
             }
-            
+
+        }
+        private void OnFilter1ButtonClicked(object sender, EventArgs e)
+        {
+            // Call the async method from the event handler
+            _ = ToggleBlackAndWhiteFilter();
+        }
+
+        private async Task ToggleBlackAndWhiteFilter()
+        {
+            try
+            {
+                LoadingIndicator.IsVisible = true;
+                LoadingIndicator.IsRunning = true;
+
+                if (!_isBlackAndWhite)
+                {
+                    _originalImagePath = _currentImagePath;
+
+                    byte[] imageBytes;
+                    if (_currentImagePath.Contains("http"))
+                    {
+                        using var client = new HttpClient();
+                        imageBytes = await client.GetByteArrayAsync(_currentImagePath);
+                    }
+                    else
+                    {
+                        imageBytes = await File.ReadAllBytesAsync(_currentImagePath);
+                    }
+
+                    using var image = SixLabors.ImageSharp.Image.Load<Rgba32>(imageBytes);
+
+                    image.Mutate(x => x
+                        .Grayscale()
+                        .Contrast(1.1f));
+
+                    string tempImagePath = Path.Combine(_editImagesDirectory, "bw_image.jpg");
+                    await using var fileStream = File.Create(tempImagePath);
+                    await image.SaveAsJpegAsync(fileStream);
+
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        EditableImage.Source = ImageSource.FromFile(tempImagePath);
+                        Filter1Button.Text = "Remove B&W";
+                    });
+                    _currentImagePath = tempImagePath;
+                    _isBlackAndWhite = true;
+                }
+                else
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        if (_originalImagePath.Contains("http"))
+                        {
+                            EditableImage.Source = ImageSource.FromUri(new Uri(_originalImagePath));
+                        }
+                        else
+                        {
+                            EditableImage.Source = ImageSource.FromFile(_originalImagePath);
+                        }
+                        Filter1Button.Text = "B&W";
+                    });
+                    _currentImagePath = _originalImagePath;
+                    _isBlackAndWhite = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to toggle black and white filter: {ex.Message}", "OK");
+                Debug.WriteLine($"Error in ToggleBlackAndWhiteFilter: {ex}");
+            }
+            finally
+            {
+                LoadingIndicator.IsVisible = false;
+                LoadingIndicator.IsRunning = false;
+            }
+        }
+        private void OnFilter2ButtonClicked(object sender, EventArgs e)
+        {
+            _ = ToggleBlueShiftFilter();
+        }
+
+        private async Task ToggleBlueShiftFilter()
+        {
+            try
+            {
+                LoadingIndicator.IsVisible = true;
+                LoadingIndicator.IsRunning = true;
+
+                if (!_isBlueShift)
+                {
+                    _originalImagePath = _currentImagePath;
+
+                    byte[] imageBytes;
+                    if (_currentImagePath.Contains("http"))
+                    {
+                        using var client = new HttpClient();
+                        imageBytes = await client.GetByteArrayAsync(_currentImagePath);
+                    }
+                    else
+                    {
+                        imageBytes = await File.ReadAllBytesAsync(_currentImagePath);
+                    }
+
+                    using var image = SixLabors.ImageSharp.Image.Load<Rgba32>(imageBytes);
+
+                    // Apply blue shift effect
+                    image.Mutate(x => x.ProcessPixelRowsAsVector4(row =>
+                    {
+                        for (int x = 0; x < row.Length; x++)
+                        {
+                            row[x] = new Vector4(
+                                row[x].X * 0.8f,     // Reduce red
+                                row[x].Y * 0.9f,     // Reduce green slightly
+                                row[x].Z * 1.2f,     // Enhance blue
+                                row[x].W              // Keep alpha the same
+                            );
+                        }
+                    }));
+
+                    string tempImagePath = Path.Combine(_editImagesDirectory, "blue_shift_image.jpg");
+                    await using var fileStream = File.Create(tempImagePath);
+                    await image.SaveAsJpegAsync(fileStream);
+
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        EditableImage.Source = ImageSource.FromFile(tempImagePath);
+                        Filter2Button.Text = "Remove Blue";
+                    });
+                    _currentImagePath = tempImagePath;
+                    _isBlueShift = true;
+                }
+                else
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        if (_originalImagePath.Contains("http"))
+                        {
+                            EditableImage.Source = ImageSource.FromUri(new Uri(_originalImagePath));
+                        }
+                        else
+                        {
+                            EditableImage.Source = ImageSource.FromFile(_originalImagePath);
+                        }
+                        Filter2Button.Text = "Blue Shift";
+                    });
+                    _currentImagePath = _originalImagePath;
+                    _isBlueShift = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to toggle blue shift filter: {ex.Message}", "OK");
+                Debug.WriteLine($"Error in ToggleBlueShiftFilter: {ex}");
+            }
+            finally
+            {
+                LoadingIndicator.IsVisible = false;
+                LoadingIndicator.IsRunning = false;
+            }
+        }
+        private void OnFilter3ButtonClicked(object sender, EventArgs e)
+        {
+            _ = ToggleVintageFilter();
+        }
+
+        private async Task ToggleVintageFilter()
+        {
+            try
+            {
+                LoadingIndicator.IsVisible = true;
+                LoadingIndicator.IsRunning = true;
+
+                if (!_isVintage)
+                {
+                    _originalImagePath = _currentImagePath;
+
+                    byte[] imageBytes;
+                    if (_currentImagePath.Contains("http"))
+                    {
+                        using var client = new HttpClient();
+                        imageBytes = await client.GetByteArrayAsync(_currentImagePath);
+                    }
+                    else
+                    {
+                        imageBytes = await File.ReadAllBytesAsync(_currentImagePath);
+                    }
+
+                    using var image = SixLabors.ImageSharp.Image.Load<Rgba32>(imageBytes);
+
+                    // Apply vintage effect
+                    image.Mutate(x => x.ProcessPixelRowsAsVector4(row =>
+                    {
+                        for (int x = 0; x < row.Length; x++)
+                        {
+                            // Get original color values
+                            float r = row[x].X;
+                            float g = row[x].Y;
+                            float b = row[x].Z;
+
+                            // Apply warm vintage tone
+                            row[x] = new Vector4(
+                                Math.Min(r * 1.2f, 1.0f),     // Enhance red slightly
+                                g * 0.9f,                     // Reduce green slightly
+                                b * 0.8f,                     // Reduce blue more
+                                row[x].W                      // Keep alpha the same
+                            );
+                        }
+                    }));
+
+                    // Add slight vignette effect
+                    image.Mutate(x => x
+                        .Contrast(1.1f)     // Increase contrast slightly
+                        .Sepia(0.2f));      // Add subtle sepia tone
+
+                    string tempImagePath = Path.Combine(_editImagesDirectory, "vintage_image.jpg");
+                    await using var fileStream = File.Create(tempImagePath);
+                    await image.SaveAsJpegAsync(fileStream);
+
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        EditableImage.Source = ImageSource.FromFile(tempImagePath);
+                        Filter3Button.Text = "Remove Vintage";
+                    });
+                    _currentImagePath = tempImagePath;
+                    _isVintage = true;
+                }
+                else
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        if (_originalImagePath.Contains("http"))
+                        {
+                            EditableImage.Source = ImageSource.FromUri(new Uri(_originalImagePath));
+                        }
+                        else
+                        {
+                            EditableImage.Source = ImageSource.FromFile(_originalImagePath);
+                        }
+                        Filter3Button.Text = "Vintage";
+                    });
+                    _currentImagePath = _originalImagePath;
+                    _isVintage = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to toggle vintage filter: {ex.Message}", "OK");
+                Debug.WriteLine($"Error in ToggleVintageFilter: {ex}");
+            }
+            finally
+            {
+                LoadingIndicator.IsVisible = false;
+                LoadingIndicator.IsRunning = false;
+            }
         }
     }
 }
