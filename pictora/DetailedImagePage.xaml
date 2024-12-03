@@ -13,6 +13,8 @@
             WidthRequest="400"
             HorizontalOptions="Center"
             SemanticProperties.Description="dot net bot in a race car number eight" />
+        
+        
     </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
