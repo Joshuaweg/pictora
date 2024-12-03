@@ -90,6 +90,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiXaml Update="DetailedImagePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="EditImagePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

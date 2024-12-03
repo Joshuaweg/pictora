@@ -22,7 +22,7 @@ public partial class ImageUploadPage : ContentPage
 {
     Pictora.Models.Image generated_image;
     string edited_image; // Parameter, need to be converted to a url either by code or uploading to a private service.
-	public ImageUploadPage(Result image)
+	public ImageUploadPage(Result image, int idx = 0)
 	{
         InitializeComponent();
 
@@ -36,7 +36,7 @@ public partial class ImageUploadPage : ContentPage
         generated_image.Model = image.model;
         generated_image.Style = image.style;
         generated_image.Tags = new List<string>();  // Defined on save page
-        generated_image.UserId = 0;                // Defined on login page
+        generated_image.UserId = idx;                // Defined on login page
         generated_image.Upvotes = 0;
         generated_image.Downvotes = 0;
         generated_image.Description = "";            // Defined on save page
@@ -86,8 +86,6 @@ public partial class ImageUploadPage : ContentPage
         }
 
         Debug.Print("Upload should be fine if it gets to this point.");
-        // * Figure out how to get the UserID
-        // Does this app even reconize if the user is logged in? That is imporatant for getting a user ID.
 
         // * Set up a NumericID
         // Go through the image database, and find the next unsued NumericId.

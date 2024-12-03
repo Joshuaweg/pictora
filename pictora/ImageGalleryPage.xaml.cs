@@ -13,11 +13,13 @@ public partial class ImageGalleryPage : ContentPage
     private readonly MongoDBService _mgdbs = new();
     private List<Image> _images = new();
     private readonly Random _random = new Random();
+    private int idx;
 
-    public ImageGalleryPage()
+    public ImageGalleryPage(int idx = 0)
     {
         InitializeComponent();
         LoadImages();
+        this.idx = idx;
     }
 
     private async void LoadImages()
@@ -151,28 +153,16 @@ public partial class ImageGalleryPage : ContentPage
 
         // Add hover/tap effect
         var hoverGesture = new PointerGestureRecognizer();
-        //var tapGesture = new TapGestureRecognizer();
+
 
         hoverGesture.PointerEntered += (s, e) => { overlay.IsVisible = true; };
         hoverGesture.PointerExited += (s, e) => { overlay.IsVisible = false; };
         hoverGesture.PointerPressed += (s, e) => 
         {
-            Debug.WriteLine(s);
+            Debug.WriteLine(image.Source);
+            Debug.WriteLine(idx);
+            Navigation.PushAsync(new DetailedImagePage(image.Source, idx));
         };
-
-        /*
-        tapGesture.Tapped += (s, e) =>
-        {
-            if (overlay.IsVisible)
-            {
-                overlay.IsVisible = false;
-                Debug.WriteLine("Vis");
-            }
-            else
-            {
-                overlay.IsVisible = true;
-            }
-        };*/
 
         frame.GestureRecognizers.Add(hoverGesture);
 
