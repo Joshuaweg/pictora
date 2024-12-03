@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Diagnostics;
 
 
 namespace Pictora
@@ -43,7 +44,8 @@ namespace Pictora
                     string password = builder.ToString();
                     if (password == passwords[idx])
                     {
-                        await Navigation.PushAsync(new DashboardPage());
+                        Debug.WriteLine("User ID: " + idx.ToString());
+                        await Navigation.PushAsync(new DashboardPage(idx));
                     }
                     else
                     {

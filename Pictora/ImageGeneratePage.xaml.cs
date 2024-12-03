@@ -23,6 +23,7 @@ namespace Pictora
         private string API_KEY = "";
         private string GeneratedURL;
         int count = 0;
+        private int idx;
         Result result_JSON;
 
         // TEMP: just in case you want to fill the database.
@@ -30,7 +31,7 @@ namespace Pictora
         MongoDBService mgdbs = new();
 
         //private ArrayList envFile = new ArrayList();
-        public ImageGeneratePage()
+        public ImageGeneratePage(int idx=0)
         {
             InitializeComponent();
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -40,7 +41,7 @@ namespace Pictora
             API_KEY = DotNetEnv.Env.GetString("FAL_API_KEY", "");
 
             mgdbs = new(); // TEMP
-
+            this.idx = idx;
         }
 
         private void Test(object sender, EventArgs e)
@@ -223,13 +224,14 @@ namespace Pictora
                         Model = result_JSON.model,
                         Style = result_JSON.style,
                         Tags = new List<string>(),
-                        UserId = 0,
+                        UserId = idx,
                         Upvotes = 0,
                         Downvotes = 0,
                         Description = "Generated image",
                         Name = "Generated Image",
                         NumericId = 0
                     };
+                    Debug.WriteLine("User Id: " + generated_image.UserId.ToString());
                 }
             }
             catch (Exception ex)
@@ -254,7 +256,7 @@ namespace Pictora
             //Navigation.PushAsync(new ImageUploadPage(json));
 
             Debug.WriteLine(result_JSON);
-            Navigation.PushAsync(new ImageUploadPage(result_JSON));
+            Navigation.PushAsync(new ImageUploadPage(result_JSON,idx));
         }
 
         // TEMPERARY: In case you want to want to upload the image without going through the save page. DEV USE ONLY!

@@ -28,6 +28,7 @@ namespace Pictora
         private PointFt _lastTouchPoint;
         private ScrollView _inpaintScrollView;
         private GraphicsView _maskCanvas;
+        private int idx;
 
         private class MaskDrawable : IDrawable
         {
@@ -305,13 +306,14 @@ namespace Pictora
             }
         }
 
-        public EditImagePage(Pictora.Models.Image generated_image = null)
+        public EditImagePage(Pictora.Models.Image generated_image = null, int idx =0)
         {
             InitializeComponent();
 
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string envPath = Path.Combine(baseDirectory, ".env");
             string uri = "";
+            this.idx = idx;
 
             MainThread.BeginInvokeOnMainThread(async () =>
             {

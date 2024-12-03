@@ -1,10 +1,15 @@
+using System.Diagnostics;
+
 namespace Pictora
 {
     public partial class DashboardPage : ContentPage
     {
-        public DashboardPage()
+        int idx;
+        public DashboardPage(int idx=0)
         {
             InitializeComponent();
+            this.idx = idx;
+            Debug.WriteLine("User ID: " + idx.ToString());
         }
 
         private async void OnButtonPressed(object sender, EventArgs e)
@@ -21,17 +26,17 @@ namespace Pictora
 
         private void OnImageEditClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new EditImagePage());
+            Navigation.PushAsync(new EditImagePage(null,idx));
         }
 
         private void OnImageGeneratedClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new ImageGeneratePage());
+            Navigation.PushAsync(new ImageGeneratePage(idx));
         }
 
         private void OnImageGalleryClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new ImageGalleryPage());
+            Navigation.PushAsync(new ImageGalleryPage(idx));
         }
     }
 }
