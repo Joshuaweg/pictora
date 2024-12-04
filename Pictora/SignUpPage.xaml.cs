@@ -21,9 +21,11 @@ namespace Pictora
             var Users = await mgdbs.GetAllAsync<User>("users");
             var Usernames = new List<string>();
             var ids = new List<int>();
+            var emails = new List<string>();
             foreach (var user in Users)
             {
                 Usernames.Add(user.Username);
+                emails.Add(user.Email);
             }
             foreach (var user in Users)
             {
@@ -51,6 +53,10 @@ namespace Pictora
                 MessageLabell.Text = "Username already exists.";
                 return;
             }
+            if (emails.Contains(EmailEntr.Text)) {
+                MessageLabell.Text = "Email already exists. ";
+                return;
+            }
             int nextId = maxId + 1;
             // create hash password using sha256
             string hashedPassword = "";
@@ -66,6 +72,7 @@ namespace Pictora
             }
             User newUser = new User();
             newUser.NumericId = nextId;
+            newUser.Email = EmailEntr.Text;
             newUser.Username = UsernameEntr.Text;
             newUser.Password = hashedPassword;
             await mgdbs.CreateAsync("users", newUser);
@@ -100,6 +107,8 @@ namespace Pictora
             public int NumericId { get; set; }
             [BsonElement("username")]
             public string Username { get; set; }
+            [BsonElement("email")]
+            public string Email { get; set; }
 
             [BsonElement("password")]         // Ensure case matching with MongoDB field
             public string Password { get; set; }

@@ -45,7 +45,7 @@ namespace Pictora
                     if (password == passwords[idx])
                     {
                         Debug.WriteLine("User ID: " + idx.ToString());
-                        await Navigation.PushAsync(new DashboardPage(idx));
+                        await Navigation.PushAsync(new DashboardPage(idx+1));
                     }
                     else
                     {
@@ -79,6 +79,8 @@ namespace Pictora
             public int NumericId { get; set; }
             [BsonElement("username")]
             public string Username { get; set; }
+            [BsonElement("email")]
+            public string Email { get; set; }
 
             [BsonElement("password")]         // Ensure case matching with MongoDB field
             public string Password { get; set; }

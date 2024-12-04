@@ -2,7 +2,8 @@
 using MongoDB.Bson;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using DotNetEnv;
+using System.Diagnostics;
 namespace Pictora.Services
 {
     public interface IMongoDBService
@@ -17,10 +18,15 @@ namespace Pictora.Services
     public class MongoDBService : IMongoDBService
     {
         private readonly IMongoDatabase _database;
-
-        public MongoDBService(string connectionString ="mongodb+srv://root:root@pictora.mgro1.mongodb.net/?retryWrites=true&w=majority&appName=pictora")
+        
+        public MongoDBService()
         {
-            var client = new MongoClient(connectionString);
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string envPath = Path.Combine(baseDirectory, ".env");
+            DotNetEnv.Env.Load(envPath);
+            string connect = DotNetEnv.Env.GetString("MONGO_URI", "");
+            Debug.WriteLine(connect);
+            var client = new MongoClient(connect);
             _database = client.GetDatabase("main");
         }
 

@@ -36,6 +36,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = Pictora.DashboardPage.xaml
 build_metadata.AdditionalFiles.TargetPath = DashboardPage.xaml
 build_metadata.AdditionalFiles.RelativePath = DashboardPage.xaml
 
+[C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/DetailedImagePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Pictora.DetailedImagePage.xaml
+build_metadata.AdditionalFiles.TargetPath = DetailedImagePage.xaml
+build_metadata.AdditionalFiles.RelativePath = DetailedImagePage.xaml
+
 [C:/Users/joshu/OneDrive/Desktop/pictora/pictora/Pictora/EditImagePage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Pictora.EditImagePage.xaml
