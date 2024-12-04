@@ -22,7 +22,7 @@ public partial class ImageUploadPage : ContentPage
 {
     Pictora.Models.Image generated_image;
     string edited_image; // Parameter, need to be converted to a url either by code or uploading to a private service.
-	public ImageUploadPage(Result image, int idx =0)
+	public ImageUploadPage(Result image, int idx = 0)
 	{
         InitializeComponent();
 
@@ -82,20 +82,19 @@ public partial class ImageUploadPage : ContentPage
             {
                 await DisplayAlert("Notice", "I still need to convert the edited file to a url. \n\n Nothing has been uploaded", "Ok");
             });
+            return;
         }
 
         Debug.Print("Upload should be fine if it gets to this point.");
-        // * Figure out how to get the UserID
-        // Does this app even reconize if the user is logged in? That is imporatant for getting a user ID.
 
         // * Set up a NumericID
         // Go through the image database, and find the next unsued NumericId.
 
         // Do not uncoment this until both of the unset fields have been set properly.
-       
+        /*
         MongoDBService mgdbs = new();
         mgdbs.CreateAsync("images", generated_image);
-        
+        */
 
         // Display a prompt, to confirm the image has been uploaded sucessfully
         // Switch view back to home page, because otherwise the user may spam the database with duplcates

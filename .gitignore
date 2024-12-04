@@ -431,3 +431,4 @@ FodyWeavers.xsd
 /Pictora/obj/project.assets.json
 /Pictora/obj/project.nuget.cache
 /pictora/ImageGalleryPage.xaml
+/Pictora/obj/Debug/net8.0-android/Pictora.GeneratedMSBuildEditorConfig.editorconfig
