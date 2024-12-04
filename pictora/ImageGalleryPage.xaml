@@ -6,7 +6,7 @@
              BackgroundImageSource="background.png">
 
     <ScrollView>
-        
+
         <FlexLayout x:Name="MosaicGallery"
                     Wrap="Wrap"
                     JustifyContent="Start"
