@@ -67,6 +67,7 @@
             Text="Uploader"
                 FontSize="18"/>
 
+            <!-- If you are looking for where the formating for the labels are, they are in the .cs file, because they are created dynamicly. -->
             <HorizontalStackLayout
                 x:Name="TagGroup"
                 IsVisible="False"
