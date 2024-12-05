@@ -186,7 +186,7 @@ namespace Pictora
 
                         response = await httpClient.SendAsync(httpRequestMessage);
                         result = await response.Content.ReadAsStringAsync();
-                        result_JSON = JsonSerializer.Deserialize<Result>(result);
+                        result_JSON = JsonSerializer.Deserialize<Result>(result)!;
 
                         if (result_JSON.detail == "Internal Server Error")
                         {

@@ -21,8 +21,8 @@ using Microsoft.Maui.Devices.Sensors;
 public partial class ImageUploadPage : ContentPage
 {
     Pictora.Models.Image generated_image;
-    string edited_image; // Parameter, need to be converted to a url either by code or uploading to a private service.
-    private Image image;
+    string edited_image = string.Empty; // Parameter, need to be converted to a url either by code or uploading to a private service.
+    private Image image = new();
     private int idx;
 
     public ImageUploadPage(Result image, int idx = 0)
@@ -141,7 +141,7 @@ public partial class ImageUploadPage : ContentPage
         generated_image.Name = Title.Text;
 
         MongoDBService mgdbs = new();
-        mgdbs.UpdateAsync<Image>("images", image.Id, generated_image);
+        _ = mgdbs.UpdateAsync<Image>("images", image.Id, generated_image);
 
         Shell.Current.GoToAsync("..");
     }

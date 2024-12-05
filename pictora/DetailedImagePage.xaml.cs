@@ -20,7 +20,7 @@ public partial class DetailedImagePage : ContentPage
 		this.idx = idx;
         Generated_Image.Source = ImageUrl;
 
-        image = FindImage(ImageUrl);
+        image = FindImage(ImageUrl)!;
 
 		if (image == null)
 		{
@@ -36,7 +36,7 @@ public partial class DetailedImagePage : ContentPage
         Debug.WriteLine(idx);
 
         // Edit tools become visible for uploader or admin.
-        UploaderTools.IsVisible = (image.UserId == idx) || (idx == 0);
+        UploaderTools.IsVisible = (image!.UserId == idx) || (idx == 0);
 
 		Debug.WriteLine(image.Tags.Count);
 
@@ -95,7 +95,7 @@ public partial class DetailedImagePage : ContentPage
 		foreach (Image image in imageList)
 		{			
 			// Substring of the imageUrl is needed to remove the "Url: " at the start.
-			if (image.ImageUrl == imageUrl.ToString()[5..])
+			if (image.ImageUrl == imageUrl.ToString()![5..])
 				return image;
 
         }
