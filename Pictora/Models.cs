@@ -100,7 +100,6 @@ namespace Pictora.Models {
                 height = 500;
         }
 
-
     }
 
     public class Progress
