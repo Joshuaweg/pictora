@@ -4,17 +4,126 @@
              x:Class="Pictora.DetailedImagePage"
              Title="DetailedImagePage">
     <ScrollView>
-    <VerticalStackLayout>
-            <!-- WidthRequest needs to be looked at to see if a dynamic option can be done. -->
-            <Image
-            Source="pictoralogo.png"
-            x:Name="Generated_Image"
-            Aspect="AspectFit"
-            WidthRequest="400"
-            HorizontalOptions="Center"
-            SemanticProperties.Description="dot net bot in a race car number eight" />
+    <VerticalStackLayout
+        Spacing="10">
+        <!-- WidthRequest needs to be looked at to see if a dynamic option can be done. -->
+        <Image
+        Source="pictoralogo.png"
+        x:Name="Generated_Image"
+        Aspect="AspectFit"
+        WidthRequest="400"
+        HorizontalOptions="Center"
+        SemanticProperties.Description="dot net bot in a race car number eight" />
+
+            <HorizontalStackLayout
+                 HorizontalOptions="Center"
+                Spacing="10">
+                <Button
+                    Text="^"/>
+                <Label
+                    Text="0"
+                    x:Name="LikeCount"
+                    VerticalOptions="Center"
+                    FontSize="24"
+                    />
+                <Button
+                    Text="v"/>
+
+                
+                <!-- Add some whitespace between these elements -->
+                <Button
+                    Text="Favorite"
+                    />
+            
+                <HorizontalStackLayout
+                    x:Name="UploaderTools"
+                    IsVisible="False"
+                    Spacing="10">
+                    <Button
+                        Text="Edit"
+                        />
+                    <Button
+                        Text="Delete"
+                    />
+                </HorizontalStackLayout>
+
+            </HorizontalStackLayout>
+
+            <Label
+            x:Name="Title"
+            Text="Title"
+                HorizontalOptions="Center"
+                FontSize="24"
+            />
+
+            <Label
+            x:Name="Uploader"
+            Text="Uploader"
+                FontSize="18"/>
+
+            <HorizontalStackLayout
+                x:Name="TagGroup"
+                IsVisible="False">
+                <Label
+                    x:Name="Tags"
+                    Text="#Tags"
+                    FontSize="18"
+                    TextColor="Blue"
+                    TextDecorations="Underline"
+                    />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout
+                x:Name="OgImage"
+                Spacing="10">
+                <Label
+                    Text="Original Image:"
+                    FontSize="18"/>
+                <Label
+                    x:Name="ImageID"
+                    Text="XXXXX"
+                    FontSize="18"
+                    TextColor="Blue"
+                    TextDecorations="Underline"
+                    />
+            </HorizontalStackLayout>
+
+            <Label 
+                x:Name="Description"
+                Text="Description"
+                FontSize="18"
+                />
         
-        
-    </VerticalStackLayout>
+            <Label 
+            x:Name="Date"
+            Text="Date Uploaded: MM/DD/YYYY"
+            FontSize="12"
+            />
+
+            <Label 
+            x:Name="Model"
+            Text="Model Used:"
+            FontSize="12"
+            />
+
+            <Label 
+            x:Name="Style"
+            Text="Style Used:"
+            FontSize="12"
+            />
+
+            <Label 
+            x:Name="Prompt"
+            Text="Prompt:"
+            FontSize="12"
+            />
+
+            <Label 
+            x:Name="Size"
+            Text="Image Size:"
+            FontSize="12"
+            />
+
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

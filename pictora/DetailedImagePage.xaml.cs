@@ -33,10 +33,57 @@ public partial class DetailedImagePage : ContentPage
         }
 
         Debug.WriteLine(image);
+        Debug.WriteLine(idx);
 
-		// Filling out the fields for each image.
+        // Edit tools become visible for uploader or admin.
+        UploaderTools.IsVisible = (image.UserId == idx) || (idx == 0);
+
+		Debug.WriteLine(image.Tags.Count);
+
+		if (image.Tags.Count > 0)
+		{
+			TagGroup.IsVisible = true;
+
+			foreach (var item in image.Tags)
+			{
+				Label label = new()
+                {
+					Text = "#" + item,
+					FontSize = 18,
+					TextColor = Color.FromRgb(0, 0, 255), // Blue
+					TextDecorations = TextDecorations.Underline
+				};
+				TagGroup.Children.Add(label);
+            }
+
+        }
+
+		LikeCount.Text = (image.Upvotes - image.Downvotes).ToString();
+		Title.Text = image.Name;
+		Uploader.Text = "Uploader: " + GetUploader(image.UserId);
+
+		ImageID.Text = image.ImageUrl;
+		Description.Text = "Description:\n\n" + image.Description;
+		Date.Text = "Date Uploaded: " + image.Created;
+		Model.Text = "Model Used: " + image.Model;
+		Style.Text = "Style Used: " + image.Style;
+		Prompt.Text = "Prompt: " + image.Prompt;
+		Size.Text = "Image Size: " + image.ImageSize.Width.ToString() + "×" + image.ImageSize.Height.ToString();
 
 
+    }
+
+    private string GetUploader(int UserID)
+    {
+		List<User> userList = Task.Run(async () => await _mgdbs.GetAllAsync<User>("users")).Result;
+
+		foreach (User u in userList)
+		{
+			if (UserID == u.NumericId)
+				return u.Username;
+		}
+
+		return "Anonymous";
     }
 
     // Get all of the images and find the correct one by url.
@@ -56,5 +103,24 @@ public partial class DetailedImagePage : ContentPage
 
 		// This happens if the image is not found in the database.
 		return null;
+    }
+
+    public class User
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }    // Changed from int to string to match MongoDB's ObjectId
+
+        [BsonElement("id")]               // Maps to the numeric 'id' field
+        public int NumericId { get; set; }
+        [BsonElement("username")]
+        public string Username { get; set; }
+
+        [BsonElement("password")]         // Ensure case matching with MongoDB field
+        public string Password { get; set; }
+
+        [BsonElement("email")]
+        public string Email { get; set; }
+
     }
 }
