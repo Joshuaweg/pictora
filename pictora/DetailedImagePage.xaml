@@ -19,7 +19,8 @@
                  HorizontalOptions="Center"
                 Spacing="10">
                 <Button
-                    Text="^"/>
+                    Text="^"
+                    Clicked="UpButtonClicked"/>
                 <Label
                     Text="0"
                     x:Name="LikeCount"
@@ -27,12 +28,15 @@
                     FontSize="24"
                     />
                 <Button
-                    Text="v"/>
+                    Text="v"
+                    Clicked="DownButtonClicked"/>
 
                 
                 <!-- Add some whitespace between these elements -->
+                
                 <Button
                     Text="Favorite"
+                    Clicked="FavoriteButtonClicked"
                     />
             
                 <HorizontalStackLayout
@@ -41,9 +45,11 @@
                     Spacing="10">
                     <Button
                         Text="Edit"
+                        Clicked="EditButtonClicked"
                         />
                     <Button
                         Text="Delete"
+                        Clicked="DeleteButtonClicked"
                     />
                 </HorizontalStackLayout>
 
@@ -63,14 +69,8 @@
 
             <HorizontalStackLayout
                 x:Name="TagGroup"
-                IsVisible="False">
-                <Label
-                    x:Name="Tags"
-                    Text="#Tags"
-                    FontSize="18"
-                    TextColor="Blue"
-                    TextDecorations="Underline"
-                    />
+                IsVisible="False"
+                Spacing="10">
             </HorizontalStackLayout>
 
             <HorizontalStackLayout

@@ -72,7 +72,6 @@ public partial class DetailedImagePage : ContentPage
 
 
     }
-
     private string GetUploader(int UserID)
     {
 		List<User> userList = Task.Run(async () => await _mgdbs.GetAllAsync<User>("users")).Result;
@@ -105,6 +104,37 @@ public partial class DetailedImagePage : ContentPage
 		return null;
     }
 
+    private void FavoriteButtonClicked(object sender, EventArgs e)
+	{
+		Debug.WriteLine("Add favorite fuctionality here");
+    }
+
+    private void UpButtonClicked(object sender, EventArgs e)
+	{
+        Debug.WriteLine("Include some data to check the vote status and update it properly here");
+
+        // Placeholder
+        LikeCount.Text = (Int32.Parse(LikeCount.Text) + 1).ToString();
+    }
+
+    private void DownButtonClicked(object sender, EventArgs e)
+	{
+        Debug.WriteLine("Include some data to check the vote status and update it properly here");
+
+        // Placeholder
+        LikeCount.Text = (Int32.Parse(LikeCount.Text) - 1).ToString();
+    }
+
+    private void EditButtonClicked(object sender, EventArgs e)
+	{
+        Navigation.PushAsync(new ImageUploadPage(image, idx));
+    }
+
+    private void DeleteButtonClicked(object sender, EventArgs e)
+	{
+
+	}
+
     public class User
     {
         [BsonId]
@@ -121,6 +151,11 @@ public partial class DetailedImagePage : ContentPage
 
         [BsonElement("email")]
         public string Email { get; set; }
+
+    }
+
+    private void Button_Clicked(object sender, EventArgs e)
+    {
 
     }
 }
