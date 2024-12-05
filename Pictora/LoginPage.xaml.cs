@@ -85,9 +85,6 @@ namespace Pictora
             [BsonElement("password")]         // Ensure case matching with MongoDB field
             public string Password { get; set; }
 
-            [BsonElement("email")]
-            public string Email { get; set; }
-
         }
     }
 }

@@ -26,7 +26,10 @@ namespace Pictora.Services
             DotNetEnv.Env.Load(envPath);
             string connect = DotNetEnv.Env.GetString("MONGO_URI", "");
             Debug.WriteLine(connect);
-            var client = new MongoClient(connect);
+            var settings = MongoClientSettings.FromConnectionString(connect);
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+            var client = new MongoClient(settings);
+            var list =client.ListDatabaseNamesAsync().Result;
             _database = client.GetDatabase("main");
         }
 

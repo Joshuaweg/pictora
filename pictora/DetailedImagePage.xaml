@@ -4,7 +4,7 @@
              x:Class="Pictora.DetailedImagePage"
              Title="DetailedImagePage">
     <ScrollView>
-    <VerticalStackLayout>
+        <VerticalStackLayout>
             <!-- WidthRequest needs to be looked at to see if a dynamic option can be done. -->
             <Image
             Source="pictoralogo.png"
@@ -13,8 +13,8 @@
             WidthRequest="400"
             HorizontalOptions="Center"
             SemanticProperties.Description="dot net bot in a race car number eight" />
-        
-        
-    </VerticalStackLayout>
+
+
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
