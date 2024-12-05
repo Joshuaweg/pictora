@@ -130,10 +130,23 @@ public partial class DetailedImagePage : ContentPage
         Navigation.PushAsync(new ImageUploadPage(image, idx));
     }
 
-    private void DeleteButtonClicked(object sender, EventArgs e)
+	// Because this function is mostly a bunch of "awaits", this function is easier to implement as an "async" instead.
+    private async void DeleteButtonClicked(object sender, EventArgs e)
 	{
+		bool delete = await DisplayAlert("Confirm", "Are you sure you want to delete this image? \n\n This cannot be undone", "YES", "NO");
 
-	}
+		Debug.WriteLine(delete);
+		Debug.WriteLine(image.Id);
+
+		if (delete)
+		{
+
+            await _mgdbs.DeleteAsync<Image>("images", image.Id);
+            await DisplayAlert("", "Image has been deleted", "OK");
+            await Shell.Current.GoToAsync("..");
+
+        }
+    }
 
     public class User
     {
