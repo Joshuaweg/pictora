@@ -353,11 +353,6 @@ namespace Pictora
             // Wire up button click handlers
             EditButton.Clicked += OnEditButtonClicked;
             SaveButton.Clicked += OnSaveButtonClicked;
-            Filter1Button.Clicked += OnFilter1ButtonClicked;
-            Filter2Button.Clicked += OnFilter2ButtonClicked;
-            Filter2Button.Text = "Blue Shift";
-            Filter3Button.Clicked += OnFilter3ButtonClicked;
-            Filter3Button.Text = "Vintage";
             MaskCanvas.StartInteraction += OnStartDrawing;
             MaskCanvas.DragInteraction += OnDrawing;
             MaskCanvas.EndInteraction += OnEndDrawing;
@@ -1045,7 +1040,10 @@ namespace Pictora
 
                 if (!_isBlackAndWhite)
                 {
-                    _originalImagePath = _currentImagePath;
+                    if (_originalImagePath == null)
+                    {
+                        _originalImagePath = _currentImagePath;
+                    }
 
                     byte[] imageBytes;
                     if (_currentImagePath.Contains("http"))
@@ -1071,27 +1069,14 @@ namespace Pictora
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         EditableImage.Source = ImageSource.FromFile(tempImagePath);
-                        Filter1Button.Text = "Remove B&W";
                     });
                     _currentImagePath = tempImagePath;
                     _isBlackAndWhite = true;
+                    UpdateFilterButtonStyles("BlackAndWhite");
                 }
                 else
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        if (_originalImagePath.Contains("http"))
-                        {
-                            EditableImage.Source = ImageSource.FromUri(new Uri(_originalImagePath));
-                        }
-                        else
-                        {
-                            EditableImage.Source = ImageSource.FromFile(_originalImagePath);
-                        }
-                        Filter1Button.Text = "B&W";
-                    });
-                    _currentImagePath = _originalImagePath;
-                    _isBlackAndWhite = false;
+                    await ResetCurrentFilter();
                 }
             }
             catch (Exception ex)
@@ -1119,7 +1104,10 @@ namespace Pictora
 
                 if (!_isBlueShift)
                 {
-                    _originalImagePath = _currentImagePath;
+                    if (_originalImagePath == null)
+                    {
+                        _originalImagePath = _currentImagePath;
+                    }
 
                     byte[] imageBytes;
                     if (_currentImagePath.Contains("http"))
@@ -1155,27 +1143,14 @@ namespace Pictora
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         EditableImage.Source = ImageSource.FromFile(tempImagePath);
-                        Filter2Button.Text = "Remove Blue";
                     });
                     _currentImagePath = tempImagePath;
                     _isBlueShift = true;
+                    UpdateFilterButtonStyles("BlueShift");
                 }
                 else
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        if (_originalImagePath.Contains("http"))
-                        {
-                            EditableImage.Source = ImageSource.FromUri(new Uri(_originalImagePath));
-                        }
-                        else
-                        {
-                            EditableImage.Source = ImageSource.FromFile(_originalImagePath);
-                        }
-                        Filter2Button.Text = "Blue Shift";
-                    });
-                    _currentImagePath = _originalImagePath;
-                    _isBlueShift = false;
+                    await ResetCurrentFilter();
                 }
             }
             catch (Exception ex)
@@ -1203,7 +1178,10 @@ namespace Pictora
 
                 if (!_isVintage)
                 {
-                    _originalImagePath = _currentImagePath;
+                    if (_originalImagePath == null)
+                    {
+                        _originalImagePath = _currentImagePath;
+                    }
 
                     byte[] imageBytes;
                     if (_currentImagePath.Contains("http"))
@@ -1250,27 +1228,15 @@ namespace Pictora
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         EditableImage.Source = ImageSource.FromFile(tempImagePath);
-                        Filter3Button.Text = "Remove Vintage";
                     });
                     _currentImagePath = tempImagePath;
                     _isVintage = true;
+                    UpdateFilterButtonStyles("Vintage");
+
                 }
                 else
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        if (_originalImagePath.Contains("http"))
-                        {
-                            EditableImage.Source = ImageSource.FromUri(new Uri(_originalImagePath));
-                        }
-                        else
-                        {
-                            EditableImage.Source = ImageSource.FromFile(_originalImagePath);
-                        }
-                        Filter3Button.Text = "Vintage";
-                    });
-                    _currentImagePath = _originalImagePath;
-                    _isVintage = false;
+                    await ResetCurrentFilter();
                 }
             }
             catch (Exception ex)
@@ -1283,6 +1249,174 @@ namespace Pictora
                 LoadingIndicator.IsVisible = false;
                 LoadingIndicator.IsRunning = false;
             }
+        }
+        private void OnBlackAndWhiteTapped(object sender, TappedEventArgs e)
+        {
+            if (_isBlueShift || _isVintage)
+            {
+                // Reset other filters first
+                _ = ResetCurrentFilter();
+            }
+            _ = ToggleBlackAndWhiteFilter();
+        }
+
+        private void OnBlueShiftTapped(object sender, TappedEventArgs e)
+        {
+            if (_isBlackAndWhite || _isVintage)
+            {
+                // Reset other filters first
+                _ = ResetCurrentFilter();
+            }
+            _ = ToggleBlueShiftFilter();
+        }
+
+        private void OnVintageTapped(object sender, TappedEventArgs e)
+        {
+            if (_isBlackAndWhite || _isBlueShift)
+            {
+                // Reset other filters first
+                _ = ResetCurrentFilter();
+            }
+            _ = ToggleVintageFilter();
+        }
+
+        private async Task ResetCurrentFilter()
+        {
+            try
+            {
+                // Reset the image to original
+                if (_originalImagePath != null)
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        if (_originalImagePath.Contains("http"))
+                        {
+                            EditableImage.Source = ImageSource.FromUri(new Uri(_originalImagePath));
+                        }
+                        else
+                        {
+                            EditableImage.Source = ImageSource.FromFile(_originalImagePath);
+                        }
+                    });
+                    _currentImagePath = _originalImagePath;
+                }
+
+                // Reset all filter states
+                _isBlackAndWhite = false;
+                _isBlueShift = false;
+                _isVintage = false;
+
+                // Reset visual states
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in ResetCurrentFilter: {ex.Message}");
+            }
+        }
+
+        private void UpdateFilterButtonStyles(string activeFilter)
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                Frame previousActiveFrame = GetActiveFrame();
+                Frame newActiveFrame = null;
+
+                // Reset all labels to default state first
+                BlackAndWhiteLabel.TextColor = ColorM.FromArgb("#666666");
+                BlueShiftLabel.TextColor = ColorM.FromArgb("#666666");
+                VintageLabel.TextColor = ColorM.FromArgb("#666666");
+
+                // Determine new active frame
+                switch (activeFilter)
+                {
+                    case "BlackAndWhite":
+                        newActiveFrame = BlackAndWhiteFrame;
+                        break;
+                    case "BlueShift":
+                        newActiveFrame = BlueShiftFrame;
+                        break;
+                    case "Vintage":
+                        newActiveFrame = VintageFrame;
+                        break;
+                }
+
+                if (newActiveFrame != null)
+                {
+                    await AnimateFilterSelection(newActiveFrame, previousActiveFrame);
+                }
+            });
+        }
+        private async Task AnimateFilterSelection(Frame newActiveFrame, Frame oldActiveFrame = null)
+        {
+            uint animationDuration = 300;
+            Debug.WriteLine("Beginning Sliding Animation");
+            Debug.WriteLine(oldActiveFrame != null);
+            Debug.WriteLine(oldActiveFrame != newActiveFrame);
+            if (oldActiveFrame != null )
+            {
+                Debug.WriteLine("Sliding");
+                // Get the positions for animation
+                double startPosition = GetFramePosition(oldActiveFrame);
+                double endPosition = GetFramePosition(newActiveFrame);
+
+                // Each frame is 100 units wide
+                double currentX = SelectionIndicator.TranslationX;
+                Debug.WriteLine("Current position: " + currentX.ToString());
+                double targetX = endPosition * 100;
+                Debug.WriteLine("end position: " + endPosition.ToString());
+
+                // Create the sliding animation for the selection indicator
+                var slideAnimation = new Animation(
+                    callback: v => SelectionIndicator.TranslationX = v,
+                    start: currentX,
+                    end: targetX,
+                    easing: Easing.CubicInOut
+                );
+
+                // Start the animation
+                slideAnimation.Commit(
+                    owner: SelectionIndicator,
+                    name: "SelectionSlide",
+                    length: animationDuration,
+                    easing: Easing.CubicInOut,
+                    finished: (v, c) => SelectionIndicator.TranslationX = targetX  // Ensure final position
+                );
+
+                // Update text colors
+                if (oldActiveFrame.Content is Label oldLabel)
+                {
+                    oldLabel.TextColor = ColorM.FromArgb("#666666");
+                }
+            }
+            else if (newActiveFrame != null)
+            {
+                // Initial positioning for first selection
+                double position = GetFramePosition(newActiveFrame);
+                SelectionIndicator.TranslationX = position * 100;
+            }
+
+            // Update new frame text color
+            if (newActiveFrame.Content is Label newLabel)
+            {
+                newLabel.TextColor = Colors.White;
+            }
+
+            await Task.Delay((int)animationDuration);
+        }
+        private Frame GetActiveFrame()
+        {
+            if (_isBlackAndWhite) return BlackAndWhiteFrame;
+            if (_isBlueShift) return BlueShiftFrame;
+            if (_isVintage) return VintageFrame;
+            return null;
+        }
+        private double GetFramePosition(Frame frame)
+        {
+            // Get the frame's position in the segmented control
+            if (frame == BlackAndWhiteFrame) return 0;
+            if (frame == BlueShiftFrame) return 1;
+            if (frame == VintageFrame) return 2;
+            return 0;
         }
     }
 }
