@@ -59,6 +59,7 @@
          />
 
             <Button Text="Edit"
+                    x:Name="Edit"
 					MinimumWidthRequest="100"
                     BackgroundColor="#FF6347" 
                     TextColor="White"
@@ -70,6 +71,7 @@
 					/>
 
             <Button Text="Upload"
+                    x:Name="Upload"
 					MinimumWidthRequest="100"
                     BackgroundColor="#8A2BE2"
                     TextColor="White"
@@ -79,6 +81,18 @@
                     HorizontalOptions="Center"
                 Clicked="ButtonUploadClicked"
 					/>
+
+            <Button Text="Save"
+        x:Name="Save"
+		MinimumWidthRequest="100"
+        BackgroundColor="#8A2BE2"
+        TextColor="White"
+        FontSize="18"
+        CornerRadius="8"
+        HeightRequest="45"
+        HorizontalOptions="Center"
+    Clicked="ButtonSaveClicked"
+		/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

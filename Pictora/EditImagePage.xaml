@@ -4,8 +4,9 @@
              x:Class="Pictora.EditImagePage"
              Title="Image Editor"
              BackgroundImageSource="background.png">
-    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto,Auto">
-
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto">
+        
+        
         <!-- Top Buttons -->
         <Grid ColumnDefinitions="*,*,*" VerticalOptions="Start" Margin="10" Grid.Row="0">
             <Button x:Name="InpaintButton"
@@ -13,50 +14,34 @@
                     BackgroundColor="#FF6347"
                     TextColor="White"
                     FontFamily="Nunito-Bold"
-                    FontSize="16"
+                    FontSize="14"
                     FontAttributes="Bold"
-                    CornerRadius="22"
-                    HeightRequest="50"
+                    CornerRadius="10"
                     Grid.Column="0"
                     Margin="5"
-                    Clicked="OnInpaintButtonClicked">
-                <Button.Shadow>
-                    <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-                </Button.Shadow>
-            </Button>
-
+                    Clicked="OnInpaintButtonClicked"/>
             <Button x:Name="AddCaptionButton"
                     Text="Add Captions"
                     BackgroundColor="#FF6347"
                     TextColor="White"
                     FontFamily="Nunito-Bold"
-                    FontSize="16"
+                    FontSize="14"
                     FontAttributes="Bold"
-                    CornerRadius="22"
-                    HeightRequest="50"
+                    CornerRadius="10"
                     Clicked="OnAddCaptionClicked"
                     Grid.Column="1"
-                    Margin="5">
-                <Button.Shadow>
-                    <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-                </Button.Shadow>
-            </Button>
-
+                    Margin="5"/>
             <Button Text="Draw Shapes"
                     BackgroundColor="#FF6347"
                     TextColor="White"
                     FontFamily="Nunito-Bold"
-                    FontSize="16"
+                    FontSize="14"
                     FontAttributes="Bold"
-                    CornerRadius="22"
-                    HeightRequest="50"
+                    CornerRadius="10"
                     Grid.Column="2"
-                    Margin="5">
-                <Button.Shadow>
-                    <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-                </Button.Shadow>
-            </Button>
+                    Margin="5"/>
         </Grid>
+
         <!-- Main Image Container -->
         <Grid Grid.Row="1" 
               x:Name="MainContainer"
@@ -144,24 +129,14 @@
               IsVisible="False"
               RowDefinitions="Auto,Auto"
               Margin="10"
-              BackgroundColor="#1A1A3C"
-              Padding="15"
-             >
-            <Frame BackgroundColor="#1A1A3C"
-                   BorderColor="#FF6347"
-                   CornerRadius="22"
-                   Padding="10"
-                   HasShadow="True"
-                   Margin="0,0,0,10">
-                <Entry x:Name="CaptionTextEntry" 
-                       Placeholder="Enter caption text"
-                       PlaceholderColor="#FFFFFF"
-                       TextColor="White"
-                       FontFamily="Nunito-Bold"
-                       FontSize="16"
-                       HorizontalTextAlignment="Center"/>
-            </Frame>
-
+              BackgroundColor="#1a1a4d"
+              Padding="10">
+            <Entry x:Name="CaptionTextEntry" 
+                   Placeholder="Enter caption text"
+                   PlaceholderColor="Gray"
+                   TextColor="White"
+                   Grid.Row="0"
+                   Margin="0,0,0,10"/>
             <StackLayout Orientation="Horizontal" 
                         Grid.Row="1" 
                         Spacing="10"
@@ -170,55 +145,29 @@
                         Text="Add Text" 
                         BackgroundColor="#FF6347"
                         TextColor="White"
-                        FontFamily="Nunito-Bold"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        CornerRadius="22"
-                        HeightRequest="50"
-                        WidthRequest="120"
-                        Clicked="OnAddTextButtonClicked">
-                    <Button.Shadow>
-                        <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-                    </Button.Shadow>
-                </Button>
-
+                        CornerRadius="8"
+                        Clicked="OnAddTextButtonClicked"/>
                 <Button x:Name="DoneCaptioningButton" 
                         Text="Done" 
                         BackgroundColor="#FF6347"
                         TextColor="White"
-                        FontFamily="Nunito-Bold"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        CornerRadius="22"
-                        HeightRequest="50"
-                        WidthRequest="120"
-                        Clicked="OnDoneCaptioningClicked">
-                    <Button.Shadow>
-                        <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-                    </Button.Shadow>
-                </Button>
+                        CornerRadius="8"
+                        Clicked="OnDoneCaptioningClicked"/>
             </StackLayout>
         </Grid>
 
         <!-- Prompt Editor -->
-        
-        <Border Grid.Row="3"
-                Margin="10"
-                BackgroundColor="#1A1A3C"
-                
-                StrokeShape="RoundRectangle 22,22,22,22"
-                 Stroke="#FF6347"
-                StrokeThickness="1">
-            <Editor x:Name="PromptEditor" 
-                    Placeholder="Enter prompt to edit image" 
-                    PlaceholderColor="#FFFFFF"
-                    TextColor="White"
-                    FontFamily="Nunito-Bold"
-                    FontAttributes="Bold"
-                    BackgroundColor="Transparent"
-                    AutoSize="TextChanges" 
-                    MaxLength="500"/>
-        </Border>
+        <Editor x:Name="PromptEditor" 
+                Grid.Row="3" 
+                Placeholder="Enter prompt to edit image" 
+                PlaceholderColor="Gray"
+                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
+                BackgroundColor="#1a1a4d"
+                AutoSize="TextChanges" 
+                MaxLength="500"
+                Margin="10"/>
 
         <!-- Edit Button -->
         <Button x:Name="EditButton" 
@@ -227,151 +176,63 @@
                 BackgroundColor="#FF6347"
                 TextColor="White"
                 FontFamily="Nunito-Bold"
-                FontSize="18"
+                FontSize="16"
                 FontAttributes="Bold"
-                CornerRadius="22"
-                HeightRequest="50"
-                WidthRequest="500"
-                HorizontalOptions="Center"
-                Margin="10">
-            <Button.Shadow>
-                <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-            </Button.Shadow>
-        </Button>
+                CornerRadius="8"
+                Margin="10"/>
 
         <!-- Filter Buttons -->
-        <Grid Grid.Row="5" x:Name="FilterContainer" HorizontalOptions="Center">
-            <!-- Base Container -->
-            <Frame BackgroundColor="White"
-           CornerRadius="25"
-           Padding="2"
-           HasShadow="False"
-           BorderColor="#8B5CF6"
-           HeightRequest="50"
-           WidthRequest="300"
-           HorizontalOptions="Center"
-           ZIndex="0">
-            </Frame>
-
-            <!-- Selection Indicator -->
-            <Frame x:Name="SelectionIndicator"
-           BackgroundColor="#FF6347"
-           CornerRadius="23"
-           HasShadow="False"
-           IsClippedToBounds="True"
-           HorizontalOptions="Start"
-           WidthRequest="100"
-           HeightRequest="46"
-           Margin="2,2,2,2"
-           ZIndex="1"/>
-
-            <!-- Filter Buttons Grid -->
-            <Grid ColumnDefinitions="100,100,100" 
-          ColumnSpacing="0"
-          ZIndex="2">
-                <Frame x:Name="BlackAndWhiteFrame"
-               Grid.Column="0" 
-               BackgroundColor="Transparent"
-               Padding="0"
-               CornerRadius="23"
-               HasShadow="False"
-               BorderColor="Transparent"
-               WidthRequest="100">
-                    <Label x:Name="BlackAndWhiteLabel"
-                   Text="Black and White"
-                   TextColor="#666666"
-                   FontFamily="Nunito-Bold"
-                   FontSize="14"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnBlackAndWhiteTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Frame>
-
-                <Frame x:Name="BlueShiftFrame"
-               Grid.Column="1"
-               BackgroundColor="Transparent"
-               Padding="0"
-               CornerRadius="23"
-               HasShadow="False"
-               BorderColor="Transparent"
-               WidthRequest="100">
-                    <Label x:Name="BlueShiftLabel"
-                   Text="Blue Shift"
-                   TextColor="#666666"
-                   FontFamily="Nunito-Bold"
-                   FontSize="14"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnBlueShiftTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Frame>
-
-                <Frame x:Name="VintageFrame"
-               Grid.Column="2"
-               BackgroundColor="Transparent"
-               Padding="0"
-               CornerRadius="23"
-               HasShadow="False"
-               BorderColor="Transparent"
-               WidthRequest="100">
-                    <Label x:Name="VintageLabel"
-                   Text="Vintage"
-                   TextColor="#666666"
-                   FontFamily="Nunito-Bold"
-                   FontSize="14"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnVintageTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Frame>
-            </Grid>
-        </Grid>
+        <StackLayout Grid.Row="5" 
+                     Orientation="Horizontal" 
+                     HorizontalOptions="Center"
+                     Spacing="10"
+                     Margin="0,10">
+            <Button x:Name="Filter1Button" 
+                    Text="Black &amp; White"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    CornerRadius="8"/>
+            <Button x:Name="Filter2Button" 
+                    Text="Filter 2"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    CornerRadius="8"/>
+            <Button x:Name="Filter3Button"
+                    Text="Filter 3"
+                    BackgroundColor="#FF6347"
+                    TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    CornerRadius="8"/>
+        </StackLayout>
 
         <!-- Save Button -->
-        <VerticalStackLayout Grid.Row="6"
-                          Spacing="10"
-                          Margin="10">
-            <Button x:Name="SaveButton" 
-                    Text="Save" 
-                    BackgroundColor="#FF6347"
-                    TextColor="White"
-                    FontFamily="Nunito-Bold"
-                    FontSize="18"
-                    FontAttributes="Bold"
-                    CornerRadius="22"
-                    HeightRequest="50"
-                    WidthRequest="500"
-                    HorizontalOptions="Center">
-                <Button.Shadow>
-                    <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-                </Button.Shadow>
-            </Button>
-
-            <Button x:Name="UploadButton" 
-                    Text="Upload" 
-                    BackgroundColor="#FF6347"
-                    TextColor="White"
-                    FontFamily="Nunito-Bold"
-                    FontSize="18"
-                    FontAttributes="Bold"
-                    CornerRadius="22"
-                    HeightRequest="50"
-                    WidthRequest="500"
-                    HorizontalOptions="Center">
-                <Button.Shadow>
-                    <Shadow Brush="Black" Opacity="0.2" Radius="6" Offset="3,3" />
-                </Button.Shadow>
-            </Button>
-        </VerticalStackLayout>
+        <Button x:Name="SaveButton" 
+                Grid.Row="6" 
+                Text="Save" 
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontSize="16"
+                FontAttributes="Bold"
+                CornerRadius="8"
+                Margin="10"/>
+        <Button x:Name="UploadButton" 
+         Grid.Row="7" 
+         Text="Upload" 
+         BackgroundColor="#FF6347"
+         TextColor="White"
+         FontFamily="Nunito-Bold"
+         FontSize="16"
+         FontAttributes="Bold"
+         CornerRadius="8"
+         Margin="10"/>
     </Grid>
 </ContentPage>

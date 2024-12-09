@@ -21,8 +21,11 @@ using Microsoft.Maui.Devices.Sensors;
 public partial class ImageUploadPage : ContentPage
 {
     Pictora.Models.Image generated_image;
-    string edited_image; // Parameter, need to be converted to a url either by code or uploading to a private service.
-	public ImageUploadPage(Result image, int idx = 0)
+    string edited_image = string.Empty; // Parameter, need to be converted to a url either by code or uploading to a private service.
+    private Image image = new();
+    private int idx;
+
+    public ImageUploadPage(Result image, int idx = 0)
 	{
         InitializeComponent();
 
@@ -45,6 +48,37 @@ public partial class ImageUploadPage : ContentPage
 
         Generated_Image.Source = generated_image.ImageUrl;
 
+        Save.IsVisible = false;
+    }
+
+    public ImageUploadPage(Image image, int idx)
+    {
+        InitializeComponent();
+
+        this.image = image;
+        generated_image = image;
+
+        Tags.Text = setTags(generated_image.Tags);
+        Description.Text = generated_image.Description;
+        Title.Text = generated_image.Name;
+
+        Generated_Image.Source = generated_image.ImageUrl;
+
+        Edit.IsVisible = false;
+        Upload.IsVisible = false;
+    }
+
+    private string setTags(List<string> tags)
+    {
+        string ret_tags = "";
+
+        foreach (string tag in tags)
+        {
+            ret_tags += (tag + " ");
+        }
+
+        // Remove the last space
+        return (tags.Count == 0) ? "" : ret_tags[..^1];
     }
 
     public string EditedImage
@@ -98,6 +132,18 @@ public partial class ImageUploadPage : ContentPage
 
         // Display a prompt, to confirm the image has been uploaded sucessfully
         // Switch view back to home page, because otherwise the user may spam the database with duplcates
+    }
+
+    private void ButtonSaveClicked(object sender, EventArgs e)
+    {
+        generated_image.Tags = getTags(Tags.Text);
+        generated_image.Description = Description.Text;
+        generated_image.Name = Title.Text;
+
+        MongoDBService mgdbs = new();
+        _ = mgdbs.UpdateAsync<Image>("images", image.Id, generated_image);
+
+        Shell.Current.GoToAsync("..");
     }
 
     private List<string> getTags(string text)

@@ -21,13 +21,13 @@ namespace Pictora
     public partial class ImageGeneratePage : ContentPage
     {
         private string API_KEY = "";
-        private string GeneratedURL;
+        private string GeneratedURL = "";
         int count = 0;
         private int idx;
-        Result result_JSON;
+        Result result_JSON = new();
 
         // TEMP: just in case you want to fill the database.
-        Pictora.Models.Image generated_image; 
+        Pictora.Models.Image generated_image = new(); 
         MongoDBService mgdbs = new();
 
         //private ArrayList envFile = new ArrayList();
@@ -50,7 +50,7 @@ namespace Pictora
         }
         private void ButtonShareClicked(object sender, EventArgs e)
         {
-            ShareFile();
+            Task.Run(async () => await ShareFile());
         }
 
         private void ButtonSaveClicked(object sender, EventArgs e)
@@ -75,16 +75,16 @@ namespace Pictora
             });
         }
 
-        private async Task DownloadFile()
+        private Task DownloadFile()
         {
-            
+
             // If there is a way to do this with the HttpClient class (or anything else), so the complier doesn't send me a obsolite message, implement it that way.
             WebClient webClient = new();
 
             // This should just lead to the systems user folder (The one with your name on it.) If there is a better directory to use, please let me know ASAP.
             //
             // Count is temperary, replace with a date and timestamp for the filename
-            string location = (Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()) + $"\\test{count}.jpeg";
+            string location = Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString() + $"\\test{count}.jpeg";
             webClient.DownloadFile(GeneratedURL, location);
 
             count++;
@@ -95,7 +95,9 @@ namespace Pictora
             {
                 await DisplayAlert("Prompt", $"File downloaded to {location}", "Ok");
             });
+            return Task.CompletedTask;
         }
+
         private async void GenerateButtonClicked(object sender, EventArgs e)
         {
             try
@@ -161,7 +163,7 @@ namespace Pictora
                     var progress_JSON = JsonSerializer.Deserialize<Progress>(result);
 
                     // Check queue status
-                    while ((progress_JSON.status).Equals("IN_QUEUE"))
+                    while ((progress_JSON!.status).Equals("IN_QUEUE"))
                     {
                         await Task.Delay(1000);
 
@@ -186,7 +188,7 @@ namespace Pictora
 
                         response = await httpClient.SendAsync(httpRequestMessage);
                         result = await response.Content.ReadAsStringAsync();
-                        result_JSON = JsonSerializer.Deserialize<Result>(result);
+                        result_JSON = JsonSerializer.Deserialize<Result>(result)!;
 
                         if (result_JSON.detail == "Internal Server Error")
                         {
@@ -273,7 +275,7 @@ namespace Pictora
 
             Debug.WriteLine(generated_image.ImageSize.Height);
             Debug.WriteLine(generated_image.ImageSize.Width);
-            mgdbs.CreateAsync("images", generated_image);
+            _ = mgdbs.CreateAsync("images", generated_image);
         }
 
         /*
