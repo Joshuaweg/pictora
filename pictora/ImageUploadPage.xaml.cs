@@ -91,10 +91,10 @@ public partial class ImageUploadPage : ContentPage
         // Go through the image database, and find the next unsued NumericId.
 
         // Do not uncoment this until both of the unset fields have been set properly.
-        /*
+       
         MongoDBService mgdbs = new();
         mgdbs.CreateAsync("images", generated_image);
-        */
+        
 
         // Display a prompt, to confirm the image has been uploaded sucessfully
         // Switch view back to home page, because otherwise the user may spam the database with duplcates
