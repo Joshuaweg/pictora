@@ -47,7 +47,7 @@
                         FontAttributes="Bold"
                         CornerRadius="22"
                         HeightRequest="50"
-                        WidthRequest="220"
+                        WidthRequest="250"
                         HorizontalOptions="Center"
                         Margin="0,8,0,8"
                         Clicked="OnImageEditClicked"
@@ -66,7 +66,7 @@
                         FontAttributes="Bold"
                         CornerRadius="22"
                         HeightRequest="50"
-                        WidthRequest="220"
+                        WidthRequest="250"
                         HorizontalOptions="Center"
                         Margin="0,8,0,8"
                         Clicked="OnImageGeneratedClicked"
@@ -85,10 +85,28 @@
                         FontAttributes="Bold"
                         CornerRadius="22"
                         HeightRequest="50"
-                        WidthRequest="220"
+                        WidthRequest="250"
                         HorizontalOptions="Center"
                         Margin="0,8,0,8"
                         Clicked="OnImageGalleryClicked"
+                        Pressed="OnButtonPressed"
+                        Released="OnButtonReleased">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                    </Button.Shadow>
+                </Button>
+                <!-- No functionality for Logout as of yet -->
+                <Button x:Name="LgoutBtn"
+                        Text="Logout"
+                        BackgroundColor="#B22222"
+                        FontFamily="Nunito-Bold"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        CornerRadius="22"
+                        HeightRequest="50"
+                        WidthRequest="250"
+                        HorizontalOptions="Center"
+                        Margin="0,8,0,8"
                         Pressed="OnButtonPressed"
                         Released="OnButtonReleased">
                     <Button.Shadow>

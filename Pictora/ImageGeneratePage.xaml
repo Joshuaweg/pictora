@@ -1,181 +1,257 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.ImageGeneratePage"
-             Title="Image Generator"
-              BackgroundImageSource="background.png">
+             Title="Image Generator">
+    <Grid>
+        <!-- Background Image -->
+        <Image Source="background.png"
+               Aspect="AspectFill"
+               IsOpaque="True"
+               Opacity="0.9"
+               VerticalOptions="FillAndExpand"
+               HorizontalOptions="FillAndExpand" />
+        
+        <ScrollView>
+            <VerticalStackLayout
+                Padding="0,20,0,20"
+                Spacing="15"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="CenterAndExpand">
+                <Grid>
+                    <Image
+                        Source="pictoralogo.png"
+			            x:Name="Generated_Image"
+                        HeightRequest="185"
+                        Aspect="AspectFit"
+                        HorizontalOptions="Center"
+                        SemanticProperties.Description="dot net bot in a race car number eight" />
+                                        
+                    <ActivityIndicator 
+                            x:Name="LoadingIndicator" 
+                            IsVisible="False"
+                            IsRunning="False"
+                            Color="White"
+                            Scale="2"
+                            HorizontalOptions="Center" 
+                            VerticalOptions="Center"/>
+                </Grid>
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25"
-            VerticalOptions="CenterAndExpand"
-            HorizontalOptions="CenterAndExpand"
-            >
-            <Grid>
-            <Image
-            Source="pictoralogo.png"
-			x:Name="Generated_Image"
-            HeightRequest="185"
-            Aspect="AspectFit"
-            HorizontalOptions="Center"
-            SemanticProperties.Description="dot net bot in a race car number eight" />
-                <ActivityIndicator 
-     x:Name="LoadingIndicator" 
-     IsVisible="False"
-     IsRunning="False"
-     Color="White"
-     Scale="2"
-     HorizontalOptions="Center" 
-     VerticalOptions="Center"/>
-            </Grid>
 
-
-
-            <!--
-            <Label Text="Prompt" 
-                   FontSize="18"
-                   TextColor="#ECECEC"
-                   HorizontalOptions="Center"
-                   />
-            -->
                 <HorizontalStackLayout
-				Padding="30,0"
-                Spacing="25"
-				x:Name="SaveControls"
-				IsVisible="False"
-				HorizontalOptions="Center"
-				>
+				    Padding="0,10,0,10"
+                    Spacing="5"
+				    x:Name="SaveControls"
+				    IsVisible="False"
+				    HorizontalOptions="Center"
+				    >
 
-				<!-- Replace these button with icons after functionality is complete -->
-				<Button Text="Share"
-						MinimumWidthRequest="100"
-						Clicked="ButtonShareClicked"/>
-				<Button Text="Upload"
-						MinimumWidthRequest="100"
-						Clicked="ButtonUploadClicked"/> <!-- Replace with "ButtonUploadClicked" -->
-				<Button Text="Save"
-						MinimumWidthRequest="100"
-						Clicked="ButtonSaveClicked"/>
-					
-			</HorizontalStackLayout>
+				    <!-- Replace these button with icons after functionality is complete -->
+				    <Button Text="Share"
+                            FontFamily="Nunito-Bold"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            BackgroundColor="#8A2BE2"
+						    MinimumWidthRequest="100"
+						    Clicked="ButtonShareClicked">
+                        <Button.Shadow>
+                            <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        </Button.Shadow>
+                    </Button>
+                    <Button Text="Upload"
+						    MinimumWidthRequest="100"
+                            FontFamily="Nunito-Bold"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            BackgroundColor="#8A2BE2"
+						    Clicked="ButtonUploadClicked"> <!-- Replace with "ButtonUploadClicked" -->
+                        <Button.Shadow>
+                            <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        </Button.Shadow>
+                    </Button>
+                    <Button Text="Save"
+						    MinimumWidthRequest="100"
+                            FontFamily="Nunito-Bold"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            BackgroundColor="#8A2BE2"
+						    Clicked="ButtonSaveClicked">
+                        <Button.Shadow>
+                            <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        </Button.Shadow>
+                    </Button>
+                </HorizontalStackLayout>
 
-                <Label Text="Prompt" 
-                       TextColor="Black"/>
+
+                <Label 
+                    Text="Prompt" 
+                    TextColor="White"
+                    FontFamily="OpenSans-Bold"
+                    Margin="0,0,0,0"/>
+                
 
                 <Editor x:Name="Prompt"
-                   Placeholder="Enter prompt to generate image"
-                   AutoSize ="TextChanges"
-                   BackgroundColor="#1c1c3c"
-                   TextColor="White"
-                   PlaceholderColor="#B0B0C3"
-                   Margin="0,10,0,20"
-                   HorizontalOptions="Fill"
-                   />
-
-
-            <Picker x:Name="Model"
-                    Title="Model"
-                    BackgroundColor="#1c1c3c"
+                    Placeholder="Enter a prompt to generate an image"
+                    PlaceholderColor="White"
+                    AutoSize ="TextChanges"
+                    BackgroundColor="#1A1A3C"
                     TextColor="White"
-                    TitleColor="DarkCyan"
+                    FontFamily="Nunito-Bold"
+                    FontAttributes="Bold"   
+                    HeightRequest="50"
+                    WidthRequest="300"
                     HorizontalOptions="Fill"
-                    Margin="0,0,0,10">
-                <Picker.Items>
-                    <x:String>Test</x:String>
-                    <x:String>Test2</x:String>
-                    <x:String>Test3</x:String>
-                </Picker.Items>
-            </Picker>
+                    VerticalOptions="Center"
+                    HorizontalTextAlignment="Center" 
+                    VerticalTextAlignment="Center"
+                    Margin="0,0,0,10"/>
+                    
 
-            <Picker x:Name="Style"
-                    Title="Style"
-                    BackgroundColor="#1c1c3c"
-                    TextColor="White"
-                    TitleColor="Black"
-                    HorizontalOptions="Fill"
-                    Margin="0,0,0,10">
-                <Picker.Items>
-                    <x:String>Test</x:String>
-                    <x:String>Test2</x:String>
-                    <x:String>Test3</x:String>
-                </Picker.Items>
-            </Picker>
+                    <Picker x:Name="Model"
+                        Title="Model"
+                        BackgroundColor="#1A1A3C"
+                        TextColor="White"
+                        TitleColor="White"
+                        FontFamily="OpenSans-Bold"
+                            FontAttributes="Bold"
+                        HeightRequest="74"
+                        WidthRequest="300"
+                        HorizontalOptions="Fill"
+                        Margin="0,0,0,10">
+                    <Picker.Items>
+                        <x:String>Test</x:String>
+                        <x:String>Test2</x:String>
+                        <x:String>Test3</x:String>
+                    </Picker.Items>
+                </Picker>
+                
+                <Picker x:Name="Style"
+                        Title="Style"
+                        BackgroundColor="#1A1A3C"
+                        TextColor="White"
+                        TitleColor="White"
+                        FontFamily="OpenSans-Bold"
+                        FontAttributes="Bold"
+                        HeightRequest="74"
+                        WidthRequest="300"
+                        HorizontalOptions="Fill"
+                        Margin="0,0,0,10">
+                    <Picker.Items>
+                        <x:String>Test</x:String>
+                        <x:String>Test2</x:String>
+                        <x:String>Test3</x:String>
+                    </Picker.Items>
+                </Picker>
 
-            <Picker x:Name="Size"
-                    Title="Size"
-                    BackgroundColor="#1c1c3c"
-                    TextColor="White"
-                    TitleColor="Black"
-                    HorizontalOptions="Fill"
-                    Margin="0,0 ,0,10">
-                <Picker.Items>
-                    <x:String>Square (512x512)</x:String>
-                    <x:String>Square HD (1024x1024)</x:String>
-                    <x:String>Portrait 3:4 (768x1024)</x:String>
-					<x:String>Portrait 9:16 (576x1024)</x:String>
-                    <x:String>Landscape 4:3 (1024x768)</x:String>
-                    <x:String>Landscape 16:9 (1024x576)</x:String>
-			        <x:String>Wallpaper 16:9 (1920x1080)</x:String>
-                    <x:String>Custom</x:String>
-                </Picker.Items>
-            </Picker>
+                <Picker x:Name="Size"
+                        Title="Size"
+                        BackgroundColor="#1A1A3C"
+                        TextColor="White"
+                        TitleColor="White"
+                        FontFamily="OpenSans-Bold"
+                        FontAttributes="Bold"
+                        HeightRequest="74"
+                        WidthRequest="300"
+                        HorizontalOptions="Fill"
+                        Margin="0,0,0,10">
+                    <Picker.Items>
+                        <x:String>Square (512x512)</x:String>
+                        <x:String>Square HD (1024x1024)</x:String>
+                        <x:String>Portrait 3:4 (768x1024)</x:String>
+					    <x:String>Portrait 9:16 (576x1024)</x:String>
+                        <x:String>Landscape 4:3 (1024x768)</x:String>
+                        <x:String>Landscape 16:9 (1024x576)</x:String>
+			            <x:String>Wallpaper 16:9 (1920x1080)</x:String>
+                        <x:String>Custom</x:String>
+                    </Picker.Items>
+                </Picker>
 
-            <Grid HorizontalOptions="Center" Margin="0,10,0,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                <Grid HorizontalOptions="Center" Margin="0,10,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Entry
                     x:Name="CustomHeight"
                     Placeholder="Height"
-                    BackgroundColor="#1c1c3c"
+                    BackgroundColor="#1A1A3C"
                     TextColor="White"
-                    PlaceholderColor="#B0B0C3"
-                    HorizontalOptions="Fill" 
+                    PlaceholderColor="White"
+                    FontFamily="Nunito-Bold"
+                    HorizontalOptions="Center"
+                    HeightRequest="50"
+                    WidthRequest="145"
+                    HorizontalTextAlignment="Center" 
+                    VerticalTextAlignment="Center"
                     />
                 <Label Text="×"
-                       Grid.Column="1"
                        TextColor="White"
+                       FontFamily="Nunito-Bold"
+                       FontAttributes="Bold"
+                       Grid.Column="1"                    
                        VerticalOptions="Center"
                        HorizontalOptions="Center"/>
                 <Entry 
                     Grid.Column="2"
                     x:Name="CustomWidth"
                     Placeholder="Width"
-                    BackgroundColor="#1c1c3c"
+                    BackgroundColor="#1A1A3C"
                     TextColor="White"
-                    PlaceholderColor="#B0B0C3"
-                    HorizontalOptions="Fill"
-                    />
-            </Grid>
-
-            <Button Text="Generate"
-                    x:Name="GenerateButton"
-                    BackgroundColor="#8A2BE2" 
-                    TextColor="White"
-                    FontSize="18"
-                    CornerRadius="8"
-                    HeightRequest="45"
+                    FontFamily="Nunito-Bold"
+                    PlaceholderColor="White"
                     HorizontalOptions="Center"
-					Clicked="GenerateButtonClicked"/>
-            
-            <HorizontalStackLayout
-	            Padding="30,0"
-                Spacing="25"
-	            x:Name="DevUpload"
-	            IsVisible="False"
-	            HorizontalOptions="Center"
-	            >
+                    WidthRequest="145"
+                    HorizontalTextAlignment="Center" 
+                    VerticalTextAlignment="Center"
+                    />
+                </Grid>
 
-                <!-- Replace these button with icons after functionality is complete -->
-                <Button Text="Dev Upload"
-			            MinimumWidthRequest="100"
-			            Clicked="ButtonDevUploadClicked"/>
-            </HorizontalStackLayout>
+                <Button Text="Generate"
+                        x:Name="GenerateButton"
+                        BackgroundColor="#8A2BE2"
+                        FontFamily="Nunito-Bold"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="50"
+                        WidthRequest="300"
+                        HorizontalOptions="Center"
+					    Clicked="GenerateButtonClicked">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                    </Button.Shadow>
+                </Button>
 
-        </VerticalStackLayout>
-    </ScrollView>
+
+                <HorizontalStackLayout
+	                Padding="0,10,0,10"
+                    Spacing="15"
+	                x:Name="DevUpload"
+	                IsVisible="False"
+	                HorizontalOptions="Center"
+	                >
+
+                    <!-- Replace these button with icons after functionality is complete -->
+                    <Button Text="Dev Upload"
+                        BackgroundColor="#1ABC9C"
+                        FontFamily="Nunito-Bold"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        HeightRequest="50"
+			            WidthRequest="300"
+			            Clicked="ButtonDevUploadClicked">
+                        <Button.Shadow>
+                            <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        </Button.Shadow>
+                    </Button>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>
     
