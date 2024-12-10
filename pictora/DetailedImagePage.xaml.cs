@@ -46,13 +46,15 @@ public partial class DetailedImagePage : ContentPage
 
 			foreach (var item in image.Tags)
 			{
-				Label label = new()
+                Label label = new()
                 {
-					Text = "#" + item,
-					FontSize = 18,
-					TextColor = Color.FromRgb(0, 0, 255), // Blue
-					TextDecorations = TextDecorations.Underline
-				};
+                    Text = "#" + item,
+                    FontSize = 18,
+                    TextColor = Colors.LightBlue, // Blue
+                    TextDecorations = TextDecorations.Underline,
+                    FontFamily = "Nunito-Bold",
+                    FontAttributes = FontAttributes.Bold,
+                };
 				TagGroup.Children.Add(label);
             }
 
