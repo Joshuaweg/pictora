@@ -108,7 +108,7 @@ public partial class ImageUploadPage : ContentPage
         generated_image.Name = Title.Text;
 
         // If the image has been edited, use this url.
-        if (edited_image != null)
+        if (edited_image != string.Empty)
         {
             // generated_image.ImageUrl = edited_image
             Debug.Print("I need to convert the generated file to a url.");
@@ -121,17 +121,24 @@ public partial class ImageUploadPage : ContentPage
 
         Debug.Print("Upload should be fine if it gets to this point.");
 
-        // * Set up a NumericID
         // Go through the image database, and find the next unsued NumericId.
+        generated_image.NumericId = FindNumericId();
 
-        // Do not uncoment this until both of the unset fields have been set properly.
-        /*
         MongoDBService mgdbs = new();
-        mgdbs.CreateAsync("images", generated_image);
-        */
+        _ = mgdbs.CreateAsync("images", generated_image);
 
-        // Display a prompt, to confirm the image has been uploaded sucessfully
-        // Switch view back to home page, because otherwise the user may spam the database with duplcates
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            await DisplayAlert("Succuess", "Image has been uploaded!", "Ok");
+            await Shell.Current.GoToAsync($"../.."); // Go back to the home page.
+        });       
+        
+    }
+
+    private static int FindNumericId()
+    {
+        // A method for finding a unique number was never discussed, so...
+        return 0;
     }
 
     private void ButtonSaveClicked(object sender, EventArgs e)
