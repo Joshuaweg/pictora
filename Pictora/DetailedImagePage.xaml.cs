@@ -20,7 +20,7 @@ public partial class DetailedImagePage : ContentPage
 		this.idx = idx;
         Generated_Image.Source = ImageUrl;
 
-        image = FindImage(ImageUrl);
+        image = FindImage(ImageUrl)!;
 
 		if (image == null)
 		{
@@ -36,7 +36,7 @@ public partial class DetailedImagePage : ContentPage
         Debug.WriteLine(idx);
 
         // Edit tools become visible for uploader or admin.
-        UploaderTools.IsVisible = (image.UserId == idx) || (idx == 0);
+        UploaderTools.IsVisible = (image!.UserId == idx) || (idx == 0);
 
 		Debug.WriteLine(image.Tags.Count);
 
@@ -46,13 +46,15 @@ public partial class DetailedImagePage : ContentPage
 
 			foreach (var item in image.Tags)
 			{
-				Label label = new()
+                Label label = new()
                 {
-					Text = "#" + item,
-					FontSize = 18,
-					TextColor = Color.FromRgb(0, 0, 255), // Blue
-					TextDecorations = TextDecorations.Underline
-				};
+                    Text = "#" + item,
+                    FontSize = 18,
+                    TextColor = Colors.LightBlue, // Blue
+                    TextDecorations = TextDecorations.Underline,
+                    FontFamily = "Nunito-Bold",
+                    FontAttributes = FontAttributes.Bold,
+                };
 				TagGroup.Children.Add(label);
             }
 
@@ -72,7 +74,6 @@ public partial class DetailedImagePage : ContentPage
 
 
     }
-
     private string GetUploader(int UserID)
     {
 		List<User> userList = Task.Run(async () => await _mgdbs.GetAllAsync<User>("users")).Result;
@@ -96,13 +97,57 @@ public partial class DetailedImagePage : ContentPage
 		foreach (Image image in imageList)
 		{			
 			// Substring of the imageUrl is needed to remove the "Url: " at the start.
-			if (image.ImageUrl == imageUrl.ToString()[5..])
+			if (image.ImageUrl == imageUrl.ToString()![5..])
 				return image;
 
         }
 
 		// This happens if the image is not found in the database.
 		return null;
+    }
+
+    private void FavoriteButtonClicked(object sender, EventArgs e)
+	{
+		Debug.WriteLine("Add favorite fuctionality here");
+    }
+
+    private void UpButtonClicked(object sender, EventArgs e)
+	{
+        Debug.WriteLine("Include some data to check the vote status and update it properly here");
+
+        // Placeholder
+        LikeCount.Text = (Int32.Parse(LikeCount.Text) + 1).ToString();
+    }
+
+    private void DownButtonClicked(object sender, EventArgs e)
+	{
+        Debug.WriteLine("Include some data to check the vote status and update it properly here");
+
+        // Placeholder
+        LikeCount.Text = (Int32.Parse(LikeCount.Text) - 1).ToString();
+    }
+
+    private void EditButtonClicked(object sender, EventArgs e)
+	{
+        Navigation.PushAsync(new ImageUploadPage(image, idx));
+    }
+
+	// Because this function is mostly a bunch of "awaits", this function is easier to implement as an "async" instead.
+    private async void DeleteButtonClicked(object sender, EventArgs e)
+	{
+		bool delete = await DisplayAlert("Confirm", "Are you sure you want to delete this image? \n\n This cannot be undone", "YES", "NO");
+
+		Debug.WriteLine(delete);
+		Debug.WriteLine(image.Id);
+
+		if (delete)
+		{
+
+            await _mgdbs.DeleteAsync<Image>("images", image.Id);
+            await DisplayAlert("", "Image has been deleted", "OK");
+            await Shell.Current.GoToAsync("..");
+
+        }
     }
 
     public class User
@@ -121,6 +166,11 @@ public partial class DetailedImagePage : ContentPage
 
         [BsonElement("email")]
         public string Email { get; set; }
+
+    }
+
+    private void Button_Clicked(object sender, EventArgs e)
+    {
 
     }
 }
