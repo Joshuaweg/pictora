@@ -2,10 +2,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.DetailedImagePage"
-             Title="DetailedImagePage">
+             Title="DetailedImagePage"
+             BackgroundImageSource="background.png">
+    
     <ScrollView>
     <VerticalStackLayout
-        Spacing="10">
+        Padding="0,20,0,20"
+        Spacing="15"
+        VerticalOptions="CenterAndExpand"
+        HorizontalOptions="CenterAndExpand">
+        
         <!-- WidthRequest needs to be looked at to see if a dynamic option can be done. -->
         <Image
         Source="pictoralogo.png"
@@ -20,24 +26,47 @@
                 Spacing="10">
                 <Button
                     Text="^"
-                    Clicked="UpButtonClicked"/>
+                    BackgroundColor="#008080"
+                        FontFamily="Nunito-Bold"
+                        FontAttributes="Bold"
+                    Clicked="UpButtonClicked">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                    </Button.Shadow>
+                </Button>
                 <Label
                     Text="0"
                     x:Name="LikeCount"
                     VerticalOptions="Center"
+                    TextColor="White"
+                    FontFamily="Nunito-Bold"
+                    FontAttributes="Bold"  
                     FontSize="24"
                     />
                 <Button
                     Text="v"
-                    Clicked="DownButtonClicked"/>
+                    BackgroundColor="#008080"
+                        FontFamily="Nunito-Bold"
+                        FontAttributes="Bold"
+                    Clicked="DownButtonClicked">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                    </Button.Shadow>
+                </Button>
 
                 
                 <!-- Add some whitespace between these elements -->
                 
                 <Button
                     Text="Favorite"
-                    Clicked="FavoriteButtonClicked"
-                    />
+                    BackgroundColor="#008080"
+                        FontFamily="Nunito-Bold"
+                        FontAttributes="Bold"
+                    Clicked="FavoriteButtonClicked">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                    </Button.Shadow>
+                </Button>
             
                 <HorizontalStackLayout
                     x:Name="UploaderTools"
@@ -45,12 +74,24 @@
                     Spacing="10">
                     <Button
                         Text="Edit"
-                        Clicked="EditButtonClicked"
-                        />
+                        BackgroundColor="#008080"
+                        FontFamily="Nunito-Bold"
+                        FontAttributes="Bold"
+                        Clicked="EditButtonClicked">
+                        <Button.Shadow>
+                            <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        </Button.Shadow>
+                    </Button>
                     <Button
                         Text="Delete"
-                        Clicked="DeleteButtonClicked"
-                    />
+                        BackgroundColor="#008080"
+                        FontFamily="Nunito-Bold"
+                        FontAttributes="Bold"
+                        Clicked="DeleteButtonClicked">
+                        <Button.Shadow>
+                            <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                        </Button.Shadow>
+                    </Button>
                 </HorizontalStackLayout>
 
             </HorizontalStackLayout>
@@ -58,20 +99,27 @@
             <Label
             x:Name="Title"
             Text="Title"
-                HorizontalOptions="Center"
-                FontSize="24"
+            HorizontalOptions="Center"
+            FontSize="24"
+            TextColor="White"
+            FontFamily="Nunito-Bold"
+            FontAttributes="Bold" 
             />
 
             <Label
             x:Name="Uploader"
             Text="Uploader"
-                FontSize="18"/>
+            FontSize="18"
+            TextColor="White"
+            FontFamily="Nunito-Bold"
+            FontAttributes="Bold" />
 
             <!-- If you are looking for where the formating for the labels are, they are in the .cs file, because they are created dynamicly. -->
             <HorizontalStackLayout
                 x:Name="TagGroup"
                 IsVisible="False"
-                Spacing="10">
+                Spacing="10"
+                >
             </HorizontalStackLayout>
 
             <HorizontalStackLayout
@@ -79,12 +127,16 @@
                 Spacing="10">
                 <Label
                     Text="Original Image:"
-                    FontSize="18"/>
+                                    FontSize="18"
+                TextColor="White"
+FontFamily="Nunito-Bold"
+FontAttributes="Bold"
+                    />
                 <Label
                     x:Name="ImageID"
                     Text="XXXXX"
                     FontSize="18"
-                    TextColor="Blue"
+                    TextColor="LightBlue"
                     TextDecorations="Underline"
                     />
             </HorizontalStackLayout>
@@ -93,36 +145,54 @@
                 x:Name="Description"
                 Text="Description"
                 FontSize="18"
+                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
                 />
         
             <Label 
             x:Name="Date"
             Text="Date Uploaded: MM/DD/YYYY"
             FontSize="12"
+                                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
             />
 
             <Label 
             x:Name="Model"
             Text="Model Used:"
             FontSize="12"
+                                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
             />
 
             <Label 
             x:Name="Style"
             Text="Style Used:"
             FontSize="12"
+                                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
             />
 
             <Label 
             x:Name="Prompt"
             Text="Prompt:"
             FontSize="12"
+                                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
             />
 
             <Label 
             x:Name="Size"
             Text="Image Size:"
             FontSize="12"
+                                TextColor="White"
+                FontFamily="Nunito-Bold"
+                FontAttributes="Bold"
             />
 
         </VerticalStackLayout>

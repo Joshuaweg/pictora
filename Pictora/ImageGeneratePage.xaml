@@ -243,7 +243,8 @@
                         TextColor="White"
                         HeightRequest="50"
 			            WidthRequest="300"
-			            Clicked="ButtonDevUploadClicked">
+			            Clicked="ButtonDevUploadClicked"
+                        IsVisible="False">
                         <Button.Shadow>
                             <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
                         </Button.Shadow>
