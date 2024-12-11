@@ -13,9 +13,9 @@ using System.Diagnostics;
 using System.Net;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
-using Pictora.Services;
 using Pictora.Models;
 using Microsoft.Maui.Devices.Sensors;
+using Pictora.services;
 
 [QueryProperty(nameof(EditedImage), "file")]
 public partial class ImageUploadPage : ContentPage
@@ -115,6 +115,8 @@ public partial class ImageUploadPage : ContentPage
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 await DisplayAlert("Notice", "I still need to convert the edited file to a url. \n\n Nothing has been uploaded", "Ok");
+                MongoDBService mgdbs = new();
+                mgdbs.CreateAsync("images", edited_image);
             });
             return;
         }

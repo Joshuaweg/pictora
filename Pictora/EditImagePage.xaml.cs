@@ -1,4 +1,4 @@
-﻿using Pictora.Services;
+﻿using Pictora.Components;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp;
 using System.Diagnostics;
@@ -6,6 +6,8 @@ using PointFt = Microsoft.Maui.Graphics.PointF;
 using ColorM = Microsoft.Maui.Graphics.Color;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Numerics;
+using Pictora.services;
+using Pictora.Services;
 
 
 namespace Pictora
@@ -26,285 +28,15 @@ namespace Pictora
         private List<List<PointFt>> _paths = new List<List<PointFt>>();
         private IDrawable _maskDrawable;
         private PointFt _lastTouchPoint;
-        private ScrollView _inpaintScrollView;
-        private GraphicsView _maskCanvas;
         private int idx;
-
-        private class MaskDrawable : IDrawable
-        {
-            private readonly List<List<PointFt>> _paths;
-            private const float STROKE_WIDTH = 20f;
-
-            public MaskDrawable(List<List<PointFt>> paths)
-            {
-                _paths = paths;
-            }
-
-            public void Draw(ICanvas canvas, RectF dirtyRect)
-            {
-                if (_paths == null || !_paths.Any()) return;
-
-                // Set up drawing parameters
-                canvas.StrokeColor = Colors.White;
-                canvas.StrokeSize = STROKE_WIDTH;
-                canvas.StrokeLineCap = LineCap.Round;
-                canvas.StrokeLineJoin = LineJoin.Round;
-                canvas.FillColor = Colors.White;
-
-                foreach (var path in _paths)
-                {
-                    if (path.Count < 2) continue;
-
-                    // Create and draw the path
-                    var pathF = new PathF();
-                    pathF.MoveTo(path[0].X, path[0].Y);
-
-                    for (int i = 1; i < path.Count; i++)
-                    {
-                        pathF.LineTo(path[i].X, path[i].Y);
-                    }
-
-                    // Draw the stroke
-                    canvas.DrawPath(pathF);
-
-                    // Draw dots at each point for better visibility
-                    foreach (var point in path)
-                    {
-                        canvas.FillCircle(point.X, point.Y, STROKE_WIDTH / 2);
-                    }
-                }
-            }
-        }
-        // Move DraggableCaption class outside of constructor but keep it inside EditImagePage
-        private class DraggableCaption : Grid
-        {
-            private double _originalX;
-            private double _originalY;
-            private double _totalX;
-            private double _totalY;
-            private readonly Label _captionLabel;
-            private readonly Button _resizeHandle;
-            private double _startWidth;
-            private double _startHeight;
-            private EditImagePage _parentPage;
+        private ImageFilterService _filterService;
+        private InpaintingService _inpaintingService;
+        private DrawShapeService _drawShapeService;
+        private string _currentShapeType;
+        private bool _isDrawingMode = false;
+        private Microsoft.Maui.Graphics.Color _currentShapeColor = Colors.Red;
 
 
-            public DraggableCaption(string text, EditImagePage parentPage)
-            {
-                _parentPage = parentPage;
-                MinimumWidthRequest = 50;
-                MinimumHeightRequest = 20;
-                WidthRequest = 200; // Default width
-                HeightRequest = 40;  // Default height
-                Padding = new Thickness(5);
-
-                RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
-                ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-                ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                _captionLabel = new Label
-                {
-                    Text = text,
-                    TextColor = Colors.White,
-                    FontSize = 18,
-                    BackgroundColor = Colors.Black.WithAlpha(0.0f),
-                    HorizontalOptions = LayoutOptions.Fill,
-                    VerticalOptions = LayoutOptions.Fill,
-                    LineBreakMode = LineBreakMode.WordWrap
-                };
-
-                _resizeHandle = new Button
-                {
-                    Text = "⋰",
-                    FontSize = 14,
-                    TextColor = Colors.White,
-                    BackgroundColor = Colors.Transparent,
-                    WidthRequest = 24,
-                    HeightRequest = 24,
-                    Padding = new Thickness(0),
-                    Margin = new Thickness(0)
-                };
-
-                Add(_captionLabel);
-                Add(_resizeHandle);
-
-                // Enable drag gesture
-                var panGesture = new PanGestureRecognizer();
-                panGesture.PanUpdated += OnPanUpdated;
-                GestureRecognizers.Add(panGesture);
-
-                // Add tap gesture for editing/deleting
-                var resizePanGesture = new PanGestureRecognizer();
-                resizePanGesture.PanUpdated += OnResizePanUpdated;
-                _resizeHandle.GestureRecognizers.Add(resizePanGesture);
-
-                var tapGesture = new TapGestureRecognizer();
-                tapGesture.Tapped += OnCaptionTapped;
-                _captionLabel.GestureRecognizers.Add(tapGesture);
-
-                // Add a double tap gesture for font size adjustment
-                var doubleTapGesture = new TapGestureRecognizer { NumberOfTapsRequired = 2 };
-                doubleTapGesture.Tapped += OnDoubleTapped;
-                _captionLabel.GestureRecognizers.Add(doubleTapGesture);
-            }
-
-            private async void OnDoubleTapped(object sender, EventArgs e)
-            {
-
-                if (_parentPage == null) return;  // Exit if parent page is not found
-
-                string action = await _parentPage.DisplayActionSheet(
-                    "Adjust Font Size",
-                    "Cancel",
-                    null,
-                    "Small (14)",
-                    "Medium (18)",
-                    "Large (24)",
-                    "Extra Large (32)");
-
-                if (string.IsNullOrEmpty(action) || action == "Cancel")
-                    return;
-
-                switch (action)
-                {
-                    case "Small (14)":
-                        _captionLabel.FontSize = 14;
-                        break;
-                    case "Medium (18)":
-                        _captionLabel.FontSize = 18;
-                        break;
-                    case "Large (24)":
-                        _captionLabel.FontSize = 24;
-                        break;
-                    case "Extra Large (32)":
-                        _captionLabel.FontSize = 32;
-                        break;
-                }
-            }
-
-            private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
-            {
-                switch (e.StatusType)
-                {
-                    case GestureStatus.Started:
-                        _originalX = TranslationX;
-                        _originalY = TranslationY;
-                        break;
-
-                    case GestureStatus.Running:
-                        TranslationX = _originalX + e.TotalX;
-                        TranslationY = _originalY + e.TotalY;
-                        _totalX = e.TotalX;
-                        _totalY = e.TotalY;
-                        break;
-
-                    case GestureStatus.Completed:
-                        _originalX = TranslationX;
-                        _originalY = TranslationY;
-                        break;
-                }
-            }
-
-            private void OnResizePanUpdated(object sender, PanUpdatedEventArgs e)
-            {
-                switch (e.StatusType)
-                {
-                    case GestureStatus.Started:
-                        _startWidth = WidthRequest;
-                        _startHeight = HeightRequest;
-                        break;
-
-                    case GestureStatus.Running:
-                        // Calculate new size
-                        double newWidth = Math.Max(_startWidth + e.TotalX, MinimumWidthRequest);
-                        double newHeight = Math.Max(_startHeight + e.TotalY, MinimumHeightRequest);
-
-                        // Ensure we don't exceed image boundaries (assuming 1024x1024 max)
-                        newWidth = Math.Min(newWidth, 1024);
-                        newHeight = Math.Min(newHeight, 1024);
-
-                        WidthRequest = newWidth;
-                        HeightRequest = newHeight;
-                        break;
-                }
-            }
-
-            private async void OnCaptionTapped(object sender, EventArgs e)
-            {
-                if (_parentPage == null) return;
-
-                string action = await _parentPage.DisplayActionSheet(
-                    "Caption Options",
-                    "Cancel",
-                    "Delete",
-                    "Edit Text",
-                    "Change Color");
-
-                switch (action)
-                {
-                    case "Delete":
-                        _parentPage.DeleteCaption(this);
-                        break;
-                    case "Edit Text":
-                        await _parentPage.EditCaption(this);
-                        break;
-                    case "Change Color":
-                        await ChangeTextColor();
-                        break;
-                }
-            }
-
-
-            private async Task ChangeTextColor()
-            {
-                if (_parentPage == null) return;
-
-                var action = await _parentPage.DisplayActionSheet(
-                    "Select Text Color",
-                    "Cancel",
-                    null,
-                    "White",
-                    "Black",
-                    "Red",
-                    "Blue",
-                    "Green",
-                    "Yellow");
-
-                ColorM newColor = action switch
-                {
-                    "White" => Colors.White,
-                    "Black" => Colors.Black,
-                    "Red" => Colors.Red,
-                    "Blue" => Colors.Blue,
-                    "Green" => Colors.Green,
-                    "Yellow" => Colors.Yellow,
-                    _ => _captionLabel.TextColor
-                };
-
-                _captionLabel.TextColor = newColor;
-                // Adjust background color for better contrast
-                _captionLabel.BackgroundColor = IsLightColor(newColor) ?
-                    Colors.Black.WithAlpha(0.0f) :
-                    Colors.White.WithAlpha(0.0f);
-            }
-
-            private bool IsLightColor(ColorM color)
-            {
-                return (color.Red * 0.299 + color.Green * 0.587 + color.Blue * 0.114) > 0.5;
-            }
-
-            public string GetText()
-            {
-                return (Children[0] as Label)?.Text ?? "";
-            }
-
-            public void SetText(string newText)
-            {
-                if (Children[0] is Label label)
-                {
-                    label.Text = newText;
-                }
-            }
-        }
 
         public EditImagePage(Pictora.Models.Image generated_image = null, int idx =0)
         {
@@ -356,6 +88,12 @@ namespace Pictora
             MaskCanvas.StartInteraction += OnStartDrawing;
             MaskCanvas.DragInteraction += OnDrawing;
             MaskCanvas.EndInteraction += OnEndDrawing;
+            ShapeCanvas.StartInteraction += OnStartDrawingShape;
+            ShapeCanvas.DragInteraction += OnDraggingShape;
+            ShapeCanvas.EndInteraction += OnEndDrawingShape;
+            _filterService = new ImageFilterService();
+            _inpaintingService = new InpaintingService(_imageService, _editImagesDirectory);
+            _drawShapeService = new DrawShapeService();
 
         }
 
@@ -444,13 +182,13 @@ namespace Pictora
             AddCaptionButton.Text = "Add Captions";
         }
 
-        private void DeleteCaption(DraggableCaption caption)
+        public void DeleteCaption(DraggableCaption caption)
         {
             _captions.Remove(caption);
             CaptionOverlay.Children.Remove(caption);
         }
 
-        private async Task EditCaption(DraggableCaption caption)
+        public async Task EditCaption(DraggableCaption caption)
         {
             string result = await DisplayPromptAsync(
                 "Edit Caption",
@@ -587,39 +325,6 @@ namespace Pictora
             }
         }
 
-        private async void SetupInitialImage()
-        {
-            try
-            {
-                // Set up the paths
-                string fileName = "test.png";
-                _currentImagePath = Path.Combine(FileSystem.CacheDirectory, fileName);
-
-                // If the file doesn't exist in cache, copy it from resources
-                if (!File.Exists(_currentImagePath))
-                {
-                    using var stream = await FileSystem.OpenAppPackageFileAsync("Resources/Images/edit/test.png");
-                    if (stream == null)
-                    {
-                        await DisplayAlert("Error", "Could not load initial image", "OK");
-                        return;
-                    }
-
-                    using var fileStream = File.Create(_currentImagePath);
-                    await stream.CopyToAsync(fileStream);
-                }
-
-                // Update the image source
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    EditableImage.Source = ImageSource.FromFile(_currentImagePath);
-                });
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"Failed to setup initial image: {ex.Message}", "OK");
-            }
-        }
 
         private async void OnEditButtonClicked(object sender, EventArgs e)
         {
@@ -697,23 +402,6 @@ namespace Pictora
             await Shell.Current.GoToAsync($"..?file={_fileToSendBack}");
         }
 
-        private void InitializeInpainting()
-        {
-            var inpaintButton = this.FindByName<Button>("InpaintButton");
-            var undoButton = this.FindByName<Button>("UndoButton");
-            var clearButton = this.FindByName<Button>("ClearButton");
-            var applyButton = this.FindByName<Button>("ApplyButton");
-            var maskCanvas = this.FindByName<GraphicsView>("MaskCanvas");
-
-            inpaintButton.Clicked += OnInpaintButtonClicked;
-            undoButton.Clicked += OnUndoButtonClicked;
-            clearButton.Clicked += OnClearButtonClicked;
-            applyButton.Clicked += OnApplyInpaintingClicked;
-
-            var panGesture = new PanGestureRecognizer();
-            panGesture.PanUpdated += OnMaskCanvasPanUpdated;
-            maskCanvas.GestureRecognizers.Add(panGesture);
-        }
 
         private void OnInpaintButtonClicked(object sender, EventArgs e)
         {
@@ -869,43 +557,30 @@ namespace Pictora
 
         private async void OnApplyInpaintingClicked(object sender, EventArgs e)
         {
-            if (_paths.Count == 0)
+            if (_paths.Count == 0 || string.IsNullOrWhiteSpace(PromptEditor.Text))
             {
-                await DisplayAlert("Error", "Please draw on the areas you want to inpaint", "OK");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(PromptEditor.Text))
-            {
-                await DisplayAlert("Error", "Please enter a prompt", "OK");
+                await DisplayAlert("Error",
+                    _paths.Count == 0 ? "Please draw on areas to inpaint" : "Please enter a prompt",
+                    "OK");
                 return;
             }
 
             try
             {
-                LoadingIndicator.IsVisible = true;
-                LoadingIndicator.IsRunning = true;
+                LoadingIndicator.IsVisible = LoadingIndicator.IsRunning = true;
 
+                var maskData = await _inpaintingService.CreateMaskFromPaths(_paths, MaskCanvas );
+                var imageData = await _inpaintingService.GetImageData(_currentImagePath);
 
-                byte[] maskData = await CreateMaskImageAsync();
-                byte[] imageData = null;
-                // Load the image data
-                Debug.WriteLine(_currentImagePath);
-                if (_currentImagePath.Contains("http"))
-                {
-                    //get bytes from uri
-                    imageData = await GetBase64fromUrl(_currentImagePath);
-                    Debug.WriteLine(imageData);
-                    // Process the inpainting
-                }
-                else
-                {
-                    //get bytes from file
-                    imageData = await File.ReadAllBytesAsync(_currentImagePath);
-                }
-                Debug.WriteLine(imageData);
-                // Process the inpainting
-                await ProcessInpaintingEdit(imageData, maskData, PromptEditor.Text);
+                var (newPath, result) = await _inpaintingService.ProcessInpainting(
+                    imageData,
+                    maskData,
+                    PromptEditor.Text,
+                    "cartoon, illustration, animation, face, male, female");
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                    EditableImage.Source = ImageSource.FromFile(newPath));
+                _currentImagePath = newPath;
 
                 // Reset inpainting mode
                 _isInpaintingMode = false;
@@ -920,111 +595,10 @@ namespace Pictora
             }
             finally
             {
-                LoadingIndicator.IsVisible = false;
-                LoadingIndicator.IsRunning = false;
+                LoadingIndicator.IsVisible = LoadingIndicator.IsRunning = false;
             }
         }
 
-        private async Task<byte[]> CreateMaskImageAsync()
-        {
-            try
-            {
-                // Capture the GraphicsView content
-                IScreenshotResult screenshot = await MaskCanvas.CaptureAsync();
-
-                // Convert the screenshot to a byte array
-                using var stream = await screenshot.OpenReadAsync();
-                using var memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-
-                // Get the byte array
-                byte[] maskData = memoryStream.ToArray();
-
-                // Use ImageSharp to process the mask image
-                using var image = SixLabors.ImageSharp.Image.Load(maskData);
-
-                // Ensure the image is in the correct format for the mask
-                image.Mutate(x => x
-                    .Grayscale()  // Convert to grayscale
-                    .BinaryThreshold(0.5f)); // Convert to binary black and white
-
-                // Save the processed mask to a new memory stream
-                using var outputStream = new MemoryStream();
-                await image.SaveAsPngAsync(outputStream);
-                return outputStream.ToArray();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error creating mask image: {ex}");
-                throw;
-            }
-        }
-
-        private async Task<string> GetImageAsBase64(string imagePath)
-        {
-            byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-            return Convert.ToBase64String(imageBytes);
-        }
-        private async Task<byte[]> GetBase64fromUrl(string url)
-        {
-
-            HttpClient _client = new HttpClient(); ;
-            byte[] imageBytes = await _client.GetByteArrayAsync(url);
-            return imageBytes;
-
-        }
-
-        private async Task<string> GetBase64FromBitmap(byte[] bitmapData)
-        {
-            return Convert.ToBase64String(bitmapData);
-        }
-
-        private async Task ProcessInpaintingEdit(byte[] imageBase64, byte[] maskBase64, string prompt)
-        {
-            string img_uri = await _imageService.ConvertImageToBase64WithCompression(imageBase64);
-            string mask_uri = await _imageService.ConvertImageToBase64WithCompression(maskBase64);
-            var imageDataUri = $"data:image/png;base64,{img_uri}";
-            var maskDataUri = $"data:image/png;base64,{mask_uri}";
-
-            try
-            {
-                string negativePrompt = "cartoon, illustration, animation, face, male, female";
-                Debug.WriteLine("Inpainting:\n");
-                var result = await _imageService.InpaintImageAsync(
-                    imageDataUri,
-                    maskDataUri,
-                    prompt,
-                    negativePrompt
-                );
-
-                if (result.Images.Count > 0)
-                {
-                    var image = result.Images[0];
-
-                    using var httpClient = new HttpClient();
-                    byte[] imageData = await httpClient.GetByteArrayAsync(image.Url);
-
-                    string tempImagePath = Path.Combine(_editImagesDirectory, "inpainted_image.jpg");
-                    await File.WriteAllBytesAsync(tempImagePath, imageData);
-
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        EditableImage.Source = ImageSource.FromFile(tempImagePath);
-                    });
-                    _currentImagePath = tempImagePath;
-
-                }
-                else
-                {
-                    await DisplayAlert("Error", "No image was generated", "OK");
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"Failed to process inpainting: {ex.Message}", "OK");
-            }
-
-        }
         private void OnFilter1ButtonClicked(object sender, EventArgs e)
         {
             // Call the async method from the event handler
@@ -1041,35 +615,17 @@ namespace Pictora
                 if (!_isBlackAndWhite)
                 {
                     if (_originalImagePath == null)
-                    {
                         _originalImagePath = _currentImagePath;
-                    }
 
-                    byte[] imageBytes;
-                    if (_currentImagePath.Contains("http"))
-                    {
-                        using var client = new HttpClient();
-                        imageBytes = await client.GetByteArrayAsync(_currentImagePath);
-                    }
-                    else
-                    {
-                        imageBytes = await File.ReadAllBytesAsync(_currentImagePath);
-                    }
-
-                    using var image = SixLabors.ImageSharp.Image.Load<Rgba32>(imageBytes);
-
-                    image.Mutate(x => x
-                        .Grayscale()
-                        .Contrast(1.1f));
+                    var imageBytes = await _filterService.LoadImageBytes(_currentImagePath);
+                    var filteredBytes = await _filterService.ApplyBlackAndWhiteFilter(imageBytes);
 
                     string tempImagePath = Path.Combine(_editImagesDirectory, "bw_image.jpg");
-                    await using var fileStream = File.Create(tempImagePath);
-                    await image.SaveAsJpegAsync(fileStream);
+                    await File.WriteAllBytesAsync(tempImagePath, filteredBytes);
 
                     MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        EditableImage.Source = ImageSource.FromFile(tempImagePath);
-                    });
+                        EditableImage.Source = ImageSource.FromFile(tempImagePath));
+
                     _currentImagePath = tempImagePath;
                     _isBlackAndWhite = true;
                     UpdateFilterButtonStyles("BlackAndWhite");
@@ -1082,7 +638,6 @@ namespace Pictora
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"Failed to toggle black and white filter: {ex.Message}", "OK");
-                Debug.WriteLine($"Error in ToggleBlackAndWhiteFilter: {ex}");
             }
             finally
             {
@@ -1105,45 +660,17 @@ namespace Pictora
                 if (!_isBlueShift)
                 {
                     if (_originalImagePath == null)
-                    {
                         _originalImagePath = _currentImagePath;
-                    }
 
-                    byte[] imageBytes;
-                    if (_currentImagePath.Contains("http"))
-                    {
-                        using var client = new HttpClient();
-                        imageBytes = await client.GetByteArrayAsync(_currentImagePath);
-                    }
-                    else
-                    {
-                        imageBytes = await File.ReadAllBytesAsync(_currentImagePath);
-                    }
-
-                    using var image = SixLabors.ImageSharp.Image.Load<Rgba32>(imageBytes);
-
-                    // Apply blue shift effect
-                    image.Mutate(x => x.ProcessPixelRowsAsVector4(row =>
-                    {
-                        for (int x = 0; x < row.Length; x++)
-                        {
-                            row[x] = new Vector4(
-                                row[x].X * 0.8f,     // Reduce red
-                                row[x].Y * 0.9f,     // Reduce green slightly
-                                row[x].Z * 1.2f,     // Enhance blue
-                                row[x].W              // Keep alpha the same
-                            );
-                        }
-                    }));
+                    var imageBytes = await _filterService.LoadImageBytes(_currentImagePath);
+                    var filteredBytes = await _filterService.ApplyBlueShiftFilter(imageBytes);
 
                     string tempImagePath = Path.Combine(_editImagesDirectory, "blue_shift_image.jpg");
-                    await using var fileStream = File.Create(tempImagePath);
-                    await image.SaveAsJpegAsync(fileStream);
+                    await File.WriteAllBytesAsync(tempImagePath, filteredBytes);
 
                     MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        EditableImage.Source = ImageSource.FromFile(tempImagePath);
-                    });
+                        EditableImage.Source = ImageSource.FromFile(tempImagePath));
+
                     _currentImagePath = tempImagePath;
                     _isBlueShift = true;
                     UpdateFilterButtonStyles("BlueShift");
@@ -1156,7 +683,6 @@ namespace Pictora
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"Failed to toggle blue shift filter: {ex.Message}", "OK");
-                Debug.WriteLine($"Error in ToggleBlueShiftFilter: {ex}");
             }
             finally
             {
@@ -1179,60 +705,20 @@ namespace Pictora
                 if (!_isVintage)
                 {
                     if (_originalImagePath == null)
-                    {
                         _originalImagePath = _currentImagePath;
-                    }
 
-                    byte[] imageBytes;
-                    if (_currentImagePath.Contains("http"))
-                    {
-                        using var client = new HttpClient();
-                        imageBytes = await client.GetByteArrayAsync(_currentImagePath);
-                    }
-                    else
-                    {
-                        imageBytes = await File.ReadAllBytesAsync(_currentImagePath);
-                    }
-
-                    using var image = SixLabors.ImageSharp.Image.Load<Rgba32>(imageBytes);
-
-                    // Apply vintage effect
-                    image.Mutate(x => x.ProcessPixelRowsAsVector4(row =>
-                    {
-                        for (int x = 0; x < row.Length; x++)
-                        {
-                            // Get original color values
-                            float r = row[x].X;
-                            float g = row[x].Y;
-                            float b = row[x].Z;
-
-                            // Apply warm vintage tone
-                            row[x] = new Vector4(
-                                Math.Min(r * 1.2f, 1.0f),     // Enhance red slightly
-                                g * 0.9f,                     // Reduce green slightly
-                                b * 0.8f,                     // Reduce blue more
-                                row[x].W                      // Keep alpha the same
-                            );
-                        }
-                    }));
-
-                    // Add slight vignette effect
-                    image.Mutate(x => x
-                        .Contrast(1.1f)     // Increase contrast slightly
-                        .Sepia(0.2f));      // Add subtle sepia tone
+                    var imageBytes = await _filterService.LoadImageBytes(_currentImagePath);
+                    var filteredBytes = await _filterService.ApplyVintageFilter(imageBytes);
 
                     string tempImagePath = Path.Combine(_editImagesDirectory, "vintage_image.jpg");
-                    await using var fileStream = File.Create(tempImagePath);
-                    await image.SaveAsJpegAsync(fileStream);
+                    await File.WriteAllBytesAsync(tempImagePath, filteredBytes);
 
                     MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        EditableImage.Source = ImageSource.FromFile(tempImagePath);
-                    });
+                        EditableImage.Source = ImageSource.FromFile(tempImagePath));
+
                     _currentImagePath = tempImagePath;
                     _isVintage = true;
                     UpdateFilterButtonStyles("Vintage");
-
                 }
                 else
                 {
@@ -1242,7 +728,6 @@ namespace Pictora
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"Failed to toggle vintage filter: {ex.Message}", "OK");
-                Debug.WriteLine($"Error in ToggleVintageFilter: {ex}");
             }
             finally
             {
@@ -1417,6 +902,110 @@ namespace Pictora
             if (frame == BlueShiftFrame) return 1;
             if (frame == VintageFrame) return 2;
             return 0;
+        }
+
+        private void OnDrawShapesButtonClicked(object sender, EventArgs e)
+        {
+            _isDrawingMode = !_isDrawingMode;
+            ShapeDrawingCanvas.IsVisible = _isDrawingMode;
+
+            if (_isDrawingMode)
+            {
+                ShapeCanvas.Drawable = new Pictora.Services.ShapeDrawable(_drawShapeService.Shapes);
+            }
+           
+        }
+
+        private void OnStartDrawingShape(object sender, TouchEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_currentShapeType)) return;
+
+            var point = e.Touches.FirstOrDefault();
+            if (point.IsEmpty) return;
+
+            _drawShapeService.StartDrawing(
+                _currentShapeType,
+                new Microsoft.Maui.Graphics.PointF((float)point.X, (float)point.Y),
+                _currentShapeColor
+            );
+            UpdateShapeCanvas();
+        }
+
+        private void OnDraggingShape(object sender, TouchEventArgs e)
+        {
+            var point = e.Touches.FirstOrDefault();
+            if (point.IsEmpty) return;
+
+            _drawShapeService.UpdateDrawing(new Microsoft.Maui.Graphics.PointF((float)point.X, (float)point.Y));
+            UpdateShapeCanvas();
+        }
+
+        private void OnEndDrawingShape(object sender, TouchEventArgs e)
+        {
+            _drawShapeService.EndDrawing();
+            UpdateShapeCanvas();
+        }
+
+        private void UpdateShapeCanvas()
+        {
+            ShapeCanvas.Invalidate();
+        }
+
+        private void OnRectangleButtonClicked(object sender, EventArgs e)
+        {
+            _currentShapeType = "rectangle";
+        }
+
+        private void OnEllipseButtonClicked(object sender, EventArgs e)
+        {
+            _currentShapeType = "ellipse";
+        }
+
+        private void OnTriangleButtonClicked(object sender, EventArgs e)
+        {
+            _currentShapeType = "triangle";
+        }
+
+        private async void OnColorButtonClicked(object sender, EventArgs e)
+        {
+            var colors = new string[] { "Red", "Blue", "Green", "Yellow", "Purple", "Orange" };
+            var result = await DisplayActionSheet("Select Color", "Cancel", null, colors);
+
+            if (result != "Cancel" && result != null)
+            {
+                _currentShapeColor = result.ToLower() switch
+                {
+                    "red" => Colors.Red,
+                    "blue" => Colors.Blue,
+                    "green" => Colors.Green,
+                    "yellow" => Colors.Yellow,
+                    "purple" => Colors.Purple,
+                    "orange" => Colors.Orange,
+                    _ => Colors.Red
+                };
+            }
+        }
+
+        private void OnUndoShapeButtonClicked(object sender, EventArgs e)
+        {
+            var shapesCount = _drawShapeService.Shapes.Count;
+            if (shapesCount > 0)
+            {
+                _drawShapeService.RemoveShape(shapesCount - 1);
+                UpdateShapeCanvas();
+            }
+        }
+
+        private void OnClearShapesButtonClicked(object sender, EventArgs e)
+        {
+            _drawShapeService.ClearShapes();
+            UpdateShapeCanvas();
+        }
+
+        private void OnDoneDrawingButtonClicked(object sender, EventArgs e)
+        {
+            _isDrawingMode = false;
+            ShapeDrawingCanvas.IsVisible = false;
         }
     }
 }

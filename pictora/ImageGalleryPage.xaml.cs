@@ -1,12 +1,12 @@
 namespace Pictora;
 
-using Pictora.Services;
 using Pictora.Models;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using System.Diagnostics;
 using System;
 using System.ComponentModel;
+using Pictora.services;
 
 public partial class ImageGalleryPage : ContentPage
 {
@@ -84,7 +84,7 @@ public partial class ImageGalleryPage : ContentPage
             Padding = 0,
             CornerRadius = 4,
             IsClippedToBounds = true,
-            BorderColor = Colors.Transparent,
+            BorderColor = Color.FromRgba("#008080"),
             BackgroundColor = Colors.Transparent,
             Margin = 2,
             WidthRequest = size.width,

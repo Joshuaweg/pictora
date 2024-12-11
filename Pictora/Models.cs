@@ -3,6 +3,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace Pictora.Models {
 
@@ -186,5 +188,169 @@ namespace Pictora.Models {
 
         [BsonElement("width")]
         public int Width { get; set; }
+    }
+    public class InpaintRequest
+    {
+        [JsonPropertyName("image_url")]
+        public string ImageUrl { get; set; } = "";
+
+        [JsonPropertyName("mask_url")]
+        public string MaskUrl { get; set; } = "";
+
+        [JsonPropertyName("prompt")]
+        public string Prompt { get; set; } = "";
+
+        [JsonPropertyName("negative_prompt")]
+        public string NegativePrompt { get; set; } = "";
+
+        [JsonPropertyName("image_size")]
+        public string ImageSize { get; set; } = "square_hd";
+
+        [JsonPropertyName("num_inference_steps")]
+        public int NumInferenceSteps { get; set; } = 25;
+
+        [JsonPropertyName("guidance_scale")]
+        public float GuidanceScale { get; set; } = 7.5f;
+
+        [JsonPropertyName("strength")]
+        public float Strength { get; set; } = 0.95f;
+
+        [JsonPropertyName("num_images")]
+        public int NumImages { get; set; } = 1;
+
+        [JsonPropertyName("enable_safety_checker")]
+        public bool EnableSafetyChecker { get; set; } = true;
+
+        [JsonPropertyName("safety_checker_version")]
+        public string SafetyCheckerVersion { get; set; } = "v1";
+
+        [JsonPropertyName("format")]
+        public string Format { get; set; } = "jpeg";
+    }
+    public class ImageEditRequest
+    {
+        [JsonPropertyName("image_url")]
+        public ImageUrlInfo ImageUrl { get; set; }
+
+        [JsonPropertyName("prompt")]
+        public string Prompt { get; set; } = "";
+
+        [JsonPropertyName("negative_prompt")]
+        public string NegativePrompt { get; set; } = "";
+
+        [JsonPropertyName("image_size")]
+        public string ImageSize { get; set; } = "square_hd";
+
+        [JsonPropertyName("num_inference_steps")]
+        public int NumInferenceSteps { get; set; } = 25;
+
+        [JsonPropertyName("guidance_scale")]
+        public float GuidanceScale { get; set; } = 7.5f;
+
+        [JsonPropertyName("strength")]
+        public float Strength { get; set; } = 0.95f;
+
+        [JsonPropertyName("num_images")]
+        public int NumImages { get; set; } = 1;
+
+        [JsonPropertyName("loras")]
+        public List<object> Loras { get; set; } = new();
+
+        [JsonPropertyName("embeddings")]
+        public List<object> Embeddings { get; set; } = new();
+
+        [JsonPropertyName("enable_safety_checker")]
+        public bool EnableSafetyChecker { get; set; } = true;
+
+        [JsonPropertyName("safety_checker_version")]
+        public string SafetyCheckerVersion { get; set; } = "v1";
+
+        [JsonPropertyName("format")]
+        public string Format { get; set; } = "jpeg";
+    }
+    public class ImageUrlInfo
+    {
+        [JsonPropertyName("path")]
+        public string Path { get; set; } = "";
+    }
+
+    public class RequestResponse
+    {
+        [JsonPropertyName("request_id")]
+        public string RequestId { get; set; } = "";
+    }
+
+    public class RequestStatus
+    {
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = "";
+
+        [JsonPropertyName("error")]
+        public string? Error { get; set; }
+    }
+
+    public class ImageEditResponse
+    {
+        [JsonPropertyName("images")]
+        public List<ImageInfo> Images { get; set; } = new();
+
+        [JsonPropertyName("timings")]
+        public Timings Timings { get; set; } = new();
+
+        [JsonPropertyName("seed")]
+        [JsonConverter(typeof(SeedConverter))]
+        public ulong Seed { get; set; }  // Changed to ulong
+
+
+        [JsonPropertyName("has_nsfw_concepts")]
+        public List<bool> HasNsfwConcepts { get; set; } = new();
+
+        [JsonPropertyName("prompt")]
+        public string Prompt { get; set; } = "";
+    }
+
+
+    public class ImageInfo
+    {
+        [JsonPropertyName("url")]
+        public string Url { get; set; } = "";
+
+        [JsonPropertyName("width")]
+        public int Width { get; set; }
+
+        [JsonPropertyName("height")]
+        public int Height { get; set; }
+
+        [JsonPropertyName("content_type")]
+        public string ContentType { get; set; } = "";
+    }
+
+    public class Timings
+    {
+        [JsonPropertyName("inference")]
+        public double Inference { get; set; }
+    }
+    public class SeedConverter : JsonConverter<ulong>
+    {
+        public override ulong Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Number)
+            {
+                try
+                {
+                    return reader.GetUInt64();
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+            return 0;
+        }
+
+        public override void Write(Utf8JsonWriter writer, ulong value, JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue(value);
+        }
     }
 }
