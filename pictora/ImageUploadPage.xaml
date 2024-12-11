@@ -6,16 +6,95 @@
              BackgroundImageSource="background.png">
     <ScrollView>
         <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25"
-            VerticalOptions="CenterAndExpand"
-            HorizontalOptions="CenterAndExpand">
+
+        Padding="0,20,0,20"
+        Spacing="15"
+        VerticalOptions="CenterAndExpand"
+        HorizontalOptions="CenterAndExpand">
+
+
             <Image
                 Source="pictoralogo.png"
                 x:Name="Generated_Image"
                 HeightRequest="185"
                 Aspect="AspectFit"
                 HorizontalOptions="Center"
+                
+                SemanticProperties.Description="dot net bot in a race car number eight"
+            />
+
+            <Label Text="Title" 
+            TextColor="White"
+            FontFamily="OpenSans-Bold"
+            Margin="0,0,0,0"/>
+
+            <Editor x:Name="Title"
+           Placeholder="Enter the title of the Image"
+           AutoSize ="TextChanges"
+           BackgroundColor="#1c1c3c"
+           TextColor="White"
+           PlaceholderColor="White"
+           Margin="0,0,0,10"
+           FontFamily="Nunito-Bold"
+           FontAttributes="Bold"   
+           HeightRequest="50"
+           WidthRequest="300"
+           HorizontalOptions="Fill"
+           VerticalOptions="Center"
+           HorizontalTextAlignment="Center" 
+           VerticalTextAlignment="Center"
+           />
+
+            <Label Text="Tags (Use Space to seperate tags)" 
+            TextColor="White"
+            FontFamily="OpenSans-Bold"
+            Margin="0,0,0,0"/>
+
+            <Editor x:Name="Tags"
+            Placeholder="Enter tags to help other users find your image."
+            AutoSize ="TextChanges"
+            BackgroundColor="#1c1c3c"
+            TextColor="White"
+            PlaceholderColor="White"
+            Margin="0,0,0,10"
+            FontFamily="Nunito-Bold"
+            FontAttributes="Bold"   
+            HeightRequest="50"
+            WidthRequest="300"
+            HorizontalOptions="Fill"
+            VerticalOptions="Center"
+            HorizontalTextAlignment="Center" 
+            VerticalTextAlignment="Center"
+           />
+
+            <Label Text="Description" 
+            TextColor="White"
+            FontFamily="OpenSans-Bold"
+            Margin="0,0,0,0"/>
+
+            <Editor x:Name="Description"
+           Placeholder="Describe what this image is about."
+           AutoSize ="TextChanges"
+           BackgroundColor="#1c1c3c"
+           TextColor="White"
+           PlaceholderColor="White"
+           Margin="0,0,0,10"
+           FontFamily="Nunito-Bold"
+           FontAttributes="Bold"   
+           HeightRequest="50"
+           WidthRequest="300"
+           HorizontalOptions="Fill"
+           VerticalOptions="Center"
+           HorizontalTextAlignment="Center" 
+           VerticalTextAlignment="Center"
+         />
+
+            <Button Text="Edit"
+                    x:Name="Edit"
+					MinimumWidthRequest="100"
+                    BackgroundColor="#FF6347"
+                    FontFamily="Nunito-Bold"
+
                 SemanticProperties.Description="dot net bot in a race car number eight" />
 
             <Frame BackgroundColor="#8A2BE2" 
@@ -82,23 +161,47 @@
                     x:Name="Edit"
                     MinimumWidthRequest="100"
                     BackgroundColor="#FF6347" 
-                    TextColor="White"
-                    FontSize="18"
-                    CornerRadius="8"
-                    HeightRequest="45"
-                    HorizontalOptions="Center"
-                    Clicked="ButtonEditClicked"/>
+                    Clicked="ButtonEditClicked">
+                <Button.Shadow>
+                    <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                </Button.Shadow>
+            </Button>
+
 
             <Button Text="Upload"
                     x:Name="Upload"
                     MinimumWidthRequest="100"
                     BackgroundColor="#8A2BE2"
+                    FontFamily="Nunito-Bold"
                     TextColor="White"
                     FontSize="18"
                     CornerRadius="8"
-                    HeightRequest="45"
+                    HeightRequest="50"
+                    WidthRequest="300"
                     HorizontalOptions="Center"
-                    Clicked="ButtonUploadClicked"/>
+                    Clicked="ButtonUploadClicked">
+                <Button.Shadow>
+                    <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                </Button.Shadow>
+            </Button>
+
+            <Button Text="Save"
+                    x:Name="Save"
+		            MinimumWidthRequest="100"
+                    BackgroundColor="#008080"
+                    FontFamily="Nunito-Bold"
+                    TextColor="White"
+                    FontSize="18"
+                    CornerRadius="8"
+                    HeightRequest="50"
+                    WidthRequest="300"
+                    HorizontalOptions="Center"
+                    Clicked="ButtonSaveClicked">
+                <Button.Shadow>
+                    <Shadow Brush="Black" Opacity="0.5" Radius="12" Offset="4,4" />
+                </Button.Shadow>
+            </Button>
+
 
             <Button Text="Save"
                     x:Name="Save"
