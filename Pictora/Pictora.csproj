@@ -47,8 +47,6 @@
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
-    <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
-    <MauiImage Update="Resources\Images\pictoralogo.png" Resize="True" BaseSize="300,185" />
 
     <!-- Custom Fonts -->
     <MauiFont Include="Resources\Fonts\*" />
@@ -64,13 +62,20 @@
     <None Remove="Resources\Fonts\OpenSans-ExtraBold.ttf" />
     <None Remove="Resources\Fonts\OpenSans-Italic.ttf" />
     <None Remove="Resources\Fonts\OpenSans-LightItalic.ttf" />
-    <None Remove="Resources\Images\background.png" />
+    <None Remove="Resources\Images\blackandwhite_icon.png" />
+    <None Remove="Resources\Images\blueshift_icon.png" />
+    <None Remove="Resources\Images\captions_icon.png" />
+    <None Remove="Resources\Images\edit_icon.png" />
     <None Remove="Resources\Images\email_icon.png" />
     <None Remove="Resources\Images\face_id_icon.png" />
     <None Remove="Resources\Images\fingerprint_icon.png" />
+    <None Remove="Resources\Images\inpainting_icon.png" />
     <None Remove="Resources\Images\lock_id_icon.png" />
     <None Remove="Resources\Images\password_icon.png" />
+    <None Remove="Resources\Images\save_icon.png" />
+    <None Remove="Resources\Images\shapes_icon.png" />
     <None Remove="Resources\Images\username_icon.png" />
+    <None Remove="Resources\Images\vintage_icon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -111,6 +116,26 @@
     <MauiXaml Update="SignUpPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiImage Include="Resources\Images\background\background.png" />
+    <MauiImage Include="Resources\Images\icons\blackandwhite_icon.png" />
+    <MauiImage Include="Resources\Images\icons\blueshift_icon.png" />
+    <MauiImage Include="Resources\Images\icons\captions_icon.png" />
+    <MauiImage Include="Resources\Images\icons\edit_icon.png" />
+    <MauiImage Include="Resources\Images\icons\email_icon.png" />
+    <MauiImage Include="Resources\Images\icons\face_id_icon.png" />
+    <MauiImage Include="Resources\Images\icons\fingerprint_icon.png" />
+    <MauiImage Include="Resources\Images\icons\inpainting_icon.png" />
+    <MauiImage Include="Resources\Images\icons\lock_id_icon.png" />
+    <MauiImage Include="Resources\Images\icons\password_icon.png" />
+    <MauiImage Include="Resources\Images\icons\save_icon.png" />
+    <MauiImage Include="Resources\Images\icons\shapes_icon.png" />
+    <MauiImage Include="Resources\Images\icons\username_icon.png" />
+    <MauiImage Include="Resources\Images\icons\vintage_icon.png" />
+    <MauiImage Include="Resources\Images\logo\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+    <MauiImage Include="Resources\Images\logo\pictoralogo.png" Resize="True" BaseSize="300,185" />
   </ItemGroup>
 
 </Project>
