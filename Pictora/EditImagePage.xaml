@@ -13,8 +13,6 @@
                     Text="Inpainting" 
                     BackgroundColor="#FF6347"
                     TextColor="White"
-                    ImageSource="inpainting_icon.png" 
-                    ContentLayout="Left,5"
                     FontFamily="Nunito-Bold"
                     FontSize="14"
                     FontAttributes="Bold"
@@ -26,8 +24,6 @@
                     Text="Add Captions"
                     BackgroundColor="#FF6347"
                     TextColor="White"
-                    ImageSource="captions_icon.png" 
-                    ContentLayout="Left,5"
                     FontFamily="Nunito-Bold"
                     FontSize="14"
                     FontAttributes="Bold"
@@ -38,14 +34,13 @@
             <Button Text="Draw Shapes"
                     BackgroundColor="#FF6347"
                     TextColor="White"
-                    ImageSource="shapes_icon.png" 
-                    ContentLayout="Left,5"
                     FontFamily="Nunito-Bold"
                     FontSize="14"
                     FontAttributes="Bold"
                     CornerRadius="10"
                     Grid.Column="2"
-                    Margin="5"/>
+                    Margin="5"
+                    Clicked="OnDrawShapesButtonClicked"/>
         </Grid>
 
         <!-- Main Image Container -->
@@ -126,6 +121,82 @@
                  Clicked="OnApplyInpaintingClicked"/>
                 </StackLayout>
             </Grid>
+            <Grid x:Name="ShapeDrawingCanvas" 
+      IsVisible="False"
+      BackgroundColor="Transparent"
+      InputTransparent="False"
+      HorizontalOptions="Fill"
+      VerticalOptions="Fill">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Shape Controls -->
+                <HorizontalStackLayout Grid.Row="0" 
+                          Spacing="10" 
+                          Padding="10" 
+                          HorizontalOptions="Center">
+                    <Button x:Name="RectangleButton"
+                Text="Rectangle"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
+                Clicked="OnRectangleButtonClicked"/>
+                    <Button x:Name="EllipseButton"
+                Text="Ellipse"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
+                Clicked="OnEllipseButtonClicked"/>
+                    <Button x:Name="TriangleButton"
+                Text="Triangle"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
+                Clicked="OnTriangleButtonClicked"/>
+                </HorizontalStackLayout>
+
+                <!-- Drawing Area -->
+                <GraphicsView x:Name="ShapeCanvas"
+                  Grid.Row="1"
+                  HorizontalOptions="Fill"
+                  VerticalOptions="Fill"
+                  Background="Transparent"/>
+
+                <!-- Bottom Controls -->
+                <HorizontalStackLayout Grid.Row="2" 
+                          Spacing="10" 
+                          Padding="10"
+                          HorizontalOptions="Center">
+                    <Button x:Name="ColorButton"
+                Text="Change Color"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
+                Clicked="OnColorButtonClicked"/>
+                    <Button x:Name="UndoShapeButton"
+                Text="Undo"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
+                Clicked="OnUndoShapeButtonClicked"/>
+                    <Button x:Name="ClearShapesButton"
+                Text="Clear All"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
+                Clicked="OnClearShapesButtonClicked"/>
+                    <Button x:Name="DoneDrawingButton"
+                Text="Done"
+                BackgroundColor="#FF6347"
+                TextColor="White"
+                CornerRadius="8"
+                Clicked="OnDoneDrawingButtonClicked"/>
+                </HorizontalStackLayout>
+            </Grid>
         </Grid>
 
         <!-- Rest of your existing content remains the same -->
@@ -181,8 +252,6 @@
                 Text="Edit"
                 BackgroundColor="#FF6347"
                 TextColor="White"
-                ImageSource="edit_icon.png" 
-                ContentLayout="Left,7"
                 FontFamily="Nunito-Bold"
                 FontSize="16"
                 FontAttributes="Bold"
@@ -190,42 +259,103 @@
                 Margin="10"/>
 
         <!-- Filter Buttons -->
-        <StackLayout Grid.Row="5" 
-                     Orientation="Horizontal" 
-                     HorizontalOptions="Center"
-                     Spacing="10"
-                     Margin="0,10">
-            <Button x:Name="Filter1Button" 
-                    Text="Black &amp; White"
-                    BackgroundColor="#FF6347"
-                    TextColor="White"
-                    ImageSource="blackandwhite_icon.png" 
-                    ContentLayout="Left,7"
-                    FontFamily="Nunito-Bold"
-                    FontSize="14"
-                    FontAttributes="Bold"
-                    CornerRadius="8"/>
-            <Button x:Name="Filter2Button" 
-                    Text="Filter 2"
-                    BackgroundColor="#FF6347"
-                    TextColor="White"
-                    ImageSource="blueshift_icon.png" 
-                    ContentLayout="Left,7"
-                    FontFamily="Nunito-Bold"
-                    FontSize="14"
-                    FontAttributes="Bold"
-                    CornerRadius="8"/>
-            <Button x:Name="Filter3Button"
-                    Text="Filter 3"
-                    BackgroundColor="#FF6347"
-                    TextColor="White"
-                    ImageSource="vintage_icon.png" 
-                    ContentLayout="Left,7"
-                    FontFamily="Nunito-Bold"
-                    FontSize="14"
-                    FontAttributes="Bold"
-                    CornerRadius="8"/>
-        </StackLayout>
+        <Grid Grid.Row="5" x:Name="FilterContainer" HorizontalOptions="Center">
+            <!-- Base Container -->
+            <Frame BackgroundColor="White"
+           CornerRadius="25"
+           Padding="2"
+           HasShadow="False"
+           BorderColor="#8B5CF6"
+           HeightRequest="50"
+           WidthRequest="310"
+           HorizontalOptions="Center"
+           ZIndex="0">
+            </Frame>
+
+            <!-- Selection Indicator -->
+            <Frame x:Name="SelectionIndicator"
+           BackgroundColor="#FF6347"
+           CornerRadius="23"
+           HasShadow="False"
+           IsClippedToBounds="True"
+           HorizontalOptions="Start"
+           WidthRequest="100"
+           HeightRequest="46"
+           Margin="2,2,2,2"
+           ZIndex="1"/>
+
+            <!-- Filter Buttons Grid -->
+            <Grid ColumnDefinitions="100,100,100" 
+          ColumnSpacing="0"
+          HorizontalOptions="Center"
+          ZIndex="2">
+                <Frame x:Name="BlackAndWhiteFrame"
+               Grid.Column="0" 
+               BackgroundColor="Transparent"
+               Padding="0"
+               CornerRadius="23"
+               HasShadow="False"
+               BorderColor="Transparent"
+               WidthRequest="100">
+                    <Label x:Name="BlackAndWhiteLabel"
+                   Text="Black and White"
+                   TextColor="#666666"
+                   FontFamily="Nunito-Bold"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBlackAndWhiteTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Frame>
+
+                <Frame x:Name="BlueShiftFrame"
+               Grid.Column="1"
+               BackgroundColor="Transparent"
+               Padding="0"
+               CornerRadius="23"
+               HasShadow="False"
+               BorderColor="Transparent"
+               WidthRequest="100">
+                    <Label x:Name="BlueShiftLabel"
+                   Text="Blue Shift"
+                   TextColor="#666666"
+                   FontFamily="Nunito-Bold"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBlueShiftTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Frame>
+
+                <Frame x:Name="VintageFrame"
+               Grid.Column="2"
+               BackgroundColor="Transparent"
+               Padding="0"
+               CornerRadius="23"
+               HasShadow="False"
+               BorderColor="Transparent"
+               WidthRequest="100">
+                    <Label x:Name="VintageLabel"
+                   Text="Vintage"
+                   TextColor="#666666"
+                   FontFamily="Nunito-Bold"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnVintageTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Frame>
+            </Grid>
+        </Grid>
 
         <!-- Save Button -->
         <Button x:Name="SaveButton" 
@@ -233,8 +363,6 @@
                 Text="Save" 
                 BackgroundColor="#FF6347"
                 TextColor="White"
-                ImageSource="save_icon.png" 
-                ContentLayout="Left,7"
                 FontFamily="Nunito-Bold"
                 FontSize="16"
                 FontAttributes="Bold"
@@ -245,8 +373,6 @@
          Text="Upload" 
          BackgroundColor="#FF6347"
          TextColor="White"
-         ImageSource="upload_icon.png" 
-         ContentLayout="Left,7"
          FontFamily="Nunito-Bold"
          FontSize="16"
          FontAttributes="Bold"
