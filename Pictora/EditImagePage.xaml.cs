@@ -34,6 +34,7 @@ namespace Pictora
         private DrawShapeService _drawShapeService;
         private string _currentShapeType;
         private bool _isDrawingMode = false;
+        private Pictora.Services.ShapeDrawable _shapeDrawable;
         private Microsoft.Maui.Graphics.Color _currentShapeColor = Colors.Red;
 
 
@@ -94,6 +95,10 @@ namespace Pictora
             _filterService = new ImageFilterService();
             _inpaintingService = new InpaintingService(_imageService, _editImagesDirectory);
             _drawShapeService = new DrawShapeService();
+            _shapeDrawable = new Pictora.Services.ShapeDrawable(_drawShapeService.Shapes);
+            ShapeCanvas.Drawable = _shapeDrawable;
+            ShapeCanvas.IsVisible = true;  // Make sure it's always visible
+            ShapeCanvas.InputTransparent = true;  // Start with input disabled
 
         }
 
@@ -350,39 +355,74 @@ namespace Pictora
                     await DisplayAlert("Error", "No image to save", "OK");
                     return null;
                 }
+
+                // Store states
                 bool wasLoadingVisible = LoadingIndicator.IsVisible;
-                LoadingIndicator.IsVisible = false;
+                bool wasShapeDrawingControlsVisible = ShapeDrawingCanvas.IsVisible;
+                bool wasShapeCanvasInputTransparent = ShapeCanvas.InputTransparent;
 
-                IScreenshotResult screenshot;
-                // Create a screenshot of the entire image container including captions
-                if (Microsoft.Maui.Devices.DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+                try
                 {
-                    screenshot = await ImageContainer.CaptureAsync();
+                    // Temporarily adjust for capture
+                    LoadingIndicator.IsVisible = false;
+                    ShapeDrawingCanvas.IsVisible = false;
+                    ShapeCanvas.InputTransparent = true;  // Temporarily make input transparent for capture
+
+                    // Ensure shape canvas is visible
+                    ShapeCanvas.IsVisible = true;
+
+                    // Ensure drawable is set
+                    if (ShapeCanvas.Drawable == null)
+                    {
+                        ShapeCanvas.Drawable = _shapeDrawable;
+                    }
+
+                    // Store original layout parameters
+                    var originalMargin = ImageContainer.Margin;
+                    var originalPadding = ImageContainer.Padding;
+
+                    // Adjust container for capture
+                    ImageContainer.Margin = new Thickness(0);
+                    ImageContainer.Padding = new Thickness(0);
+
+                    // Small delay to ensure layout updates
+                    await Task.Delay(50);
+
+                    IScreenshotResult screenshot;
+                    if (Microsoft.Maui.Devices.DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+                    {
+                        screenshot = await ImageContainer.CaptureAsync();
+                    }
+                    else
+                    {
+                        screenshot = await ImageContainer.CaptureAsync();
+                    }
+
+                    if (screenshot == null)
+                    {
+                        await DisplayAlert("Error", "Failed to capture image", "OK");
+                        return null;
+                    }
+
+                    string picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                    string fileName = $"pictora_edited_{DateTime.Now:yyyyMMddHHmmss}.png";
+                    string fullPath = Path.Combine(picturesFolder, fileName);
+
+                    using (var stream = File.OpenWrite(fullPath))
+                    {
+                        await screenshot.CopyToAsync(stream);
+                    }
+
+                    await DisplayAlert("Success", "Image saved to Pictures folder", "OK");
+                    return fullPath;
                 }
-                else
+                finally
                 {
-                    screenshot = await ImageContainer.CaptureAsync();
-
+                    // Restore all original states
+                    LoadingIndicator.IsVisible = wasLoadingVisible;
+                    ShapeDrawingCanvas.IsVisible = wasShapeDrawingControlsVisible;
+                    ShapeCanvas.InputTransparent = wasShapeCanvasInputTransparent;  // Restore original input state
                 }
-
-                if (screenshot == null)
-                {
-                    await DisplayAlert("Error", "Failed to capture image", "OK");
-                }
-
-                string picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-                string fileName = $"pictora_captioned_{DateTime.Now:yyyyMMddHHmmss}.png";
-
-                using (var stream = File.OpenWrite(Path.Combine(picturesFolder, fileName)))
-                {
-                    await screenshot.CopyToAsync(stream);
-                }
-
-                LoadingIndicator.IsVisible = wasLoadingVisible;
-
-                await DisplayAlert("Success", "Image saved to Pictures folder", "OK");
-
-                return Path.Combine(picturesFolder, fileName);
             }
             catch (Exception ex)
             {
@@ -399,6 +439,8 @@ namespace Pictora
         private async void OnUploadButtonClicked(object? sender, EventArgs e)
         {
             string _fileToSendBack = await SaveImageWithCaptions();
+            byte[] editdata = await File.ReadAllBytesAsync(_fileToSendBack);
+
             await Shell.Current.GoToAsync($"..?file={_fileToSendBack}");
         }
 
@@ -847,7 +889,7 @@ namespace Pictora
                 // Each frame is 100 units wide
                 double currentX = SelectionIndicator.TranslationX;
                 Debug.WriteLine("Current position: " + currentX.ToString());
-                double targetX = endPosition * 100;
+                double targetX = endPosition * 200;
                 Debug.WriteLine("end position: " + endPosition.ToString());
 
                 // Create the sliding animation for the selection indicator
@@ -877,7 +919,7 @@ namespace Pictora
             {
                 // Initial positioning for first selection
                 double position = GetFramePosition(newActiveFrame);
-                SelectionIndicator.TranslationX = position * 100;
+                SelectionIndicator.TranslationX = position * 200;
             }
 
             // Update new frame text color
@@ -909,16 +951,28 @@ namespace Pictora
             _isDrawingMode = !_isDrawingMode;
             ShapeDrawingCanvas.IsVisible = _isDrawingMode;
 
+            // Always keep ShapeCanvas visible, just toggle input handling
+            ShapeCanvas.InputTransparent = !_isDrawingMode;
+
             if (_isDrawingMode)
             {
-                ShapeCanvas.Drawable = new Pictora.Services.ShapeDrawable(_drawShapeService.Shapes);
+                // Set a default shape type if none is selected
+                if (string.IsNullOrEmpty(_currentShapeType))
+                {
+                    _currentShapeType = "rectangle";
+                }
             }
-           
+
+            UpdateShapeCanvas();
         }
 
         private void OnStartDrawingShape(object sender, TouchEventArgs e)
         {
-            if (string.IsNullOrEmpty(_currentShapeType)) return;
+            if (!_isDrawingMode) return;  // Only handle input in drawing mode
+            if (string.IsNullOrEmpty(_currentShapeType))
+            {
+                _currentShapeType = "rectangle";  // Set default if none selected
+            }
 
             var point = e.Touches.FirstOrDefault();
             if (point.IsEmpty) return;
@@ -933,6 +987,8 @@ namespace Pictora
 
         private void OnDraggingShape(object sender, TouchEventArgs e)
         {
+            if (!_isDrawingMode) return;  // Only handle input in drawing mode
+
             var point = e.Touches.FirstOrDefault();
             if (point.IsEmpty) return;
 
@@ -942,12 +998,18 @@ namespace Pictora
 
         private void OnEndDrawingShape(object sender, TouchEventArgs e)
         {
+            if (!_isDrawingMode) return;  // Only handle input in drawing mode
+
             _drawShapeService.EndDrawing();
             UpdateShapeCanvas();
         }
 
         private void UpdateShapeCanvas()
         {
+            if (ShapeCanvas.Drawable == null)
+            {
+                ShapeCanvas.Drawable = _shapeDrawable;
+            }
             ShapeCanvas.Invalidate();
         }
 
@@ -1006,6 +1068,8 @@ namespace Pictora
         {
             _isDrawingMode = false;
             ShapeDrawingCanvas.IsVisible = false;
+            ShapeCanvas.InputTransparent = true;  // Disable input but keep shapes visible
+            UpdateShapeCanvas();
         }
     }
 }

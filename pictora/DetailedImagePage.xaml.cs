@@ -50,12 +50,14 @@ public partial class DetailedImagePage : ContentPage
                 {
                     Text = "#" + item,
                     FontSize = 18,
-                    TextColor = Colors.LightBlue, // Blue
+                    TextColor = Color.FromArgb("#008080"),
                     TextDecorations = TextDecorations.Underline,
                     FontFamily = "Nunito-Bold",
                     FontAttributes = FontAttributes.Bold,
+                    BackgroundColor = Colors.White,
+                    Padding = new Thickness(5)
                 };
-				TagGroup.Children.Add(label);
+                TagGroup.Children.Add(label);
             }
 
         }

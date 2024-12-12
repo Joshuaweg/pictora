@@ -2,130 +2,141 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pictora.DetailedImagePage"
-              BackgroundImageSource="background.png"
+             BackgroundImageSource="background.png"
              Title="DetailedImagePage">
     <ScrollView>
-    <VerticalStackLayout
-        Spacing="10">
-        <!-- WidthRequest needs to be looked at to see if a dynamic option can be done. -->
-        <Image
-        Source="pictoralogo.png"
-        x:Name="Generated_Image"
-        Aspect="AspectFit"
-        WidthRequest="400"
-        HorizontalOptions="Center"
-        SemanticProperties.Description="dot net bot in a race car number eight" />
+        <Grid 
+            Padding="20"
+            RowSpacing="15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <HorizontalStackLayout
-                 HorizontalOptions="Center"
-                Spacing="10">
-                <Button
-                    Text="^"
-                    Clicked="UpButtonClicked"/>
-                <Label
-                    Text="0"
-                    x:Name="LikeCount"
-                    VerticalOptions="Center"
-                    FontSize="24"
-                    />
-                <Button
-                    Text="v"
-                    Clicked="DownButtonClicked"/>
+            <!-- Image Display Area -->
+            <Frame Grid.Row="0" 
+                   BackgroundColor="#80008080"
+                   Padding="10"
+                   CornerRadius="10"
+                   BorderColor="#008080">
+                <Image x:Name="Generated_Image"
+                       Aspect="AspectFit"
+                       WidthRequest="400"
+                       HorizontalOptions="Center"/>
+            </Frame>
 
-                
-                <!-- Add some whitespace between these elements -->
-                
-                <Button
-                    Text="Favorite"
-                    Clicked="FavoriteButtonClicked"
-                    />
-            
-                <HorizontalStackLayout
-                    x:Name="UploaderTools"
-                    IsVisible="False"
-                    Spacing="10">
-                    <Button
-                        Text="Edit"
-                        Clicked="EditButtonClicked"
-                        />
-                    <Button
-                        Text="Delete"
-                        Clicked="DeleteButtonClicked"
-                    />
+            <!-- Interaction Buttons -->
+            <Frame Grid.Row="1"
+                   BackgroundColor="#80008080"
+                   Padding="10"
+                   CornerRadius="10"
+                   BorderColor="#008080">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                    <Button Text="^"
+                            Clicked="UpButtonClicked"
+                            BackgroundColor="#008080"/>
+                    <Label Text="0"
+                           x:Name="LikeCount"
+                           VerticalOptions="Center"
+                           FontSize="24"
+                           TextColor="White"/>
+                    <Button Text="v"
+                            Clicked="DownButtonClicked"
+                            BackgroundColor="#008080"/>
+                    <Button Text="Favorite"
+                            Clicked="FavoriteButtonClicked"
+                            BackgroundColor="#008080"/>
+                    <HorizontalStackLayout x:Name="UploaderTools"
+                                         IsVisible="False"
+                                         Spacing="10">
+                        <Button Text="Edit"
+                                Clicked="EditButtonClicked"
+                                BackgroundColor="#008080"/>
+                        <Button Text="Delete"
+                                Clicked="DeleteButtonClicked"
+                                BackgroundColor="#008080"/>
+                    </HorizontalStackLayout>
                 </HorizontalStackLayout>
+            </Frame>
 
-            </HorizontalStackLayout>
+            <!-- Title and Uploader Info -->
+            <Frame Grid.Row="2"
+                   BackgroundColor="#80008080"
+                   Padding="15"
+                   CornerRadius="10"
+                   BorderColor="#008080">
+                <VerticalStackLayout Spacing="10">
+                    <Label x:Name="Title"
+                           Text="Title"
+                           HorizontalOptions="Center"
+                           FontSize="24"
+                           TextColor="White"/>
+                    <Label x:Name="Uploader"
+                           Text="Uploader"
+                           FontSize="18"
+                           TextColor="White"/>
+                    <HorizontalStackLayout x:Name="TagGroup"
+                                         IsVisible="False"
+                                         Spacing="10"/>
+                </VerticalStackLayout>
+            </Frame>
 
-            <Label
-            x:Name="Title"
-            Text="Title"
-                HorizontalOptions="Center"
-                FontSize="24"
-            />
+            <!-- Description -->
+            <Frame Grid.Row="3"
+                   BackgroundColor="#80008080"
+                   Padding="15"
+                   CornerRadius="10"
+                   BorderColor="#008080">
+                <VerticalStackLayout Spacing="10">
+                    <Label x:Name="Description"
+                           Text="Description"
+                           FontSize="18"
+                           TextColor="White"/>
+                </VerticalStackLayout>
+            </Frame>
 
-            <Label
-            x:Name="Uploader"
-            Text="Uploader"
-                FontSize="18"/>
-
-            <!-- If you are looking for where the formating for the labels are, they are in the .cs file, because they are created dynamicly. -->
-            <HorizontalStackLayout
-                x:Name="TagGroup"
-                IsVisible="False"
-                Spacing="10">
-            </HorizontalStackLayout>
-
-            <HorizontalStackLayout
-                x:Name="OgImage"
-                Spacing="10">
-                <Label
-                    Text="Original Image:"
-                    FontSize="18"/>
-                <Label
-                    x:Name="ImageID"
-                    Text="XXXXX"
-                    FontSize="18"
-                    TextColor="Blue"
-                    TextDecorations="Underline"
-                    />
-            </HorizontalStackLayout>
-
-            <Label 
-                x:Name="Description"
-                Text="Description"
-                FontSize="18"
-                />
-        
-            <Label 
-            x:Name="Date"
-            Text="Date Uploaded: MM/DD/YYYY"
-            FontSize="12"
-            />
-
-            <Label 
-            x:Name="Model"
-            Text="Model Used:"
-            FontSize="12"
-            />
-
-            <Label 
-            x:Name="Style"
-            Text="Style Used:"
-            FontSize="12"
-            />
-
-            <Label 
-            x:Name="Prompt"
-            Text="Prompt:"
-            FontSize="12"
-            />
-
-            <Label 
-            x:Name="Size"
-            Text="Image Size:"
-            FontSize="12"
-            />
-
-        </VerticalStackLayout>
+            <!-- Additional Details -->
+            <Frame Grid.Row="4"
+                   BackgroundColor="#80008080"
+                   Padding="15"
+                   CornerRadius="10"
+                   BorderColor="#008080">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout x:Name="OgImage" Spacing="10">
+                        <Label Text="Original Image:"
+                               FontSize="18"
+                               TextColor="White"/>
+                        <Label x:Name="ImageID"
+                               Text="XXXXX"
+                               FontSize="18"
+                               TextColor="LightBlue"
+                               TextDecorations="Underline"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="Date"
+                           Text="Date Uploaded: MM/DD/YYYY"
+                           FontSize="12"
+                           TextColor="White"/>
+                    <Label x:Name="Model"
+                           Text="Model Used:"
+                           FontSize="12"
+                           TextColor="White"/>
+                    <Label x:Name="Style"
+                           Text="Style Used:"
+                           FontSize="12"
+                           TextColor="White"/>
+                    <Label x:Name="Prompt"
+                           Text="Prompt:"
+                           FontSize="12"
+                           TextColor="White"/>
+                    <Label x:Name="Size"
+                           Text="Image Size:"
+                           FontSize="12"
+                           TextColor="White"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
     </ScrollView>
 </ContentPage>

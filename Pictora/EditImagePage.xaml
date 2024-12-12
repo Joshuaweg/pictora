@@ -13,6 +13,8 @@
                     Text="Inpainting" 
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    ImageSource="inpainting_icon.png" 
+                    ContentLayout="Left,5"
                     FontFamily="Nunito-Bold"
                     FontSize="14"
                     FontAttributes="Bold"
@@ -24,6 +26,8 @@
                     Text="Add Captions"
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    ImageSource="captions_icon.png" 
+                    ContentLayout="Left,5"
                     FontFamily="Nunito-Bold"
                     FontSize="14"
                     FontAttributes="Bold"
@@ -34,6 +38,8 @@
             <Button Text="Draw Shapes"
                     BackgroundColor="#FF6347"
                     TextColor="White"
+                    ImageSource="shapes_icon.png" 
+                    ContentLayout="Left,5"
                     FontFamily="Nunito-Bold"
                     FontSize="14"
                     FontAttributes="Bold"
@@ -50,18 +56,30 @@
 
             <!-- Base Image Content -->
             <Grid x:Name="ImageContainer"
-          WidthRequest="300"
+          BackgroundColor="Black"
           HeightRequest="300"
-          BackgroundColor="Transparent"
-          HorizontalOptions="Center">
+          WidthRequest="300"
+          Padding="0"
+          Margin="0">
                 <Image x:Name="EditableImage" 
-               Aspect="AspectFit"
-               HorizontalOptions="Fill"
-               VerticalOptions="Fill"/>
-                <Grid x:Name="CaptionOverlay" 
-              IsVisible="False"
-              InputTransparent="False"
-              BackgroundColor="Transparent"/>
+           Aspect="AspectFit"
+           HorizontalOptions="FillAndExpand"
+           VerticalOptions="FillAndExpand"
+           Margin="0" />
+                <GraphicsView x:Name="ShapeCanvas" 
+              StartInteraction="OnStartDrawingShape"
+              DragInteraction="OnDraggingShape"
+              EndInteraction="OnEndDrawingShape"
+              InputTransparent="True"
+              HorizontalOptions="Fill"
+              VerticalOptions="Fill"
+              Background="Transparent"
+              ZIndex="1" />
+                <Grid x:Name="CaptionOverlay"
+          InputTransparent="False"
+          HorizontalOptions="FillAndExpand"
+          VerticalOptions="FillAndExpand"
+          Margin="0" />
                 <ActivityIndicator x:Name="LoadingIndicator" 
                           IsVisible="False"
                           IsRunning="False"
@@ -121,81 +139,67 @@
                  Clicked="OnApplyInpaintingClicked"/>
                 </StackLayout>
             </Grid>
+            
+
+            <!-- Controls overlay - positioned at bottom and centered -->
             <Grid x:Name="ShapeDrawingCanvas" 
-      IsVisible="False"
-      BackgroundColor="Transparent"
-      InputTransparent="False"
-      HorizontalOptions="Fill"
-      VerticalOptions="Fill">
+          IsVisible="False"
+          InputTransparent="False"
+          VerticalOptions="End"
+          Margin="0,0,0,20">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                <StackLayout Orientation="Horizontal" 
+                     Spacing="10"
+                     HorizontalOptions="Center">
+                    <Button Text="Rectangle" 
+                   Clicked="OnRectangleButtonClicked"
+                   BackgroundColor="#FF6347"
+                   TextColor="White"
+                   CornerRadius="5"
+                   Padding="10,5"/>
 
-                <!-- Shape Controls -->
-                <HorizontalStackLayout Grid.Row="0" 
-                          Spacing="10" 
-                          Padding="10" 
-                          HorizontalOptions="Center">
-                    <Button x:Name="RectangleButton"
-                Text="Rectangle"
-                BackgroundColor="#FF6347"
-                TextColor="White"
-                CornerRadius="8"
-                Clicked="OnRectangleButtonClicked"/>
-                    <Button x:Name="EllipseButton"
-                Text="Ellipse"
-                BackgroundColor="#FF6347"
-                TextColor="White"
-                CornerRadius="8"
-                Clicked="OnEllipseButtonClicked"/>
-                    <Button x:Name="TriangleButton"
-                Text="Triangle"
-                BackgroundColor="#FF6347"
-                TextColor="White"
-                CornerRadius="8"
-                Clicked="OnTriangleButtonClicked"/>
-                </HorizontalStackLayout>
+                    <Button Text="Ellipse" 
+                   Clicked="OnEllipseButtonClicked"
+                   BackgroundColor="#FF6347"
+                   TextColor="White"
+                   CornerRadius="5"
+                   Padding="10,5"/>
 
-                <!-- Drawing Area -->
-                <GraphicsView x:Name="ShapeCanvas"
-                  Grid.Row="1"
-                  HorizontalOptions="Fill"
-                  VerticalOptions="Fill"
-                  Background="Transparent"/>
+                    <Button Text="Triangle" 
+                   Clicked="OnTriangleButtonClicked"
+                   BackgroundColor="#FF6347"
+                   TextColor="White"
+                   CornerRadius="5"
+                   Padding="10,5"/>
 
-                <!-- Bottom Controls -->
-                <HorizontalStackLayout Grid.Row="2" 
-                          Spacing="10" 
-                          Padding="10"
-                          HorizontalOptions="Center">
-                    <Button x:Name="ColorButton"
-                Text="Change Color"
-                BackgroundColor="#FF6347"
-                TextColor="White"
-                CornerRadius="8"
-                Clicked="OnColorButtonClicked"/>
-                    <Button x:Name="UndoShapeButton"
-                Text="Undo"
-                BackgroundColor="#FF6347"
-                TextColor="White"
-                CornerRadius="8"
-                Clicked="OnUndoShapeButtonClicked"/>
-                    <Button x:Name="ClearShapesButton"
-                Text="Clear All"
-                BackgroundColor="#FF6347"
-                TextColor="White"
-                CornerRadius="8"
-                Clicked="OnClearShapesButtonClicked"/>
-                    <Button x:Name="DoneDrawingButton"
-                Text="Done"
-                BackgroundColor="#FF6347"
-                TextColor="White"
-                CornerRadius="8"
-                Clicked="OnDoneDrawingButtonClicked"/>
-                </HorizontalStackLayout>
+                    <Button Text="Change Color" 
+                   Clicked="OnColorButtonClicked"
+                   BackgroundColor="#FF6347"
+                   TextColor="White"
+                   CornerRadius="5"
+                   Padding="10,5"/>
+
+                    <Button Text="Undo" 
+                   Clicked="OnUndoShapeButtonClicked"
+                   BackgroundColor="#FF6347"
+                   TextColor="White"
+                   CornerRadius="5"
+                   Padding="10,5"/>
+
+                    <Button Text="Clear All" 
+                   Clicked="OnClearShapesButtonClicked"
+                   BackgroundColor="#FF6347"
+                   TextColor="White"
+                   CornerRadius="5"
+                   Padding="10,5"/>
+
+                    <Button Text="Done" 
+                   Clicked="OnDoneDrawingButtonClicked"
+                   BackgroundColor="#FF6347"
+                   TextColor="White"
+                   CornerRadius="5"
+                   Padding="10,5"/>
+                </StackLayout>
             </Grid>
         </Grid>
 
@@ -252,6 +256,8 @@
                 Text="Edit"
                 BackgroundColor="#FF6347"
                 TextColor="White"
+                ImageSource="edit_icon.png" 
+                ContentLayout="Left,7"
                 FontFamily="Nunito-Bold"
                 FontSize="16"
                 FontAttributes="Bold"
@@ -260,36 +266,35 @@
 
         <!-- Filter Buttons -->
         <Grid Grid.Row="5" x:Name="FilterContainer" HorizontalOptions="Center">
-            <!-- Base Container -->
-            <Frame BackgroundColor="White"
+        <!-- Base Container -->
+        <Frame BackgroundColor="White"
            CornerRadius="25"
            Padding="2"
            HasShadow="False"
            BorderColor="#8B5CF6"
            HeightRequest="50"
-           WidthRequest="310"
+           WidthRequest="615"
            HorizontalOptions="Center"
            ZIndex="0">
-            </Frame>
+        </Frame>
 
-            <!-- Selection Indicator -->
-            <Frame x:Name="SelectionIndicator"
+        <!-- Selection Indicator -->
+        <Frame x:Name="SelectionIndicator"
            BackgroundColor="#FF6347"
            CornerRadius="23"
            HasShadow="False"
            IsClippedToBounds="True"
            HorizontalOptions="Start"
-           WidthRequest="100"
+           WidthRequest="200"
            HeightRequest="46"
            Margin="2,2,2,2"
            ZIndex="1"/>
 
-            <!-- Filter Buttons Grid -->
-            <Grid ColumnDefinitions="100,100,100" 
+        <!-- Filter Buttons Grid -->
+        <Grid ColumnDefinitions="200,200,200" 
           ColumnSpacing="0"
-          HorizontalOptions="Center"
           ZIndex="2">
-                <Frame x:Name="BlackAndWhiteFrame"
+            <Frame x:Name="BlackAndWhiteFrame"
                Grid.Column="0" 
                BackgroundColor="Transparent"
                Padding="0"
@@ -297,7 +302,7 @@
                HasShadow="False"
                BorderColor="Transparent"
                WidthRequest="100">
-                    <Label x:Name="BlackAndWhiteLabel"
+                <Label x:Name="BlackAndWhiteLabel"
                    Text="Black and White"
                    TextColor="#666666"
                    FontFamily="Nunito-Bold"
@@ -305,13 +310,13 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
                    VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnBlackAndWhiteTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Frame>
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBlackAndWhiteTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Frame>
 
-                <Frame x:Name="BlueShiftFrame"
+            <Frame x:Name="BlueShiftFrame"
                Grid.Column="1"
                BackgroundColor="Transparent"
                Padding="0"
@@ -319,7 +324,7 @@
                HasShadow="False"
                BorderColor="Transparent"
                WidthRequest="100">
-                    <Label x:Name="BlueShiftLabel"
+                <Label x:Name="BlueShiftLabel"
                    Text="Blue Shift"
                    TextColor="#666666"
                    FontFamily="Nunito-Bold"
@@ -327,13 +332,13 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
                    VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnBlueShiftTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Frame>
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBlueShiftTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Frame>
 
-                <Frame x:Name="VintageFrame"
+            <Frame x:Name="VintageFrame"
                Grid.Column="2"
                BackgroundColor="Transparent"
                Padding="0"
@@ -341,7 +346,7 @@
                HasShadow="False"
                BorderColor="Transparent"
                WidthRequest="100">
-                    <Label x:Name="VintageLabel"
+                <Label x:Name="VintageLabel"
                    Text="Vintage"
                    TextColor="#666666"
                    FontFamily="Nunito-Bold"
@@ -349,20 +354,22 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
                    VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnVintageTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Frame>
-            </Grid>
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnVintageTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Frame>
         </Grid>
+    </Grid>
 
-        <!-- Save Button -->
+    <!-- Save Button -->
         <Button x:Name="SaveButton" 
                 Grid.Row="6" 
                 Text="Save" 
                 BackgroundColor="#FF6347"
                 TextColor="White"
+                ImageSource="save_icon.png" 
+                ContentLayout="Left,7"
                 FontFamily="Nunito-Bold"
                 FontSize="16"
                 FontAttributes="Bold"
@@ -373,6 +380,8 @@
          Text="Upload" 
          BackgroundColor="#FF6347"
          TextColor="White"
+         ImageSource="upload_icon.png" 
+         ContentLayout="Left,7"
          FontFamily="Nunito-Bold"
          FontSize="16"
          FontAttributes="Bold"
